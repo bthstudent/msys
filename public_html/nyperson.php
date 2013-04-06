@@ -25,37 +25,37 @@
 		<table>
 			<tr>
 				<td>Personnr:</td>
-				<td><input type="text" name="PNR" /></td>
+				<td><input type="text" name="PNR" tabindex="5" /></td>
 				<td>C/O:</td>
-				<td><input type="text" name="CO" /></td>
+				<td><input type="text" name="CO" tabindex="10" /></td>
 				<td class="right_col">Fel Adress:</td>
-				<td class="right_col"><input type="checkbox" name="FELADR" value="1" /></td>
+				<td class="right_col"><input type="checkbox" name="FELADR" value="1" tabindex="-1" /></td>
 			</tr>
 			<tr>
 				<td>F&ouml;rnamn:</td>
-				<td><input type="text" name="FNM" /></td>
+				<td><input type="text" name="FNM" tabindex="6" /></td>
 				<td>Adress:</td>
-				<td><input type="text" name="ADR" /></td>
+				<td><input type="text" name="ADR" tabindex="11" /></td>
 				<td>Avisera ej:</td>
-				<td><input type="checkbox" name="AVISEJ" value="1" /></td>
+				<td><input type="checkbox" name="AVISEJ" value="1" tabindex="-1" /></td>
 			</tr>
 			<tr>
 				<td>Efternamn:</td>
-				<td><input type="text" name="ENM" /></td>
+				<td><input type="text" name="ENM" tabindex="7" /></td>
 				<td>Postnummer:</td>
-				<td><input type="text" name="PSTNR" /></td>
+				<td><input type="text" name="PSTNR" tabindex="12" /></td>
 			</tr>
 			<tr>
 				<td>Telefon:</td>
-				<td><input type="text" name="TEL" /></td>
+				<td><input type="text" name="TEL" tabindex="8" /></td>
 				<td>Ort:</td>
-				<td><input type="text" name="ORT" /></td>
+				<td><input type="text" name="ORT" tabindex="13" /></td>
 			</tr>
 			<tr>
 				<td>Epost:</td>
-				<td><input type="text" name="EMAIL" /></td>
+				<td><input type="text" name="EMAIL" tabindex="9" /></td>
 				<td>Land:</td>
-				<td><input type="text" name="LAND" /></td>
+				<td><input type="text" name="LAND" tabindex="14" /></td>
 			</tr>
 		</table>
 		<div style="text-align:right">
