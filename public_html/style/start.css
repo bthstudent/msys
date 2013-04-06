@@ -1,0 +1,30 @@
+#infoBoxes{
+	float:left;
+	text-align:center;
+}
+
+.info{
+	margin:10px;
+	padding:10px 0px;
+	width:250px;
+	border:2px dashed #CCCCCC;
+	display:inline-block;
+}
+
+h7{
+	font-size:60px;
+	font-weight:bold;
+	color:#B8B8B8;
+	text-transform:uppercase;
+	margin:5px;
+	text-shadow: 1px 1px 3px #CCCCCC;
+}
+
+a{
+	font-size:60px;
+	color:#B8B8B8;
+}
+
+a:hover{
+	text-decoration:none;
+}

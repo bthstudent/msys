@@ -1,0 +1,24 @@
+HISTORY
+Something something?
+
+Code can be fetched from http://git.sis.bthstudent.se/msys, the
+license to adhere to is AGPLv3.
+
+
+INSTALL AND USAGE
+
+This code is clean PHP5, HTML, CSS and JavaScript. To execute it you
+need a standard webserver with PHP and a MySQL server instance. It
+might work with MariaDB but it has not yet been tested.
+
+git clone the repository, set Apache to serve the public_html
+directory. Copy example-config.php to local-config.php and add the
+relevant database information there.
+
+Use the MySQL commandline client and read the db/db.sql file.
+  mysql -u USERNAME -pPASSWORD databasename< db/db.sql
+
+Point you webclient to the system and login with admin as user and
+nimda as password.
+
+You are now ready to start.
