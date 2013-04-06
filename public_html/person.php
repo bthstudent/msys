@@ -121,6 +121,14 @@ if ($result) {
                     <td>" . $value->betalat . "</td>
                     <td>" . $value->betaldatum . "</td>
                     <td>" . $value->betalsatt . "</td>
+                    <td><form name=\"RemovePayment\" class=\"info\" method=\"post\">
+  						<input type=\"hidden\" readonly=\"readonly\" value=\"RemovePayment\" name=\"handler\" />
+    					<input type=\"hidden\" readonly=\"readonly\" value=\"" . $_GET['pnr'] . "\" name=\"pnr\"/>
+    					<input type=\"hidden\" readonly=\"readonly\" value=\"" . $value->period . "\" name=\"per\"/>
+    					<input type=\"hidden\" readonly=\"readonly\" value=\"" . $value->betalsatt . "\" name=\"bets\"/>
+    					<div style=\"text-align:right;float:right\">
+    						<input type=\"submit\" value=\"X\">
+    					</div></td>
                  </tr>";
             $i++;
         }

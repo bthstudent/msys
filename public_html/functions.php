@@ -124,6 +124,13 @@ function handlepost()
             echo "location.href='?page=person&pnr=" . $_GET['pnr'] . "'";
             echo "</script>";
             break;
+		case "RemovePayment":
+			removePayment();
+			echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
+            echo "<script type=\"text/javascript\">";
+            echo "location.href='?page=person&pnr=" . $_GET['pnr'] . "'";
+            echo "</script>";
+            break;
         case "ChangePerson":
             updatePerson();
             break;
@@ -834,7 +841,7 @@ function getPayments($pnr)
                         betalningar.perioder_period=avgift.perioder_period AND
                         betalningar.medlemstyp_id=avgift.medlemstyp_id
               LEFT JOIN medlemstyp ON id=betalningar.medlemstyp_id
-              WHERE personer_personnr='$pnr'";
+              WHERE personer_personnr='$pnr' AND deleted != 1";
     $result = mysql_query($query);
     while ($row = mysql_fetch_object($result)) {
         $payments[] = $row;
@@ -914,5 +921,13 @@ function getMedlemstyper()
         $medlemstyper[$row->id]->benamning = $row->benamning;
     }
     return $medlemstyper;
+}
+
+function removePayment()
+{
+	getConnection();
+	$query = "UPDATE betalningar SET deleted='1' WHERE personer_personnr='" . mysql_real_escape_string($_POST['pnr']) . 
+			 "' AND perioder_period='" . mysql_real_escape_string($_POST['per']) . "' AND betalsatt='" . mysql_real_escape_string($_POST['bets']) . "'";
+	mysql_query($query);
 }
 ?>
