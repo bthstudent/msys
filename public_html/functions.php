@@ -172,7 +172,7 @@ function getAPIUsers()
 function addAPIUser()
 {
     getConnection();
-    $permission = mysql_real_escape_string($_POST['getPerson'] + $_POST['setPerson'] + $_POST['regPayment'] + $_POST['regPerson']);
+    $permission = mysql_real_escape_string($_POST['getPerson'] + $_POST['setPerson'] + $_POST['regPayment'] + $_POST['regPerson']  + $_POST['isMember']);
     $query = "INSERT INTO api
               VALUES ('" . mysql_real_escape_string($_POST['USR']) . "',
                       '" . mysql_real_escape_string($_POST['KEY']) . "',
@@ -632,6 +632,25 @@ function countMembers()
 
     $memberCount = $row->NumberOfMembers;
     return $memberCount;
+}
+
+function isMember($pnr)
+{
+    $query = "SELECT COUNT(personer_personnr) AS IsMember
+              FROM betalningar
+              LEFT JOIN perioder ON perioder_period=period
+              WHERE forst<DATE(NOW()) AND
+              sist>DATE(NOW()) AND
+			  personer_personnr=" . $pnr;
+    $result = mysql_query($query);
+    $row = mysql_fetch_object($result);
+
+    $IsMember = $row->IsMember;
+	if($IsMember>0)
+	{
+		return true;
+	}
+    return false;
 }
 
 function getPerson($pnr)

@@ -36,6 +36,7 @@
 					<input type="checkbox" name="setPerson" value=2/> Editera Personinformation <br />
 					<input type="checkbox" name="regPayment" value=4 /> Registera Betalningar <br />
 					<input type="checkbox" name="regPerson" value=8 /> Registera Personer <br />
+					<input type="checkbox" name="isMember" value=16 /> Kontrollera medlemskap <br />
 				</td>
 			</tr>
 		</table>

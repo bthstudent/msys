@@ -147,5 +147,22 @@ case "registerPerson":
         die();
     }
     break;
+case "isMember":
+	if ($userPermissions & 16) {
+		if (isset($_GET['pnr'])) {
+			$IsMember = isMember($_GET['pnr']);
+			if($IsMember)
+			{
+				echo $_GET['pnr'] . ",1";
+			}
+			else
+			{
+				echo $_GET['pnr'] . ",0";
+			}
+		} else {
+			echo "No Personalnumber included";
+			die();
+		}
+	}
 }
 ?>

@@ -27,7 +27,7 @@
 				<td>Personnr:</td>
 				<td><input type="text" name="PNR" value="<?php echo $_GET['pnr']; ?>" readonly /></td>
 				<td>Betaldatum:</td>
-				<td><input type="text" name="BETDATE" value="<?=date("Y-m-d");?>"/></td>
+				<td><input type="text" name="BETDATE" value="<?php echo date("Y-m-d");?>"/></td>
 			</tr>
 			<tr>
 				<td>Period:</td>
