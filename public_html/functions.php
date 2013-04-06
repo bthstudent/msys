@@ -261,12 +261,13 @@ function getAPIPerson($pnr)
 
 function setAPIPersonData($data)
 {
+	$PSTNR = str_replace(' ', '', $data->PSTNR);
     getConnection();
     $query = "UPDATE personer SET telefon='" . $data->TEL . "',
 			epost ='" . $data->EMAIL . "',
 			co='" . $data->CO . "',
 			adress='" . $data->ADR . "',
-			postnr='" . $data->PSTNR . "',
+			postnr='" . $PSTNR . "',
 			ort='". $data->ORT . "',
 			land='" . $data->LAND . "',
 			aviseraej='" . $data->AVISEJ . "',
@@ -278,14 +279,15 @@ function setAPIPersonData($data)
 function addAPIPerson($data)
 {
     getConnection();
-
+	
+	$PSTNR = str_replace(' ', '', $data->PSTNR);
     $query = "INSERT INTO personer
               VALUES ('" . mysqL_real_escape_string($data->PNR) . "',
                       '" . mysqL_real_escape_string($data->FNM) . "',
                       '" . mysqL_real_escape_string($data->ENM) . "',
                       '" . mysqL_real_escape_string($data->CO) . "',
                       '" . mysqL_real_escape_string($data->ADR) . "',
-                      '" . mysqL_real_escape_string($data->PSTNR) . "',
+                      '" . mysqL_real_escape_string($PSTNR) . "',
                       '" . mysqL_real_escape_string($data->ORT) . "',
                       '" . mysqL_real_escape_string($data->LAND) . "',
                       '" . mysqL_real_escape_string($data->TEL) . "',
@@ -342,13 +344,14 @@ function addPayment()
 function addPerson()
 {
     getConnection();
+	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     $query = "INSERT INTO personer
               VALUES ('" . mysql_real_escape_string($_POST['PNR']) . "',
                       '" . mysql_real_escape_string($_POST['FNM']) . "',
                       '" . mysql_real_escape_string($_POST['ENM']) . "',
                       '" . mysql_real_escape_string($_POST['CO']) . "',
                       '" . mysql_real_escape_string($_POST['ADR']) . "',
-                      '" . mysql_real_escape_string($_POST['PSTNR']) . "',
+                      '" . mysql_real_escape_string($PSTNR) . "',
                       '" . mysql_real_escape_string($_POST['ORT']) . "',
                       '" . mysql_real_escape_string($_POST['LAND']) . "',
                       '" . mysql_real_escape_string($_POST['TEL']) . "',
@@ -400,6 +403,7 @@ function changePeriod()
 
 function updatePerson()
 {
+	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     getConnection();
     $query = "UPDATE personer
               SET personnr='" . mysql_real_escape_string($_POST['PNR']) . "',
@@ -409,7 +413,7 @@ function updatePerson()
                   epost ='" . mysql_real_escape_string($_POST['EMAIL']) . "',
                   co='" . mysql_real_escape_string($_POST['CO']) . "',
                   adress='" . mysql_real_escape_string($_POST['ADR']) . "',
-                  postnr='" . mysql_real_escape_string($_POST['PSTNR']) . "',
+                  postnr='" . mysql_real_escape_string($PSTNR) . "',
                   ort='" . mysql_real_escape_string($_POST['ORT']) . "',
                   land='" . mysql_real_escape_string($_POST['LAND']) . "',
                   feladress='" . mysql_real_escape_string($_POST['FELADR']) . "',
@@ -421,6 +425,7 @@ function updatePerson()
 
 function sparaStudent()
 {
+	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     getConnection();
 
     $query = "UPDATE personer
@@ -430,7 +435,7 @@ function sparaStudent()
                   epost ='" . mysql_real_escape_string($_POST['EMAIL']) . "',
                   co='" . mysql_real_escape_string($_POST['CO']) . "',
                   adress='" . mysql_real_escape_string($_POST['ADR']) . "',
-                  postnr='" . mysql_real_escape_string($_POST['PSTNR']) . "',
+                  postnr='" . mysql_real_escape_string($PSTNR) . "',
                   ort='" . mysql_real_escape_string($_POST['ORT']) . "',
                   land='" . mysql_real_escape_string($_POST['LAND']) . "',
                   feladress='" . mysql_real_escape_string($_POST['FELADR']) . "',
