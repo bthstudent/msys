@@ -35,7 +35,10 @@
 <?php
 $perioder = getPeriods();
 foreach ($perioder as $rad) {
-    echo "<option value=\"" . $rad->period . "\">" . $rad->period . "</option>";
+	if($rad->sist > date("Y-m-d"))
+	{
+		echo "<option value=\"" . $rad->period . "\">" . $rad->period . "</option>";
+	}
 }
 ?>
 				</select></td>
