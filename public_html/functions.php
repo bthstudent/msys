@@ -1,4 +1,5 @@
 <?php
+include "../local-config.php";
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -19,7 +20,7 @@
 */
 function getConnection()
 {
-    include "../local-config.php";
+    global $db;
     $con = mysql_connect($db["host"], $db["user"], $db["pass"]);
     mysql_select_db($db["db"], $con);
     return $con;
@@ -40,11 +41,11 @@ function handlesession()
 function handlestyle()
 {
     if (!isset($_GET["page"])) {
-        if (@file_exists("style/start.css")) {
-            echo "<link rel='stylesheet' href='style/start.css' type='text/css'>";
+        if (@file_exists("style/pages/start.css")) {
+            echo "<link rel='stylesheet' href='style/pages/start.css' type='text/css'>";
         }
-    } elseif (@file_exists("style/" . $_GET["page"] . ".css")) {
-        echo "<link rel='stylesheet' href='style/" . $_GET["page"] . ".css' type='text/css'>";
+    } elseif (@file_exists("style/pages/" . $_GET["page"] . ".css")) {
+        echo "<link rel='stylesheet' href='style/pages/" . $_GET["page"] . ".css' type='text/css'>";
     }
 }
 
@@ -501,13 +502,15 @@ function composeSearchURL()
 
 function insertHead($menu=false)
 {
+    global $customize;
     putBoxStart();
     echo "<h1>
-		  	<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\" title=\"Hem\">
-		  		<img src=\"misc/logga_uggla.png\" width=\"80\" height=\"60\" align=\"absmiddle\" />
-		  	</a>
-		  	Medlem - Blekinge studentkår
-		  </h1>";
+            <a href=\"http://" . $_SERVER['HTTP_HOST'] . "\" title=\"Hem\">
+                <img src='".$customize["style"]["logo"]."' width=\"80\" height=\"60\" align=\"absmiddle\" />
+            </a>
+            ".$customize["text"]["title"]."
+          </h1>";
+
     if ($menu) {
         echo "<div id=\"logout\">
 				<form name=\"logout\" method=\"post\">

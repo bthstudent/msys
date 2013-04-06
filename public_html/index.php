@@ -21,10 +21,6 @@ session_start();
 ?>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="style/main.css" type="text/css">
-    <link rel="stylesheet" href="style/login.css" type="text/css">
-    <script type="text/javascript" src="script/main.js"></script>
     <?php
         require_once "functions.php";
         handlesession();
@@ -32,7 +28,10 @@ session_start();
         handlestyle();
         handlejavascript();
     ?>
-    <title>Medlem - Blekinge studentkår</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="style/<?php echo $customize["style"]["stylesheet"]?>" type="text/css">
+    <script type="text/javascript" src="script/main.js"></script>
+    <title><?php echo $customize["text"]["title"]?></title>
 </head>
 <body>
     <div id="wrapper">

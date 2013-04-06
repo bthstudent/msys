@@ -1,4 +1,3 @@
-<?php
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -18,17 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* copy to local-config.php and replace values with your things. */
-$db["host"] = "sqlhost.example.com";
-$db["user"] = "db_user";
-$db["pass"] = "db_password";
-$db["db"] = "database_name";
+/* Imports fragmented stylesheets */
 
-/* Style config, if no other specified default style will be used
- * If multiple stylesheets are used, include these in one master stylesheet
- * eg. master.css
- * */
-$customize["style"]["stylesheet"] = "default.css";
-$customize["style"]["logo"] = "misc/logga_uggla.png";
-$customize["text"]["title"] = "Medlemmar - Blekinge studentkår";
-?>
+@import url("default/main.css");
+@import url("default/login.css");
