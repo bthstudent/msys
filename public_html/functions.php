@@ -280,7 +280,7 @@ function setAPIPersonData($data)
 function addAPIPerson($data)
 {
     getConnection();
-	
+
 	$PSTNR = str_replace(' ', '', $data->PSTNR);
     $query = "INSERT INTO personer
               VALUES ('" . mysqL_real_escape_string($data->PNR) . "',
@@ -596,36 +596,6 @@ function getNonMembers()
     }
     return $nonmembers;
 }
-
-function getData($wanted,$as,$conditions)
-{
-    $query = "SHOW TABLES";
-    getConnection();
-    $result = mysql_query($query);
-    while ($rowtables = mysql_fetch_array($result)) {
-        $query = "SELECT column_name
-                  FROM information_schema.columns
-                  WHERE table_name = '$key'";
-        $result2 = mysql_query($query);
-        while ($row = mysql_fetch_array($result2)) {
-            $tables[$rowtables[0]] = $row;
-        }
-    }
-    $columns = explode(",", $wanted);
-    if (isset($as)) {
-        $columns_as = explore(",", $as);
-    }
-    /** what? FIXME
-    foreach ($tables as $key => $table) {
-        foreach ($table as $column) {
-
-        }
-    }*/
-    if (!(strpos($value, "PersonNr")===false)) {
-        $tables['PersonNr']=true;
-    }
-}
-
 
 function putInfoBox($head,$value)
 {
