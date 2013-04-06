@@ -54,7 +54,7 @@ if ($result) {
     $i = 0;
     foreach ($result as $value) {
         $color = $bgcolor[$i%2];
-        echo "        <tr bgcolor='" . $color . "' onmouseover=\"this.bgColor='" . $hovercolor . "'; this.className='cursor';\" onmouseout=\"this.bgColor='" . $color . "'\" onclick=\" location.href='?page=person&amp;pnr=" . $value->personnr . "'\">
+        echo "        <tr bgcolor='" . $color . "' onmouseover=\"this.bgColor='" . $hovercolor . "'; this.className='cursor';\" onmouseout=\"this.bgColor='" . $color . "'\" onclick=\" location.href='?page=person&amp;id=" . $value->id . "'\">
             <td>" . $value->personnr . "</td>
             <td>" . $value->fornamn . "</td>
             <td>" . $value->efternamn . "</td>

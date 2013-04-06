@@ -20,12 +20,12 @@
 require_once "functions.php";
 putBoxStart();
 getConnection();
-$result = getPerson($_GET["pnr"]);
+$result = getPerson($_GET["id"]);
 echo "<h2>Personuppgifter</h2>";
 if ($result) {
     echo "<form name=\"Person\" class=\"info\" method=\"post\">
 			<input type=\"hidden\" readonly=\"readonly\" value=\"ChangePerson\" name=\"handler\" />
-			<input name=\"PNRCUR\" readonly=\"readonly\" type=\"hidden\" value=\"" . $_GET['pnr'] . "\">
+			<input name=\"ID\" readonly=\"readonly\" type=\"hidden\" value=\"" . $result->id . "\">
 			<input name=\"url\" readonly=\"readonly\" type=\"hidden\" value=\"" . "?" . $_SERVER['QUERY_STRING'] . "\">
 			<table>
 				<tr>
@@ -76,7 +76,7 @@ if ($result) {
 
     echo "<form name=\"Whatever\" class=\"info\" method=\"post\">
 		  <input type=\"hidden\" readonly=\"readonly\" value=\"RemovePerson\" name=\"handler\" />
-		  <input name=\"PNR\" readonly=\"readonly\" type=\"hidden\" value=\"" . $_GET['pnr'] . "\">
+		  <input name=\"ID\" readonly=\"readonly\" type=\"hidden\" value=\"" . $_GET['id'] . "\">
 		  <div style=\"text-align:right\">
 		  <input type=\"submit\" value=\"Ta Bort Högvördige Medlem\">
 		  </div>
@@ -90,7 +90,7 @@ if ($result) {
 
     putBoxStart();
     echo "<h2>Medlemskap</h2>
-		  <form style=\"margin:0\" name=\"Betalning\" action=\"?page=nybetalning&pnr=" . $_GET['pnr'] . "\" method=\"post\">
+		  <form style=\"margin:0\" name=\"Betalning\" action=\"?page=nybetalning&id=" . $_GET['id'] . "\" method=\"post\">
           	<input name=\"handler\" readonly=\"readonly\" type=\"hidden\" value=\"nybetalning\">
           	<input name=\"url\" readonly=\"readonly\" type=\"hidden\" value=\"" . "?" . $_SERVER['QUERY_STRING'] . "\">
             <table>
@@ -102,7 +102,7 @@ if ($result) {
                     <td>Betaldatum</td>
                     <td>Betalst&auml;tt</td>
                 </tr>";
-    $result = getPayments($_GET['pnr']);
+    $result = getPayments($_GET['id']);
     $i = 0;
     if ($result) {
         $today = strtotime(date("Y-m-d"));
@@ -158,7 +158,7 @@ if ($result) {
 				<td>Uppdrag</td>
 				<td>Beskrivning</td>
 			</tr>";
-    $result = getMandates($_GET['pnr']);
+    $result = getMandates($_GET['id']);
     $i = 0;
     if ($result) {
         $today = strtotime(date("Y-m-d"));

@@ -22,10 +22,11 @@
 	<h2>Registrera Betalning</h2>
 	<form name="addPayment" class="info" method="post">
 		<input type="hidden" readonly="readonly" value="addPayment" name="handler" />
+		<input type="hidden" readonly="readonly" value="<?php echo $_GET['id']; ?>" name="ID" />
 		<table>
 			<tr>
-				<td>Personnr:</td>
-				<td><input type="text" name="PNR" value="<?php echo $_GET['pnr']; ?>" readonly /></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
 				<td>Betaldatum:</td>
 				<td><input type="text" name="BETDATE" value="<?php echo date("Y-m-d");?>"/></td>
 			</tr>

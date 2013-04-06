@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS avgift (
 -- --------------------------------------------------------
 -- FIXME #972
 CREATE TABLE IF NOT EXISTS betalningar (
-  personer_personnr char(10) NOT NULL,
+  personer_id char(12) NOT NULL,
   perioder_period char(4) NOT NULL,
   betalsatt enum('konto','kassa','online') NOT NULL,
   betaldatum date NOT NULL,
@@ -70,7 +70,8 @@ CREATE TABLE IF NOT EXISTS perioder (
 -- --------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS personer (
-  personnr char(10) NOT NULL,
+  id int(11) NOT NULL AUTO_INCREMENT,
+  personnr char(12) NOT NULL,
   fornamn varchar(255) NOT NULL,
   efternamn varchar(255) NOT NULL,
   co varchar(255) DEFAULT NULL,
@@ -83,7 +84,7 @@ CREATE TABLE IF NOT EXISTS personer (
   aviseraej tinyint(1) DEFAULT NULL,
   feladress tinyint(1) DEFAULT NULL,
   senastandrad date NOT NULL,
-  UNIQUE KEY personnr (personnr)
+  PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
@@ -91,9 +92,9 @@ CREATE TABLE IF NOT EXISTS personer (
 -- FIXME bigint? fo realz?
 CREATE TABLE IF NOT EXISTS personer_uppdrag (
   uppdrag_id int(11) NOT NULL,
-  personer_personnr bigint(10) NOT NULL,
+  personer_id int(11) NOT NULL,
   perioder_period char(4) NOT NULL,
-  PRIMARY KEY (personer_personnr,uppdrag_id,perioder_period)
+  PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

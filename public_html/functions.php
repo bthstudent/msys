@@ -122,7 +122,7 @@ function handlepost()
             addPayment();
             echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
             echo "<script type=\"text/javascript\">";
-            echo "location.href='?page=person&pnr=" . $_GET['pnr'] . "'";
+            echo "location.href='?page=person&id=" . $_GET['id'] . "'";
             echo "</script>";
             break;
 		case "RemovePayment":
@@ -155,9 +155,6 @@ function handlepost()
             break;
         case "RemoveAPIUser":
             removeAPIUser();
-            break;
-        case "nybetalning":
-            // placeholder
             break;
         default:
             echo "Du har försökt skicka något med metoden 'POST' som sidan inte känner igen,<br />";
@@ -245,8 +242,12 @@ function authenticateAPIUser($key, $user)
 
 function getAPIPerson($pnr)
 {
-    $person = getPerson($pnr);
-    $bank = getPayments($pnr);
+	getConnection();
+	$query = "SELECT id FROM personer WHERE personnr=" . $pnr;
+	$result = mysql_query($query);
+	$id = mysql_fetch_object($result);
+    $person = getPerson($id->id);
+    $bank = getPayments($id->id);
     echo $person->personnr . "," . $person->fornamn . "," .
          $person->efternamn . "," . $person->co . "," .
          $person->adress . "," . $person->postnr . "," .
@@ -264,6 +265,9 @@ function setAPIPersonData($data)
 {
 	$PSTNR = str_replace(' ', '', $data->PSTNR);
     getConnection();
+	$query = "SELECT id FROM personer WHERE personnr=" . $data->PNR;
+	$result = mysql_query($query);
+	$id = mysql_fetch_object($result);
     $query = "UPDATE personer SET telefon='" . $data->TEL . "',
 			epost ='" . $data->EMAIL . "',
 			co='" . $data->CO . "',
@@ -273,7 +277,7 @@ function setAPIPersonData($data)
 			land='" . $data->LAND . "',
 			aviseraej='" . $data->AVISEJ . "',
 			senastandrad=DATE(NOW())
-		WHERE personnr='" . $data->PNR . "'";
+		WHERE id='" . $id . "'";
     $result = mysql_query($query);
 }
 
@@ -283,7 +287,8 @@ function addAPIPerson($data)
 
 	$PSTNR = str_replace(' ', '', $data->PSTNR);
     $query = "INSERT INTO personer
-              VALUES ('" . mysqL_real_escape_string($data->PNR) . "',
+              VALUES ('NULL',
+					  '" . mysqL_real_escape_string($data->PNR) . "',
                       '" . mysqL_real_escape_string($data->FNM) . "',
                       '" . mysqL_real_escape_string($data->ENM) . "',
                       '" . mysqL_real_escape_string($data->CO) . "',
@@ -333,12 +338,13 @@ function addPayment()
 {
     getConnection();
     $query = "INSERT INTO betalningar
-              VALUES ('" . mysql_real_escape_string($_POST['PNR']) . "',
+              VALUES ('" . mysql_real_escape_string($_POST['ID']) . "',
                       '" . mysql_real_escape_string($_POST['PERIOD']) . "',
                       '" . mysql_real_escape_string($_POST['BETWAY']) . "',
                       '" . mysql_real_escape_string($_POST['BETDATE']) . "',
                       '" . mysql_real_escape_string($_POST['BET']) . "',
                       '" . mysql_real_escape_string($_POST['MEDTYPE']) . "')";
+	echo $query;
     $result = mysql_query($query);
 }
 
@@ -347,7 +353,8 @@ function addPerson()
     getConnection();
 	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     $query = "INSERT INTO personer
-              VALUES ('" . mysql_real_escape_string($_POST['PNR']) . "',
+              VALUES ('NULL',
+					  '" . mysql_real_escape_string($_POST['PNR']) . "',
                       '" . mysql_real_escape_string($_POST['FNM']) . "',
                       '" . mysql_real_escape_string($_POST['ENM']) . "',
                       '" . mysql_real_escape_string($_POST['CO']) . "',
@@ -360,6 +367,7 @@ function addPerson()
                       '" . mysql_real_escape_string($_POST['AVISEJ']) . "',
                       '" . mysql_real_escape_string($_POST['FELADR']) . "',
                       DATE(NOW()))";
+	echo $query;
     $result = mysql_query($query);
 }
 
@@ -367,10 +375,10 @@ function removePerson()
 {
     getConnection();
     $query = "DELETE FROM betalningar
-              WHERE personer_personnr=".mysql_real_escape_string($_POST['PNR']);
+              WHERE personer_id=".mysql_real_escape_string($_POST['ID']);
     $result = mysql_query($query);
     $query = "DELETE FROM personer
-              WHERE personnr=".mysql_real_escape_string($_POST['PNR']);
+              WHERE id=".mysql_real_escape_string($_POST['ID']);
     $result = mysql_query($query);
 }
 
@@ -420,7 +428,7 @@ function updatePerson()
                   feladress='" . mysql_real_escape_string($_POST['FELADR']) . "',
                   aviseraej='" . mysql_real_escape_string($_POST['AVISEJ']) . "',
                   senastandrad=DATE(NOW())
-              WHERE personnr='". mysql_real_escape_string($_POST['PNRCUR']) . "'";
+              WHERE id='". mysql_real_escape_string($_POST['ID']) . "'";
     $result = mysql_query($query);
 }
 
@@ -442,7 +450,7 @@ function sparaStudent()
                   feladress='" . mysql_real_escape_string($_POST['FELADR']) . "',
                   aviseraej='" . mysql_real_escape_string($_POST['AVISEJ']) . "',
                   senastandrad=DATE(NOW())
-              WHERE personnr='" . mysql_real_escape_string($_POST['PNR']) . "'";
+              WHERE id='" . mysql_real_escape_string($_POST['ID']) . "'";
     $result = mysql_query($query);
 }
 
@@ -556,7 +564,7 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
         $query .= ", period, benamning, avgift, betalat";
     }
     $query .= " FROM betalningar
-                LEFT JOIN personer ON personnr=personer_personnr
+                LEFT JOIN personer ON id=personer_id
                 LEFT JOIN perioder ON perioder_period=period
                 LEFT JOIN avgift ON
                           avgift.perioder_period=betalningar.perioder_period AND
@@ -607,7 +615,7 @@ function putInfoBox($head,$value)
 
 function countMembers()
 {
-    $query = "SELECT COUNT(personer_personnr) AS NumberOfMembers
+    $query = "SELECT COUNT(personer_id) AS NumberOfMembers
               FROM betalningar
               LEFT JOIN perioder ON perioder_period=period
               WHERE forst<DATE(NOW()) AND
@@ -621,12 +629,13 @@ function countMembers()
 
 function isMember($pnr)
 {
-    $query = "SELECT COUNT(personer_personnr) AS IsMember
+    $query = "SELECT COUNT(personer_id) AS IsMember
               FROM betalningar
               LEFT JOIN perioder ON perioder_period=period
+			  LEFT JOIN personer ON personer_id=id
               WHERE forst<DATE(NOW()) AND
               sist>DATE(NOW()) AND
-			  personer_personnr=" . $pnr;
+			  personnr=" . $pnr;
     $result = mysql_query($query);
     $row = mysql_fetch_object($result);
 
@@ -638,11 +647,11 @@ function isMember($pnr)
     return false;
 }
 
-function getPerson($pnr)
+function getPerson($id)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE personnr=" . $pnr;
+              WHERE id=" . $id;
     $result = mysql_query($query);
     $person = mysql_fetch_object($result);
     return $person;
@@ -687,7 +696,10 @@ function findPNR($pnr)
             }
         }
     }
-    return $persons;
+	if(isset($persons))
+	{
+		return $persons;
+	}
 }
 
 function findFNM($fnm)
@@ -780,18 +792,25 @@ function findNM($fnm, $enm)
     return $persons;
 }
 
-function getMandates($pnr)
+function getMandates($id)
 {
     $query = "SELECT benamning, beskrivning, period, forst, sist FROM personer
-              LEFT JOIN personer_uppdrag ON personnr = personer_personnr
-              LEFT JOIN uppdrag ON uppdrag_id=id
-              LEFT JOIN perioder ON perioder_period=period
-              WHERE personnr='$pnr'";
-    $result = mysql_query($query);
-    while ($row = mysql_fetch_object($result)) {
-        $mandates[] = $row;
-    }
-    return $mandates;
+              LEFT JOIN personer_uppdrag ON personer.id = personer_uppdrag.personer_id
+              LEFT JOIN uppdrag ON personer_uppdrag.uppdrag_id=uppdrag.id
+              LEFT JOIN perioder ON personer_uppdrag.perioder_period=perioder.period
+              WHERE id='$id'";
+	$result = mysql_query($query);
+	if($result)
+	{
+		while ($row = mysql_fetch_object($result)) {
+			$mandates[] = $row;
+		}
+	}
+    
+	if(isset($mandates))
+	{
+		return $mandates;
+	}
 }
 
 function getCurrentMandates($pnr)
@@ -811,7 +830,7 @@ function getCurrentMandates($pnr)
     return $mandates;
 }
 
-function getPayments($pnr)
+function getPayments($id)
 {
     $query = "SELECT period, betalsatt, betalat, avgift, benamning, forst, sist, betaldatum FROM betalningar
               LEFT JOIN perioder ON perioder_period=period
@@ -819,12 +838,18 @@ function getPayments($pnr)
                         betalningar.perioder_period=avgift.perioder_period AND
                         betalningar.medlemstyp_id=avgift.medlemstyp_id
               LEFT JOIN medlemstyp ON id=betalningar.medlemstyp_id
-              WHERE personer_personnr='$pnr' AND deleted != 1";
+              WHERE personer_id='$id' AND deleted != 1";
     $result = mysql_query($query);
-    while ($row = mysql_fetch_object($result)) {
-        $payments[] = $row;
-    }
-    return $payments;
+	if($result)
+	{
+		while ($row = mysql_fetch_object($result)) {
+			$payments[] = $row;
+		}
+	}
+	if(isset($payments))
+	{
+		return $payments;
+	}
 }
 
 function putBoxStart()
