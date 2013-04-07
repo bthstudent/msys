@@ -23,16 +23,23 @@
 	<form name="addPayment" class="info" method="post">
 		<input type="hidden" readonly="readonly" value="addPayment" name="handler" />
 		<input type="hidden" readonly="readonly" value="<?php echo $_GET['id']; ?>" name="ID" />
-		<table>
-			<tr>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-				<td>Betaldatum:</td>
-				<td><input type="text" name="BETDATE" value="<?php echo date("Y-m-d");?>"/></td>
-			</tr>
-			<tr>
-				<td>Period:</td>
-				<td><select name="PERIOD">
+        <table>
+            <tr>
+                <td colspan="2">
+                    <a href="?page=person&id=<?php echo $_GET['id']; ?>">
+                        Gå tillbaka till
+                        <?php 
+                            $person = getPerson($_GET['id']);
+                            echo $person->fornamn . " " . $person->efternamn;
+                        ?>
+                    </a>
+                </td>
+                <td>Betaldatum:</td>
+                <td><input type="text" name="BETDATE" value="<?php echo date("Y-m-d");?>"/></td>
+            </tr>
+            <tr>
+                <td>Period:</td>
+                <td><select name="PERIOD">
 <?php
 $perioder = getPeriods();
 foreach ($perioder as $rad) {
