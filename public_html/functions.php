@@ -943,7 +943,7 @@ function getPeriods()
 {
     getConnection();
     $query = "SELECT id, period, forst, sist FROM perioder
-              ORDER BY forst DESC, sist DESC";
+              ORDER BY forst, sist";
     $result = mysql_query($query);
     while ($row = mysql_fetch_object($result)) {
         $periods[] = $row;
