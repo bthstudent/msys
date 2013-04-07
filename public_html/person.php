@@ -177,9 +177,7 @@ if ($result) {
             $i++;
         }
     } else {
-        $color = $bgcolor[$i%2];
-        $value->Period = $value->Benamning = $value->Beskrivning = "-";
-        echo "<tr bgcolor=\"" . $color . "\" onmouseover=\"this.bgColor=" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $color . "'\">
+        echo "<tr bgcolor=\"" . $bgcolor[$i%2] . "\" onmouseover=\"this.bgColor=" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $bgcolor[$i%2] . "'\">
 				<td>-</td>
 				<td>-</td>
 				<td>-</td>
