@@ -98,7 +98,7 @@ function loginpage()
 
 function handlepost()
 {
-    if (!empty($_POST)) {
+    if (!empty($_POST["handler"])) {
         switch($_POST["handler"]) {
         case "composeSearchURL":
             composeSearchURL();
