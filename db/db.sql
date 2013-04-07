@@ -89,8 +89,8 @@ CREATE TABLE IF NOT EXISTS personer (
 
 
 -- --------------------------------------------------------
--- FIXME bigint? fo realz?
 CREATE TABLE IF NOT EXISTS personer_uppdrag (
+  id int(11) NOT NULL AUTO_INCREMENT,
   uppdrag_id int(11) NOT NULL,
   personer_id int(11) NOT NULL,
   perioder_period char(4) NOT NULL,
