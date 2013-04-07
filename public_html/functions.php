@@ -373,10 +373,10 @@ function addPerson()
 function removePerson()
 {
     getConnection();
-    $query = "DELETE FROM betalningar
+    $query = "UPDATE betalningar SET deleted='1'
               WHERE personer_id=".mysql_real_escape_string($_POST['ID']);
     $result = mysql_query($query);
-    $query = "DELETE FROM personer
+    $query = "UPDATE personer SET deleted='1'
               WHERE id=".mysql_real_escape_string($_POST['ID']);
     $result = mysql_query($query);
 }
