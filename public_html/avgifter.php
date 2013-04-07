@@ -20,51 +20,83 @@
 putBoxStart();
 ?>
 <h2>Avgifter</h2>
-<table>
-    <tr class="toptr">
-	    <td>Period</td>
-        <td>Helavgift</td>
-        <td>Halvavgift</td>
-        <td>Stödavgift</td>
-        <td>Spara ändring</td>
-    </tr>
-</table>
 <?php
 $avgifter = getAvgifter();
-$i=$j=$k=0;
-$today = strtotime(date("Y-m-d"));
-$validcolor = "#c7ffc7";
-$pastcolor = "#ffc7c7";
-foreach ($avgifter as $rad) {
-    $forst = strtotime($rad->forst);
-    $sist = strtotime($rad->sist);
-    if ($forst < $today && $today < $sist) {
-        $i=1;
-    } elseif ($sist < $today) {
-        $i=-1;
-    } else {
-        $i=0;
+$perioder = getPeriods();
+$medlemstyper = getMedlemstyper();
+$periodid = -1;
+$medlemstypid = -1;
+$visibility = "style=\"visibility:hidden\"";
+$medlemstypvisibility = "style=\"visibility:hidden\"";
+$avgiftid = -1;
+$avgift = 0;
+if (isset($_GET["periodid"]) && $_GET["periodid"] > 0) {
+    getConnection();
+
+    $periodid = mysql_real_escape_string($_GET["periodid"]);
+    $medlemstypvisibility = "";
+    if (isset($_GET["medlemstypid"]) && $_GET["medlemstypid"] > 0) {
+        $medlemstypid = mysql_real_escape_string($_GET["medlemstypid"]);
+        $visibility = "";
+
+        $r = mysql_query("SELECT id, avgift FROM avgift
+                          WHERE perioder_id=".$periodid." AND
+                          medlemstyp_id=".$medlemstypid."");
+        if (mysql_affected_rows() > 0) {
+            $a = mysql_fetch_assoc($r);
+            $avgiftid = $a["id"];
+            $avgift = $a["avgift"];
+        }
     }
-    echo "<form name=\"changeavgift" . $k . "\" method=\"post\">";
-    echo "<input type=\"hidden\" readonly=\"readonly\" value=\"ChangeAvgift\" name=\"handler\" />";
-    echo "<table><tr ";
-    if ($i==1) {
-        echo "bgcolor=\"" . $validcolor . "\"";
-    } elseif ($i==-1) {
-        echo "bgcolor=\"" . $pastcolor . "\"";
-    }
-    echo ">";
-    echo "<td><input name=\"period\" value=\"" . $rad->period . "\" type=\"text\" readonly=\"readonly\" /></td>\n";
-    echo "<td><input name=\"avg1\" type=\"number\" value=\"" . $rad->avgift[1] . "\" /></td>\n";
-    echo "<td><input name=\"avg2\" type=\"number\" value=\"" . $rad->avgift[2] . "\" /></td>\n";
-    echo "<td><input name=\"avg3\" type=\"number\" value=\"" . $rad->avgift[3] . "\" /></td>\n";
-    echo "<td><img src=\"misc/save.png\" ";
-    if ($i==1 || $i==-1) {
-        echo "style=\"visibility:hidden\" ";
-    }
-    echo "class=\"cursor\" onclick=\"document.forms['changeavgift" . $k++ . "'].submit();\" /></td>\n";
-    echo "</tr>";
-    echo "</table></form>";
 }
+
+echo "<form name=\"avgift\" method=\"post\">\n";
+echo "    <input type=\"hidden\" readonly=\"readonly\" value=\"ChangeAvgift\" name=\"handler\" />
+    <table>
+        <tr class=\"toptr\">
+            <td><p>Period</p></td>
+            <td><p>Medlemstyp</p></td>
+            <td><p>Avgift</p></td>
+            <td><p $visibility>Spara ändring</p></td>
+        </tr>
+        <tr>
+            <td>
+                <select name=\"period_id\" onchange=\"window.location = '?page=avgifter&amp;periodid='+(document.forms.avgift.period_id[document.forms.avgift.period_id.selectedIndex].value);\">
+                    <option value=\"-1\">Ange period</option>\n";
+foreach ($perioder as $period) {
+    if (strtotime($period->forst) > date("U")) {
+        $selected = "";
+        if ($period->id == $periodid) {
+            $selected = "SELECTED";
+        }
+        echo "                    <option value=\"".$period->id."\" $selected>".$period->period."</option>\n";
+    }
+}
+echo"                </select>
+            </td>
+            <td>
+                <select $medlemstypvisibility name=\"medlemstyp_id\" onchange=\"window.location = '?page=avgifter&amp;periodid=$periodid&amp;medlemstypid='+(document.forms.avgift.medlemstyp_id[document.forms.avgift.medlemstyp_id.selectedIndex].value);\">
+                    <option value=\"-1\">Ange medlemstyp</option>\n";
+foreach ($medlemstyper as $id => $medlemstyp) {
+        $selected = "";
+        if ($id == $medlemstypid) {
+            $selected = "SELECTED";
+        }
+        echo "                    <option value=\"".$id."\" $selected>".$medlemstyp."</option>\n";
+}
+
+
+echo "                </select>
+            </td>
+            <td>
+                <input type=\"hidden\" name=\"avgiftid\" value=\"$avgiftid\" />
+                <input $visibility type=\"text\" name=\"avgiften\" size=\"10\" value=\"$avgift\" />
+            </td>
+            <td>
+                <img src=\"misc/save.png\" $visibility class=\"cursor\" onclick=\"document.forms['avgift'].submit();\" />
+            </td>
+        </tr>
+    </table>
+</form>";
 putBoxEnd();
 ?>

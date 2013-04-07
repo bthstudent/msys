@@ -43,10 +43,10 @@
 <?php
 $perioder = getPeriods();
 foreach ($perioder as $rad) {
-	if($rad->sist > date("Y-m-d"))
-	{
-		echo "<option value=\"" . $rad->period . "\">" . $rad->period . "</option>";
-	}
+    if($rad->sist > date("Y-m-d"))
+    {
+        echo "<option value=\"" . $rad->id . "\">" . $rad->period . "</option>\n";
+    }
 }
 ?>
 				</select></td>
@@ -54,8 +54,8 @@ foreach ($perioder as $rad) {
 				<td><select name="MEDTYPE">
 <?php
 $medlemstyp = getMedlemstyper();
-foreach ($medlemstyp as $rad) {
-    echo "<option value=\"" . $rad->id . "\">" . $rad->benamning . "</option>";
+foreach ($medlemstyp as $id => $benamning) {
+    echo "<option value=\"" . $id . "\">" . $benamning . "</option>\n";
 }
 ?>
 				</select></td>

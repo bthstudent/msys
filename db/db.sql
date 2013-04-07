@@ -23,24 +23,26 @@ CREATE TABLE IF NOT EXISTS api (
 -- --------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS avgift (
-  perioder_period char(4) NOT NULL,
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  perioder_id INT(4) NOT NULL,
   medlemstyp_id int(11) NOT NULL,
   avgift int(11) NOT NULL,
-  PRIMARY KEY (perioder_period, medlemstyp_id)
+  PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 -- --------------------------------------------------------
 -- FIXME #972
 CREATE TABLE IF NOT EXISTS betalningar (
+  id INT(11) NOT NULL AUTO_INCREMENT,
   personer_id char(12) NOT NULL,
-  perioder_period char(4) NOT NULL,
+  avgift_id INT(11) NOT NULL,
   betalsatt enum('konto','kassa','online') NOT NULL,
   betaldatum date NOT NULL,
   betalat int(11) NOT NULL,
-  medlemstyp_id int(11) NOT NULL
+  deleted tinyint(1) DEFAULT 0 NOT NULL,
+  PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 
 -- --------------------------------------------------------
 
@@ -60,10 +62,11 @@ INSERT INTO medlemstyp(benamning) VALUES('Stöd');
 -- --------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS perioder (
+  id INT(11) NOT NULL AUTO_INCREMENT,
   period varchar(50) NOT NULL,
   forst date NOT NULL,
   sist date NOT NULL,
-  PRIMARY KEY (period)
+  PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -92,7 +95,7 @@ CREATE TABLE IF NOT EXISTS personer_uppdrag (
   id int(11) NOT NULL AUTO_INCREMENT,
   uppdrag_id int(11) NOT NULL,
   personer_id int(11) NOT NULL,
-  perioder_period char(4) NOT NULL,
+  perioder_id int(11) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
