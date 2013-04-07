@@ -665,7 +665,7 @@ function getPerson($id)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE id=" . $id;
+              WHERE id=" . $id . " AND deleted != 1";
     $result = mysql_query($query);
     $person = mysql_fetch_object($result);
     return $person;
@@ -674,7 +674,7 @@ function getPerson($id)
 function getPersons()
 {
     getConnection();
-    $query = "SELECT * FROM personer";
+    $query = "SELECT * FROM personer WHERE deleted != 1";
     $result = mysql_query($query);
 
     $i = 0;
