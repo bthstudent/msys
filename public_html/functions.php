@@ -28,14 +28,21 @@ function getConnection()
 
 function handlesession()
 {
-
-    /**
-    if (!empty($_SESSION)) {
-        echo "Detta är en placeholder för handlesessions - det finns sessions variabler<br />";
-    } else {
-        echo "Detta är en placeholder för handlesessions - det finns inga sessions variabler<br />";
-    }
-    */
+	if(isset($_SESSION['page']))
+	{
+		if ($_SESSION['page']=="admin")
+		{
+			getConnection();
+			$query = "SELECT id FROM adminusers WHERE id='" . $_SESSION['id'] . "'";
+			mysql_query($query);
+			if(mysql_affected_rows()!=1)
+			{
+				session_destroy();
+				header("Location: /");
+				exit();
+			}
+		}
+	}
 }
 
 function handlestyle()
@@ -213,6 +220,13 @@ function removeUser()
     $query = "DELETE FROM adminusers
               WHERE id=" . mysql_real_escape_string($_POST['id']);
     $result = mysql_query($query);
+	if ($_POST['id']==$_SESSION['id'])
+	{
+		echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
+		echo "<script type=\"text/javascript\">";
+		echo "location.href=''";
+		echo "</script>";
+	}
 }
 
 function getUsers()
@@ -319,18 +333,18 @@ function registerAPIPayment($data)
 
 function checkAdminLogin()
 {
-    /** FIXME rewrite to check password via database, this is stupid. */
-    getConnection();
-    $anvNamn = mysql_real_escape_string($_POST['username']);
-    $losen = $_POST['pass2'];
-    $losen = sha1($losen);
-
-    $query = "SELECT hashpass FROM adminusers
-              WHERE username='" . mysql_real_escape_string($anvNamn) . "'";
-    $result = mysql_query($query);
-
-    if ($losen == mysql_fetch_object($result)->hashpass) {
+	getConnection();
+	$anvNamn = mysql_real_escape_string($_POST['username']);
+	$hashpass = sha1($_POST['pass2']);
+	$query = "SELECT id FROM adminusers
+              WHERE username='" . mysql_real_escape_string($anvNamn) . "'
+			  AND hashpass='" . $hashpass . "'";
+	$result = mysql_query($query);
+	if (mysql_affected_rows() == 1)
+	{
+		$row = mysql_fetch_object($result);
         $_SESSION['page']="admin";
+		$_SESSION['id']=$row->id;
     }
 }
 

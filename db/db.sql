@@ -38,9 +38,7 @@ CREATE TABLE IF NOT EXISTS betalningar (
   betalsatt enum('konto','kassa','online') NOT NULL,
   betaldatum date NOT NULL,
   betalat int(11) NOT NULL,
-  medlemstyp_id int(11) NOT NULL,
-  deleted tinyint(1) DEFAULT 0 NOT NULL,
-  PRIMARY KEY (personer_personnr,perioder_period,betalsatt)
+  medlemstyp_id int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
