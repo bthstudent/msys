@@ -90,9 +90,6 @@ if ($result) {
 
     putBoxStart();
     echo "<h2>Medlemskap</h2>
-		  <form style=\"margin:0\" name=\"Betalning\" action=\"?page=nybetalning&id=" . $_GET['id'] . "\" method=\"post\">
-          	<input name=\"handler\" readonly=\"readonly\" type=\"hidden\" value=\"nybetalning\">
-          	<input name=\"url\" readonly=\"readonly\" type=\"hidden\" value=\"" . "?" . $_SERVER['QUERY_STRING'] . "\">
             <table>
                 <tr class=\"toptr\">
                     <td>Period</td>
@@ -144,6 +141,8 @@ if ($result) {
                  </tr>";
     }
     echo "</table>
+                <form style=\"margin:0\" name=\"Betalning\" action=\"?page=nybetalning&amp;pnr=" . $_GET['pnr'] . "\" method=\"post\">
+                <input name=\"url\" readonly=\"readonly\" type=\"hidden\" value=\"" . "?" . $_SERVER['QUERY_STRING'] . "\">
 			<div style=\"text-align:right\">
 				<input type=\"submit\" value=\"Registrera betalning\">
 			</div>
