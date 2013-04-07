@@ -661,11 +661,15 @@ function isMember($pnr)
     return false;
 }
 
-function getPerson($id)
+function getPerson($id,$getdeleted=false)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE id=" . $id . " AND deleted != 1";
+              WHERE id=" . $id;
+    if(!$getdeleted)
+    {
+        $query  .= " AND deleted != 1";
+    }
     $result = mysql_query($query);
     $person = mysql_fetch_object($result);
     return $person;

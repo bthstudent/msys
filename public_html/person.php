@@ -185,7 +185,15 @@ if ($result) {
     }
     echo "</table>";
 } else {
-    echo "Ingen person med personnummer: " . $_GET["pnr"] . " kunde hittas.";
+    $result = getPerson($_GET["id"],true);
+    if($result)
+    {
+        echo "Personen är borttagen";
+    }
+    else
+    {
+        echo "Ingen person kunde hittas.";
+    }
 }
 putBoxEnd();
 ?>
