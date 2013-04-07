@@ -34,7 +34,7 @@ if ($result) {
 					<td>C/O:</td>
 					<td><input type=\"text\" name=\"CO\" value=\"" . $result->co . "\" tabindex=\"4\" /></td>
 					<td class=\"right_col\">Fel Adress:</td>
-					<td class=\"right_col\"><input type=\"checkbox\" name=\"FELADR\" value=\"1\" ";
+					<td class=\"right_col\"><input type=\"checkbox\" name=\"FELADR\" value=\"1\" onclick=\"document.forms['Person'].submit()\" ";
     if ($result->feladress)  echo "checked";
     echo			" tabindex=\"12\" /></td>
 				</tr>
@@ -44,7 +44,7 @@ if ($result) {
 					<td>Adress:</td>
 					<td><input type=\"text\" name=\"ADR\" value=\"" . $result->adress . "\" tabindex=\"5\" /></td>
 					<td>Avisera ej:</td>
-					<td><input type=\"checkbox\" name=\"AVISEJ\" value=\"1\" ";
+					<td><input type=\"checkbox\" name=\"AVISEJ\" value=\"1\" onclick=\"document.forms['Person'].submit()\" ";
     if ($result->aviseraej == 1) echo "checked";
     echo 			" tabindex=\"13\" /></td>
 				</tr>
@@ -87,7 +87,6 @@ if ($result) {
     $bgcolor[] = "ffffff";
     $hovercolor = "#d7d7ff";
     $validcolor = "#d7ffd7";
-
     putBoxStart();
     echo "<h2>Medlemskap</h2>
             <table>
