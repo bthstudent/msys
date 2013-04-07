@@ -118,6 +118,10 @@ function handlepost()
             break;
         case "AddPerson":
             addPerson();
+            echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
+            echo "<script type=\"text/javascript\">";
+            echo "location.href='?page=person&id=" . $_GET['id'] . "'";
+            echo "</script>";
             break;
         case "SparaStudent":
             sparaStudent();
@@ -368,7 +372,7 @@ function addPerson()
 	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     $query = "INSERT INTO personer
               VALUES ('NULL',
-					  '" . mysql_real_escape_string($_POST['PNR']) . "',
+                      '" . mysql_real_escape_string($_POST['PNR']) . "',
                       '" . mysql_real_escape_string($_POST['FNM']) . "',
                       '" . mysql_real_escape_string($_POST['ENM']) . "',
                       '" . mysql_real_escape_string($_POST['CO']) . "',
@@ -383,6 +387,7 @@ function addPerson()
                       DATE(NOW()),
                       'NULL')";
     $result = mysql_query($query);
+    $_GET['id'] = mysql_insert_id();
 }
 
 function removePerson()
