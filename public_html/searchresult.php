@@ -33,6 +33,9 @@ if (isset($_GET["pnr"])) {
 } elseif (isset($_GET["enm"])) {
     getConnection();
     $result = findENM($_GET["enm"]);
+} elseif (isset($_GET["email"])) {
+    getConnection();
+    $result = findEMA($_GET["email"]);
 }
 if ($result) {
     $bgcolor[] = "e7e7e7";

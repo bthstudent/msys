@@ -693,6 +693,37 @@ function getPersons()
     return $persons;
 }
 
+function findEMA($ema) {
+    getConnection();
+    $query = "SELECT * FROM personer
+              WHERE epost LIKE '$ema' AND deleted != 1";
+    $result = mysql_query($query);
+    if ($row = mysql_fetch_object($result)) {
+	  $persons[] = $row;
+	} else {
+        $query = "SELECT * FROM personer
+                  WHERE epost LIKE '$ema%' AND deleted != 1";
+		$result = mysql_query($query);
+		while ($row = mysql_fetch_object($result)) {
+		    if (!isset($persons[$row->epost])) {
+			    $persons[$row->epost] = $row;
+			}
+		}
+		$query = "SELECT * FROM personer
+                  WHERE epost LIKE '%$ema%' AND deleted != 1";
+        $result = mysql_query($query);
+        while ($row = mysql_fetch_object($result)) {
+            if (!isset($persons[$row->epost])) {
+                $persons[$row->epost] = $row;
+            }
+        }
+    }
+    if(isset($persons))
+    {
+        return $persons;
+    }
+}
+
 function findPNR($pnr)
 {
     getConnection();

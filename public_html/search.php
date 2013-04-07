@@ -51,7 +51,7 @@ putBoxStart();
 	            <input type="text" name="ENM" tabindex="3" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
             </td>
             <td style="padding:0 5;">
-            	<input type="text" name="EMAIL" tabindex="4" value="Broken" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
+                <input type="text" name="EMAIL" tabindex="4" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
             </td>
         </tr>
     </table>
