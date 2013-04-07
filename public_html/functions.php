@@ -366,7 +366,8 @@ function addPerson()
                       '" . mysql_real_escape_string($_POST['EMAIL']) . "',
                       '" . mysql_real_escape_string($_POST['AVISEJ']) . "',
                       '" . mysql_real_escape_string($_POST['FELADR']) . "',
-                      DATE(NOW()))";
+                      DATE(NOW()),
+                      'NULL')";
     $result = mysql_query($query);
 }
 
