@@ -674,13 +674,13 @@ function findPNR($pnr)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE personnr LIKE '$pnr'";
+              WHERE personnr LIKE '$pnr' AND deleted != 1";
     $result = mysql_query($query);
     if ($row = mysql_fetch_object($result)) {
         $persons[$row->personnr] = $row;
     } else {
         $query = "SELECT * FROM personer
-                  WHERE personnr LIKE '$pnr%'";
+                  WHERE personnr LIKE '$pnr%' AND deleted != 1";
         $result = mysql_query($query);
         while ($row = mysql_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
@@ -688,7 +688,7 @@ function findPNR($pnr)
             }
         }
         $query = "SELECT * FROM personer
-                  WHERE personnr LIKE '%$pnr%'";
+                  WHERE personnr LIKE '%$pnr%' AND deleted != 1";
         $result = mysql_query($query);
         while ($row = mysql_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
