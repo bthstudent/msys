@@ -964,23 +964,28 @@ function getPeriods()
     return $periods;
 }
 
-function getPeriod($period)
-{
-    getConnection();
-    $query = "SELECT period, forst, sist FROM perioder
-              WHERE period='$period'";
-    $result = mysql_query($query);
-    $row = mysql_fetch_object($result);
-    return $row;
-}
-
 function updatePeriod($period)
 {
+
+    /*
+
+ _____ _____  ____  __ _____
+|  ___|_ _\ \/ /  \/  | ____|
+| |_   | | \  /| |\/| |  _|
+|  _|  | | /  \| |  | | |___
+|_|   |___/_/\_\_|  |_|_____|
+
+
+     */
+
+
     getConnection();
     $query = "UPDATE perioder
               SET forst='$period->Forst',
                   sist='$period->Sist'
               WHERE period='$period->Period'";
+    //--------------^^^^^^^^^^^^^^^
+
     $result = mysql_query($query);
     if (mysql_affected_rows()>0) {
         return true;
