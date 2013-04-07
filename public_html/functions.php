@@ -765,14 +765,16 @@ function findNM($fnm, $enm)
     getConnection();
     $query = "SELECT * FROM personer
               WHERE fornamn LIKE '$fnm'
-			  AND efternamn LIKE '$enm'";
+			  AND efternamn LIKE '$enm'
+			  AND deleted != 1";
     $result = mysql_query($query);
     if ($row = mysql_fetch_object($result)) {
         $persons[$row->personnr] = $row;
     } else {
         $query = "SELECT * FROM personer
                   WHERE fornamn LIKE '$fnm%' AND
-                        efternamn LIKE '$enm%'";
+                        efternamn LIKE '$enm%'
+                        AND deleted != 1";
         $result = mysql_query($query);
         while ($row = mysql_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
@@ -781,7 +783,8 @@ function findNM($fnm, $enm)
         }
         $query = "SELECT * FROM personer
                   WHERE fornamn LIKE '%$fnm%' AND
-                        efternamn LIKE '%$enm%'";
+                        efternamn LIKE '%$enm%'
+                        AND deleted != 1";
         $result = mysql_query($query);
         while ($row = mysql_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
