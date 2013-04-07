@@ -431,24 +431,55 @@ function changePeriod()
 
 function updatePerson()
 {
-	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    getConnection();
-    $query = "UPDATE personer
-              SET personnr='" . mysql_real_escape_string($_POST['PNR']) . "',
-                  fornamn='" . mysql_real_escape_string($_POST['FNM']) . "',
-                  efternamn='" . mysql_real_escape_string($_POST['ENM']) . "',
-                  telefon='" . mysql_real_escape_string($_POST['TEL']) . "',
-                  epost ='" . mysql_real_escape_string($_POST['EMAIL']) . "',
-                  co='" . mysql_real_escape_string($_POST['CO']) . "',
-                  adress='" . mysql_real_escape_string($_POST['ADR']) . "',
-                  postnr='" . mysql_real_escape_string($PSTNR) . "',
-                  ort='" . mysql_real_escape_string($_POST['ORT']) . "',
-                  land='" . mysql_real_escape_string($_POST['LAND']) . "',
-                  feladress='" . mysql_real_escape_string($_POST['FELADR']) . "',
-                  aviseraej='" . mysql_real_escape_string($_POST['AVISEJ']) . "',
-                  senastandrad=DATE(NOW())
-              WHERE id='". mysql_real_escape_string($_POST['ID']) . "'";
-    $result = mysql_query($query);
+    $person = getPerson(mysql_real_escape_string($_POST['ID']));
+    $haschanged = false;
+    $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
+    if($person->personnr != mysql_real_escape_string($_POST['PNR'])) {
+        $haschanged = true;
+    } else if ($person->fornamn != mysql_real_escape_string($_POST['FNM'])) {
+        $haschanged = true;
+    } else if ($person->efternamn != mysql_real_escape_string($_POST['ENM'])) {
+        $haschanged = true;
+    } else if ($person->telefon != mysql_real_escape_string($_POST['TEL'])) {
+        $haschanged = true;
+    } else if ($person->epost != mysql_real_escape_string($_POST['EMAIL'])) {
+        $haschanged = true;
+    } else if ($person->co != mysql_real_escape_string($_POST['CO'])) {
+        $haschanged = true;
+    } else if ($person->adress != mysql_real_escape_string($_POST['ADR'])) {
+        $haschanged = true;
+    } else if ($person->postnr != mysql_real_escape_string($PSTNR)) {
+        $haschanged = true;
+    } else if ($person->ort != mysql_real_escape_string($_POST['ORT'])) {
+        $haschanged = true;
+    } else if ($person->land != mysql_real_escape_string($_POST['LAND'])) {
+        $haschanged = true;
+    } else if ($person->feladress != mysql_real_escape_string($_POST['FELADR'])) {
+        $haschanged = true;
+    } else if ($person->aviseraej != mysql_real_escape_string($_POST['AVISEJ'])) {
+        $haschanged = true;
+    }
+
+	if($haschanged)
+    {
+        getConnection();
+        $query = "UPDATE personer
+                  SET personnr='" . mysql_real_escape_string($_POST['PNR']) . "',
+                      fornamn='" . mysql_real_escape_string($_POST['FNM']) . "',
+                      efternamn='" . mysql_real_escape_string($_POST['ENM']) . "',
+                      telefon='" . mysql_real_escape_string($_POST['TEL']) . "',
+                      epost ='" . mysql_real_escape_string($_POST['EMAIL']) . "',
+                      co='" . mysql_real_escape_string($_POST['CO']) . "',
+                      adress='" . mysql_real_escape_string($_POST['ADR']) . "',
+                      postnr='" . mysql_real_escape_string($PSTNR) . "',
+                      ort='" . mysql_real_escape_string($_POST['ORT']) . "',
+                      land='" . mysql_real_escape_string($_POST['LAND']) . "',
+                      feladress='" . mysql_real_escape_string($_POST['FELADR']) . "',
+                      aviseraej='" . mysql_real_escape_string($_POST['AVISEJ']) . "',
+                      senastandrad=DATE(NOW())
+                  WHERE id='". mysql_real_escape_string($_POST['ID']) . "'";
+        $result = mysql_query($query);
+    }
 }
 
 function sparaStudent()
