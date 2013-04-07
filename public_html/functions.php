@@ -801,7 +801,8 @@ function getMandates($id)
               LEFT JOIN personer_uppdrag ON personer.id = personer_uppdrag.personer_id
               LEFT JOIN uppdrag ON personer_uppdrag.uppdrag_id=uppdrag.id
               LEFT JOIN perioder ON personer_uppdrag.perioder_period=perioder.period
-              WHERE id='$id'";
+              WHERE id='$id'
+              AND deleted != 1";
 	$result = mysql_query($query);
 	if($result)
 	{
@@ -825,7 +826,8 @@ function getCurrentMandates($pnr)
               LEFT JOIN perioder ON perioder_period=period
               WHERE personnr=$pnr AND
                     forst<CURDATE() AND
-                    sist>CURDATE()";
+                    sist>CURDATE()
+              AND deleted != 1";
     $result = mysql_query($query);
     while ($row = mysql_fetch_object($result)) {
         $mandates[] = $row;
