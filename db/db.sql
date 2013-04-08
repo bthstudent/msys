@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS personer (
   aviseraej tinyint(1) DEFAULT NULL,
   feladress tinyint(1) DEFAULT NULL,
   senastandrad date NOT NULL,
+  deleted tinyint(1) DEFAULT 0 NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
