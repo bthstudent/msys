@@ -1011,4 +1011,18 @@ function removePayment()
 	$query = "UPDATE betalningar SET deleted='1' WHERE id='" . mysql_real_escape_string($_POST['betid']) . "'";
 	mysql_query($query) or die(mysql_error());
 }
+
+function getNumberOfMembers($benamning)
+{
+	getConnection();
+	$query = "SELECT count(betalningar.id) AS antal, medlemstyp.benamning
+              FROM betalningar
+              LEFT JOIN avgift ON betalningar.avgift_id = avgift.id
+              LEFT JOIN medlemstyp ON avgift.medlemstyp_id = medlemstyp.id
+              WHERE betalningar.deleted = 0 AND medlemstyp.benamning = '". $benamning ."'";
+	$result = mysql_query($query) or die(mysql_error());
+	$row = mysql_fetch_object($result);
+
+	return $row->antal;
+}
 ?>

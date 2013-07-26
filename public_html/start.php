@@ -38,6 +38,9 @@ if ((int)$month < 7) {
 putInfoBox("Antal medlemmar", countMembers());
 putInfoBox("Antal studenter", 4000);
 putInfoBox("Anslutningsgrad", round(((countMembers()/4000)*100), 2) . "%");
+putInfoBox("Antal campusmedlemmar", getNumberOfMembers('Campus'));
+putInfoBox("Antal distans/Doktorandmedlemmar", getNumberOfMembers('Distans/Doktorand'));
+putInfoBox("Antal stödmedlemmar", getNumberOfMembers('Stöd'));
 putInfoBox("Antal helårsmedlemmar", countMembers());
 putInfoBox("Antal halvårsmedlemmar", countMembers());
 putInfoBox("Antal får på Gotland", 60504 . "<a href=\"http://lmgtfy.com/?q=hur+m%C3%A5nga+f%C3%A5r+finns+det+p%C3%A5+gotland%3F&l=1\">*</a>");
