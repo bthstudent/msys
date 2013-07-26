@@ -36,12 +36,25 @@ CREATE TABLE IF NOT EXISTS betalningar (
   id INT(11) NOT NULL AUTO_INCREMENT,
   personer_id char(12) NOT NULL,
   avgift_id INT(11) NOT NULL,
-  betalsatt enum('konto','kassa','online') NOT NULL,
+  betalsatt_id INT(11) NOT NULL,
   betaldatum date NOT NULL,
   betalat int(11) NOT NULL,
   deleted tinyint(1) DEFAULT 0 NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS betalsatt (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  benamning text NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- FIXME #1089
+INSERT INTO betalsatt(benamning) VALUES('kassa');
+INSERT INTO betalsatt(benamning) VALUES('konto');
+INSERT INTO betalsatt(benamning) VALUES('online');
 
 -- --------------------------------------------------------
 

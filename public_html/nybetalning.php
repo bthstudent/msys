@@ -63,9 +63,12 @@ foreach ($medlemstyp as $id => $benamning) {
 			<tr>
 				<td>Betalsätt:</td>
 				<td><select name = "BETWAY">
-					<option value = "Konto">Konto</option>
-					<option value = "Kassa">Kassa</option>
-					<option value = "Online">Online</option>
+<?
+$betalsatt = getBetalsatt();
+foreach ($betalsatt as $id => $benamning) {
+    echo "<option value=\"" . $id . "\">" . $benamning . "</option>\n";
+}
+?>
 				</select></td>
 				<td>Betalat:</td>
 				<td><input type="text" name="BET" \></td>

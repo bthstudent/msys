@@ -357,7 +357,7 @@ function addPayment()
                  perioder_id=".mysql_real_escape_string($_POST['PERIOD'])) or die(mysql_error());
     $a=mysql_fetch_assoc($r);
 
-    $query = "INSERT INTO betalningar (personer_id, avgift_id, betalsatt, betaldatum, betalat)
+    $query = "INSERT INTO betalningar (personer_id, avgift_id, betalsatt_id, betaldatum, betalat)
               VALUES ('" . mysql_real_escape_string($_POST['ID']) . "',
                       '" . $a["avgift_id"] . "',
                       '" . mysql_real_escape_string($_POST['BETWAY']) . "',
@@ -911,13 +911,14 @@ function getCurrentMandates($pnr)
 
 function getPayments($id)
 {
-    $query = "SELECT betalningar.id AS id, betalningar.betalsatt AS betalsatt,
+    $query = "SELECT betalningar.id AS id, betalsatt.benamning AS betalsatt,
                      betalningar.betalat AS betalat, betalningar.betaldatum AS betaldatum,
                      avgift.avgift AS avgift, medlemstyp.benamning AS benamning,
                      perioder.forst AS forst, perioder.sist AS sist,
                      perioder.period AS period
               FROM betalningar
               LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
+              LEFT JOIN betalsatt ON betalningar.betalsatt_id=betalsatt.id
               LEFT JOIN perioder ON avgift.perioder_id=perioder.id
               LEFT JOIN medlemstyp ON avgift.medlemstyp_id=medlemstyp.id
               WHERE betalningar.personer_id='$id' AND deleted != 1";
@@ -1003,6 +1004,17 @@ function getMedlemstyper()
         $medlemstyper[$row["id"]] = $row["benamning"];
     }
     return $medlemstyper;
+}
+
+function getBetalsatt()
+{
+    getConnection();
+    $query = "SELECT * FROM betalsatt";
+    $result = mysql_query($query);
+    while ($row = mysql_fetch_assoc($result)) {
+        $betalsatt[$row["id"]] = $row["benamning"];
+    }
+    return $betalsatt;
 }
 
 function removePayment()
