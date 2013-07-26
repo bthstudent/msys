@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS api (
 
 
 -- --------------------------------------------------------
-
+-- FIXME #1013
 CREATE TABLE IF NOT EXISTS avgift (
   id INT(11) NOT NULL AUTO_INCREMENT,
   perioder_id INT(4) NOT NULL,
@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS avgift (
 
 
 -- --------------------------------------------------------
--- FIXME #972
 CREATE TABLE IF NOT EXISTS betalningar (
   id INT(11) NOT NULL AUTO_INCREMENT,
   personer_id char(12) NOT NULL,
@@ -52,7 +51,7 @@ CREATE TABLE IF NOT EXISTS medlemstyp (
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- FIXME #927
+-- FIXME #1013
 INSERT INTO medlemstyp(benamning) VALUES('Campus');
 INSERT INTO medlemstyp(benamning) VALUES('Distans/Doktorand');
 INSERT INTO medlemstyp(benamning) VALUES('Stöd');
