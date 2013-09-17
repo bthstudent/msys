@@ -300,9 +300,12 @@ function addAPIPerson($data)
     getConnection();
 
 	$PSTNR = str_replace(' ', '', $data->PSTNR);
-    $query = "INSERT INTO personer
-              VALUES ('NULL',
-					  '" . mysqL_real_escape_string($data->PNR) . "',
+    $query = "INSERT INTO personer(personnr, fornamn, efternamn,
+                                   co, adress, postnr, ort, land,
+                                   telefon, epost,
+                                   aviseraej, feladress, senastandrad
+                                  )
+              VALUES ('" . mysqL_real_escape_string($data->PNR) . "',
                       '" . mysqL_real_escape_string($data->FNM) . "',
                       '" . mysqL_real_escape_string($data->ENM) . "',
                       '" . mysqL_real_escape_string($data->CO) . "',
