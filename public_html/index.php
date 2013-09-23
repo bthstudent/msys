@@ -42,7 +42,7 @@ if(isset($_SESSION["page"]))
 		adminpage();
 	} elseif ($_SESSION["page"] == "student") {
 		studentpage();
-	} 
+	}
 } else {
 	loginpage();
 }

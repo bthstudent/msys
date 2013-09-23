@@ -256,10 +256,10 @@ function authenticateAPIUser($key, $user)
 
 function getAPIPerson($pnr)
 {
-	getConnection();
-	$query = "SELECT id FROM personer WHERE personnr=" . $pnr;
-	$result = mysql_query($query);
-	$id = mysql_fetch_object($result);
+    getConnection();
+    $query = "SELECT id FROM personer WHERE personnr=" . $pnr;
+    $result = mysql_query($query);
+    $id = mysql_fetch_object($result);
     $person = getPerson($id->id);
     $bank = getPayments($id->id);
     echo $person->personnr . "," . $person->fornamn . "," .
@@ -323,6 +323,9 @@ function addAPIPerson($data)
 
 function registerAPIPayment($data)
 {
+    // Den här funktionen borde vara beroende av addPayment istället...
+    // FIXME!!
+    // Not even close. PNR && PERIOD && MED>TYPE är fel.
     getConnection();
     $query = "INSERT INTO betalningar
               VALUES ('". $data->PNR . "',

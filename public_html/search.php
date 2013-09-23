@@ -41,7 +41,7 @@ putBoxStart();
             </td>
         </tr>
         <tr>
-        	<td style="padding:0 5;">
+            <td style="padding:0 5;">
             	<input type="text" name="PNR" tabindex="1" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
             </td>
             <td style="padding:0 5;">
