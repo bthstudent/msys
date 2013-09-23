@@ -291,7 +291,7 @@ function setAPIPersonData($data)
 			land='" . $data->LAND . "',
 			aviseraej='" . $data->AVISEJ . "',
 			senastandrad=DATE(NOW())
-		WHERE id='" . $id . "'";
+		WHERE id='" . $id->id . "'";
     $result = mysql_query($query);
 }
 
