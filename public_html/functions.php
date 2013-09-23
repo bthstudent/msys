@@ -685,7 +685,7 @@ function isMember($pnr)
 			  LEFT JOIN personer ON betalningar.personer_id=personer.id
               WHERE forst<DATE(NOW()) AND
               sist>DATE(NOW()) AND
-			  personnr=" . $pnr;
+              personnr='$pnr'";
     $result = mysql_query($query);
     $row = mysql_fetch_object($result);
 
