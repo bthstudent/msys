@@ -185,7 +185,7 @@ function addAPIUser()
 {
     getConnection();
     $permission = mysql_real_escape_string($_POST['getPerson'] + $_POST['setPerson'] + $_POST['regPayment'] + $_POST['regPerson']  + $_POST['isMember']);
-    $query = "INSERT INTO api
+    $query = "INSERT INTO api(username, apikey, permissions)
               VALUES ('" . mysql_real_escape_string($_POST['USR']) . "',
                       '" . mysql_real_escape_string($_POST['KEY']) . "',
                       '" . $permission . "')";
@@ -327,7 +327,10 @@ function registerAPIPayment($data)
     // FIXME!!
     // Not even close. PNR && PERIOD && MED>TYPE är fel.
     getConnection();
-    $query = "INSERT INTO betalningar
+    $query = "INSERT INTO betalningar(personer_id, avgift_id,
+                                      betalsatt_id, betaldatum, betalat,
+                                      deleted
+                                     )
               VALUES ('". $data->PNR . "',
                       '" . $data->PERIOD . "',
                       '" . $data->BETWAY . "',
@@ -375,9 +378,12 @@ function addPayment()
 function addPerson()
 {
     getConnection();
-	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    $query = "INSERT INTO personer
-              VALUES ('NULL',
+    $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
+    $query = "INSERT INTO personer(personnr, fornamn, efternamn co,
+                                   adress, postnr, ort, land, telefon,
+                                   epost, aviseraej, feladress
+                                  )
+              VALUES (
                       '" . mysql_real_escape_string($_POST['PNR']) . "',
                       '" . mysql_real_escape_string($_POST['FNM']) . "',
                       '" . mysql_real_escape_string($_POST['ENM']) . "',
@@ -389,9 +395,8 @@ function addPerson()
                       '" . mysql_real_escape_string($_POST['TEL']) . "',
                       '" . mysql_real_escape_string($_POST['EMAIL']) . "',
                       '" . mysql_real_escape_string($_POST['AVISEJ']) . "',
-                      '" . mysql_real_escape_string($_POST['FELADR']) . "',
-                      DATE(NOW()),
-                      'NULL')";
+                      '" . mysql_real_escape_string($_POST['FELADR']) . "'
+                     )";
     $result = mysql_query($query);
     $_GET['id'] = mysql_insert_id();
 }
