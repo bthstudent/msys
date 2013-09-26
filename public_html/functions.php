@@ -379,7 +379,7 @@ function addPerson()
 {
     getConnection();
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    $query = "INSERT INTO personer(personnr, fornamn, efternamn co,
+    $query = "INSERT INTO personer(personnr, fornamn, efternamn, co,
                                    adress, postnr, ort, land, telefon,
                                    epost, aviseraej, feladress
                                   )
