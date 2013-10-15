@@ -1,5 +1,5 @@
 <?php
-include "../local-config.php";
+require "../local-config.php";
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -28,21 +28,18 @@ function getConnection()
 
 function handlesession()
 {
-	if(isset($_SESSION['page']))
-	{
-		if ($_SESSION['page']=="admin")
-		{
-			getConnection();
-			$query = "SELECT id FROM adminusers WHERE id='" . $_SESSION['id'] . "'";
-			mysql_query($query);
-			if(mysql_affected_rows()!=1)
-			{
-				session_destroy();
-				header("Location: /");
-				exit();
-			}
-		}
-	}
+    if (isset($_SESSION['page'])) {
+        if ($_SESSION['page']=="admin") {
+            getConnection();
+            $query = "SELECT id FROM adminusers WHERE id='" . $_SESSION['id'] . "'";
+            mysql_query($query);
+            if (mysql_affected_rows()!=1) {
+                session_destroy();
+                header("Location: /");
+                exit();
+            }
+        }
+    }
 }
 
 function handlestyle()
@@ -104,7 +101,7 @@ function handlepost()
             composeSearchURL();
             break;
         case "StudentLogin":
-            $_SESSION['page']="student";
+            $_SESSION['page'] = "student";
             break;
         case "AdminLogin":
             checkAdminLogin();
@@ -136,8 +133,8 @@ function handlepost()
             echo "location.href='?page=person&id=" . $_GET['id'] . "'";
             echo "</script>";
             break;
-		case "RemovePayment":
-			removePayment();
+        case "RemovePayment":
+            removePayment();
             break;
         case "ChangePerson":
             updatePerson();
@@ -173,7 +170,7 @@ function handlepost()
 function getAPIUsers()
 {
     getConnection();
-    $query = "SELECT * FROM api";
+    $query  = "SELECT * FROM api";
     $result = mysql_query($query);
     while ($row = mysql_fetch_object($result)) {
         $users[] = $row;
@@ -195,7 +192,7 @@ function addAPIUser()
 function removeAPIUser()
 {
     getConnection();
-    $query = "DELETE FROM api
+    $query  = "DELETE FROM api
               WHERE username='" . mysql_real_escape_string($_POST['USR']) . "'";
     $result = mysql_query($query);
 }
@@ -217,16 +214,15 @@ function removeUser()
        OBS! if $_POST['id'] == %?
        possible?
     */
-    $query = "DELETE FROM adminusers
+    $query  = "DELETE FROM adminusers
               WHERE id=" . mysql_real_escape_string($_POST['id']);
     $result = mysql_query($query);
-	if ($_POST['id']==$_SESSION['id'])
-	{
-		echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
-		echo "<script type=\"text/javascript\">";
-		echo "location.href=''";
-		echo "</script>";
-	}
+    if ($_POST['id']==$_SESSION['id']) {
+        echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
+        echo "<script type=\"text/javascript\">";
+        echo "location.href=''";
+        echo "</script>";
+    }
 }
 
 function getUsers()
@@ -277,11 +273,11 @@ function getAPIPerson($pnr)
 
 function setAPIPersonData($data)
 {
-	$PSTNR = str_replace(' ', '', $data->PSTNR);
+    $PSTNR = str_replace(' ', '', $data->PSTNR);
     getConnection();
-	$query = "SELECT id FROM personer WHERE personnr=" . $data->PNR;
-	$result = mysql_query($query);
-	$id = mysql_fetch_object($result);
+    $query = "SELECT id FROM personer WHERE personnr=" . $data->PNR;
+    $result = mysql_query($query);
+    $id = mysql_fetch_object($result);
     $query = "UPDATE personer SET telefon='" . $data->TEL . "',
 			epost ='" . $data->EMAIL . "',
 			co='" . $data->CO . "',
@@ -292,14 +288,14 @@ function setAPIPersonData($data)
 			aviseraej='" . $data->AVISEJ . "',
 			senastandrad=DATE(NOW())
 		WHERE id='" . $id->id . "'";
-    $result = mysql_query($query);
+    mysql_query($query);
 }
 
 function addAPIPerson($data)
 {
     getConnection();
 
-	$PSTNR = str_replace(' ', '', $data->PSTNR);
+    $PSTNR = str_replace(' ', '', $data->PSTNR);
     $query = "INSERT INTO personer(personnr, fornamn, efternamn,
                                    co, adress, postnr, ort, land,
                                    telefon, epost,
@@ -318,14 +314,14 @@ function addAPIPerson($data)
                       '" . mysqL_real_escape_string($data->AVISEJ) . "',
                       '" . mysqL_real_escape_string($data->FELADR) . "',
                       DATE(NOW()))";
-    $result = mysql_query($query);
+    mysql_query($query);
 }
 
 function registerAPIPayment($data)
 {
-    // Den här funktionen borde vara beroende av addPayment istället...
-    // FIXME!!
-    // Not even close. PNR && PERIOD && MED>TYPE är fel.
+    /* Den här funktionen borde vara beroende av addPayment istället...
+     * FIXME!!
+     * Not even close. PNR && PERIOD && MED>TYPE är fel. */
     getConnection();
     $query = "INSERT INTO betalningar(personer_id, avgift_id,
                                       betalsatt_id, betaldatum, betalat,
@@ -342,18 +338,17 @@ function registerAPIPayment($data)
 
 function checkAdminLogin()
 {
-	getConnection();
-	$anvNamn = mysql_real_escape_string($_POST['username']);
-	$hashpass = sha1($_POST['pass2']);
-	$query = "SELECT id FROM adminusers
+    getConnection();
+    $anvNamn = mysql_real_escape_string($_POST['username']);
+    $hashpass = sha1($_POST['pass2']);
+    $query = "SELECT id FROM adminusers
               WHERE username='" . mysql_real_escape_string($anvNamn) . "'
-			  AND hashpass='" . $hashpass . "'";
-	$result = mysql_query($query);
-	if (mysql_affected_rows() == 1)
-	{
-		$row = mysql_fetch_object($result);
+              AND hashpass='" . $hashpass . "'";
+    $result = mysql_query($query);
+    if (mysql_affected_rows() == 1) {
+        $row = mysql_fetch_object($result);
         $_SESSION['page']="admin";
-		$_SESSION['id']=$row->id;
+        $_SESSION['id']=$row->id;
     }
 }
 
@@ -445,7 +440,7 @@ function updatePerson()
     $person = getPerson(mysql_real_escape_string($_POST['ID']));
     $haschanged = false;
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    if($person->personnr != mysql_real_escape_string($_POST['PNR'])) {
+    if ($person->personnr != mysql_real_escape_string($_POST['PNR'])) {
         $haschanged = true;
     } else if ($person->fornamn != mysql_real_escape_string($_POST['FNM'])) {
         $haschanged = true;
@@ -471,8 +466,7 @@ function updatePerson()
         $haschanged = true;
     }
 
-	if($haschanged)
-    {
+    if ($haschanged) {
         getConnection();
         $query = "UPDATE personer
                   SET personnr='" . mysql_real_escape_string($_POST['PNR']) . "',
@@ -495,7 +489,7 @@ function updatePerson()
 
 function sparaStudent()
 {
-	$PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
+    $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     getConnection();
 
     $query = "UPDATE personer
@@ -690,10 +684,9 @@ function isMember($pnr)
     $row = mysql_fetch_object($result);
 
     $IsMember = $row->IsMember;
-	if($IsMember>0)
-	{
-		return true;
-	}
+    if ($IsMember>0) {
+        return true;
+    }
     return false;
 }
 
@@ -702,9 +695,8 @@ function getPerson($id,$getdeleted=false)
     getConnection();
     $query = "SELECT * FROM personer
               WHERE id=" . $id;
-    if(!$getdeleted)
-    {
-        $query  .= " AND deleted != 1";
+    if (!$getdeleted) {
+        $query .= " AND deleted != 1";
     }
     $result = mysql_query($query);
     $person = mysql_fetch_object($result);
@@ -730,17 +722,17 @@ function findEMA($ema) {
               WHERE epost LIKE '$ema' AND deleted != 1";
     $result = mysql_query($query);
     if ($row = mysql_fetch_object($result)) {
-	  $persons[] = $row;
-	} else {
+        $persons[] = $row;
+    } else {
         $query = "SELECT * FROM personer
                   WHERE epost LIKE '$ema%' AND deleted != 1";
-		$result = mysql_query($query);
-		while ($row = mysql_fetch_object($result)) {
-		    if (!isset($persons[$row->epost])) {
-			    $persons[$row->epost] = $row;
-			}
-		}
-		$query = "SELECT * FROM personer
+        $result = mysql_query($query);
+        while ($row = mysql_fetch_object($result)) {
+            if (!isset($persons[$row->epost])) {
+                $persons[$row->epost] = $row;
+            }
+        }
+        $query = "SELECT * FROM personer
                   WHERE epost LIKE '%$ema%' AND deleted != 1";
         $result = mysql_query($query);
         while ($row = mysql_fetch_object($result)) {
@@ -749,8 +741,7 @@ function findEMA($ema) {
             }
         }
     }
-    if(isset($persons))
-    {
+    if (isset($persons)) {
         return $persons;
     }
 }
@@ -781,10 +772,9 @@ function findPNR($pnr)
             }
         }
     }
-	if(isset($persons))
-	{
-		return $persons;
-	}
+    if (isset($persons)) {
+        return $persons;
+    }
 }
 
 function findFNM($fnm)
@@ -888,18 +878,16 @@ function getMandates($id)
               LEFT JOIN perioder ON personer_uppdrag.perioder_id=perioder.id
               WHERE personer.id='$id'
               AND personer.deleted != 1";
-	$result = mysql_query($query);
-	if($result)
-	{
-		while ($row = mysql_fetch_object($result)) {
-			$mandates[] = $row;
-		}
-	}
+    $result = mysql_query($query);
+    if ($result) {
+        while ($row = mysql_fetch_object($result)) {
+            $mandates[] = $row;
+        }
+    }
 
-	if(isset($mandates))
-	{
-		return $mandates;
-	}
+    if (isset($mandates)) {
+        return $mandates;
+    }
 }
 
 function getCurrentMandates($pnr)
@@ -968,11 +956,11 @@ function updatePeriod($period)
 
     /*
 
- _____ _____  ____  __ _____
-|  ___|_ _\ \/ /  \/  | ____|
-| |_   | | \  /| |\/| |  _|
-|  _|  | | /  \| |  | | |___
-|_|   |___/_/\_\_|  |_|_____|
+       _____ _____  ____  __ _____
+      |  ___|_ _\ \/ /  \/  | ____|
+      | |_   | | \  /| |\/| |  _|
+      |  _|  | | /  \| |  | | |___
+      |_|   |___/_/\_\_|  |_|_____|
 
 
      */
@@ -1030,22 +1018,22 @@ function getBetalsatt()
 
 function removePayment()
 {
-	getConnection();
-	$query = "UPDATE betalningar SET deleted='1' WHERE id='" . mysql_real_escape_string($_POST['betid']) . "'";
-	mysql_query($query) or die(mysql_error());
+    getConnection();
+    $query = "UPDATE betalningar SET deleted='1' WHERE id='" . mysql_real_escape_string($_POST['betid']) . "'";
+    mysql_query($query) or die(mysql_error());
 }
 
 function getNumberOfMembers($benamning)
 {
-	getConnection();
-	$query = "SELECT count(betalningar.id) AS antal, medlemstyp.benamning
+    getConnection();
+    $query = "SELECT count(betalningar.id) AS antal, medlemstyp.benamning
               FROM betalningar
               LEFT JOIN avgift ON betalningar.avgift_id = avgift.id
               LEFT JOIN medlemstyp ON avgift.medlemstyp_id = medlemstyp.id
               WHERE betalningar.deleted = 0 AND medlemstyp.benamning = '". $benamning ."'";
-	$result = mysql_query($query) or die(mysql_error());
-	$row = mysql_fetch_object($result);
+    $result = mysql_query($query) or die(mysql_error());
+    $row = mysql_fetch_object($result);
 
-	return $row->antal;
+    return $row->antal;
 }
 ?>

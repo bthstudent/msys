@@ -63,12 +63,12 @@ case "setPerson":
             echo "No Personalnumber included";
             die();
         }
-        $data->CO = $_GET['cof'];
-        $data->EMAIL = $_GET['ema'];
-        $data->ADR = $_GET['adr'];
-        $data->PSTNR = $_GET['psn'];
-        $data->ORT = $_GET['ort'];
-        $data->LAND = $_GET['lan'];
+        $data->CO     = $_GET['cof'];
+        $data->EMAIL  = $_GET['ema'];
+        $data->ADR    = $_GET['adr'];
+        $data->PSTNR  = $_GET['psn'];
+        $data->ORT    = $_GET['ort'];
+        $data->LAND   = $_GET['lan'];
         $data->AVISEJ = $_GET['ave'];
         setAPIPersonData($data);
     } else {
@@ -131,14 +131,14 @@ case "registerPerson":
             echo "No Personalnumber included";
             die();
         }
-        $data->FNM = urldecode($_GET['fnm']);
-        $data->ENM = urldecode($_GET['enm']);
-        $data->CO = urldecode($_GET['cof']);
-        $data->EMAIL = urldecode($_GET['ema']);
-        $data->ADR = urldecode($_GET['adr']);
-        $data->PSTNR = urldecode($_GET['psn']);
-        $data->ORT = urldecode($_GET['ort']);
-        $data->LAND = urldecode($_GET['lan']);
+        $data->FNM    = urldecode($_GET['fnm']);
+        $data->ENM    = urldecode($_GET['enm']);
+        $data->CO     = urldecode($_GET['cof']);
+        $data->EMAIL  = urldecode($_GET['ema']);
+        $data->ADR    = urldecode($_GET['adr']);
+        $data->PSTNR  = urldecode($_GET['psn']);
+        $data->ORT    = urldecode($_GET['ort']);
+        $data->LAND   = urldecode($_GET['lan']);
         $data->AVISEJ = urldecode($_GET['ave']);
         $data->FELADR = 0;
         addAPIPerson($data);
@@ -148,21 +148,18 @@ case "registerPerson":
     }
     break;
 case "isMember":
-	if ($userPermissions & 16) {
-		if (isset($_GET['pnr'])) {
-			$IsMember = isMember($_GET['pnr']);
-			if($IsMember)
-			{
-				echo $_GET['pnr'] . ",1";
-			}
-			else
-			{
-				echo $_GET['pnr'] . ",0";
-			}
-		} else {
-			echo "No Personalnumber included";
-			die();
-		}
-	}
+    if ($userPermissions & 16) {
+        if (isset($_GET['pnr'])) {
+            $IsMember = isMember($_GET['pnr']);
+            if ($IsMember) {
+                echo $_GET['pnr'] . ",1";
+            } else {
+                echo $_GET['pnr'] . ",0";
+            }
+        } else {
+            echo "No Personalnumber included";
+            die();
+        }
+    }
 }
 ?>

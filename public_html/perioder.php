@@ -57,11 +57,11 @@ foreach ($perioder as $rad) {
     $forst = strtotime($rad->forst);
     $sist = strtotime($rad->sist);
     if ($forst < $today && $today < $sist) {
-        $i=1;
+        $i = 1;
     } elseif ($sist < $today) {
-        $i=-1;
+        $i = -1;
     } else {
-        $i=0;
+        $i = 0;
     }
     if ($i==1) {
         echo "<tr bgcolor=\"" . $validcolor . "\">";

@@ -35,7 +35,9 @@ if ($result) {
 					<td><input type=\"text\" name=\"CO\" value=\"" . $result->co . "\" tabindex=\"4\" /></td>
 					<td class=\"right_col\">Fel Adress:</td>
 					<td class=\"right_col\"><input type=\"checkbox\" name=\"FELADR\" value=\"1\" onclick=\"document.forms['Person'].submit()\" ";
-    if ($result->feladress)  echo "checked";
+    if ($result->feladress) {
+        echo "checked";
+    }
     echo			" tabindex=\"12\" /></td>
 				</tr>
 				<tr>
@@ -45,7 +47,9 @@ if ($result) {
 					<td><input type=\"text\" name=\"ADR\" value=\"" . $result->adress . "\" tabindex=\"5\" /></td>
 					<td>Avisera ej:</td>
 					<td><input type=\"checkbox\" name=\"AVISEJ\" value=\"1\" onclick=\"document.forms['Person'].submit()\" ";
-    if ($result->aviseraej == 1) echo "checked";
+    if ($result->aviseraej == 1) {
+        echo "checked";
+    }
     echo 			" tabindex=\"13\" /></td>
 				</tr>
 				<tr>
@@ -185,13 +189,10 @@ if ($result) {
     }
     echo "</table>";
 } else {
-    $result = getPerson($_GET["id"],true);
-    if($result)
-    {
+    $result = getPerson($_GET["id"], true);
+    if ($result) {
         echo "Personen är borttagen";
-    }
-    else
-    {
+    } else {
         echo "Ingen person kunde hittas.";
     }
 }

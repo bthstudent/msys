@@ -43,8 +43,7 @@
 <?php
 $perioder = getPeriods();
 foreach ($perioder as $rad) {
-    if($rad->sist > date("Y-m-d"))
-    {
+    if ($rad->sist > date("Y-m-d")) {
         echo "<option value=\"" . $rad->id . "\">" . $rad->period . "</option>\n";
     }
 }
@@ -63,7 +62,7 @@ foreach ($medlemstyp as $id => $benamning) {
 			<tr>
 				<td>Betalsätt:</td>
 				<td><select name = "BETWAY">
-<?
+<?php
 $betalsatt = getBetalsatt();
 foreach ($betalsatt as $id => $benamning) {
     echo "<option value=\"" . $id . "\">" . $benamning . "</option>\n";

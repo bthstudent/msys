@@ -36,15 +36,14 @@ session_start();
 <body>
     <div id="wrapper">
 <?php
-if(isset($_SESSION["page"]))
-{
-	if ($_SESSION["page"] == "admin") {
-		adminpage();
-	} elseif ($_SESSION["page"] == "student") {
-		studentpage();
-	}
+if (isset($_SESSION["page"])) {
+    if ($_SESSION["page"] == "admin") {
+        adminpage();
+    } elseif ($_SESSION["page"] == "student") {
+        studentpage();
+    }
 } else {
-	loginpage();
+    loginpage();
 }
 ?>
     </div>

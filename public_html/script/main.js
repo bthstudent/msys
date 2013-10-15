@@ -1,4 +1,4 @@
 function redirectto(location)
 {
-	location.href=location;
+    location.href=location;
 }

@@ -45,16 +45,15 @@ foreach ($users as $row) {
     echo "<div style=\"text-align:right;float:left\">";
     echo "<p style=\"font-size:20px\">Användarnamn: " . $row->username . "</p>";
     echo "</div>";
-	if($row->id != $_SESSION['id'])
-	{
-		echo "<form name=\"RemoveUser\" class=\"info\" method=\"post\">
+    if ($row->id != $_SESSION['id']) {
+        echo "<form name=\"RemoveUser\" class=\"info\" method=\"post\">
 				<input type=\"hidden\" readonly=\"readonly\" value=\"RemoveUser\" name=\"handler\" />
 				<input type=\"hidden\" readonly=\"readonly\" value=\"" . $row->id . "\" name=\"id\"/>
 				<div style=\"text-align:right;float:right\">
 					<input type=\"submit\" value=\"Ta Bort Användare\">
 				</div>
 			</form>";
-	}
+    }
     echo "<br /><br /><br />";
 }
 ?>

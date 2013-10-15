@@ -78,11 +78,11 @@ echo"                </select>
                 <select $medlemstypvisibility name=\"medlemstyp_id\" onchange=\"window.location = '?page=avgifter&amp;periodid=$periodid&amp;medlemstypid='+(document.forms.avgift.medlemstyp_id[document.forms.avgift.medlemstyp_id.selectedIndex].value);\">
                     <option value=\"-1\">Ange medlemstyp</option>\n";
 foreach ($medlemstyper as $id => $medlemstyp) {
-        $selected = "";
-        if ($id == $medlemstypid) {
-            $selected = "SELECTED";
-        }
-        echo "                    <option value=\"".$id."\" $selected>".$medlemstyp."</option>\n";
+    $selected = "";
+    if ($id == $medlemstypid) {
+        $selected = "SELECTED";
+    }
+    echo "                    <option value=\"".$id."\" $selected>".$medlemstyp."</option>\n";
 }
 
 
