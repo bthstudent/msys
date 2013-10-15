@@ -18,6 +18,12 @@ require "../local-config.php";
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/**
+ * Opens a connection to the database server.
+ *
+ * @return resource
+ */
 function getConnection()
 {
     global $db;
@@ -26,6 +32,12 @@ function getConnection()
     return $con;
 }
 
+/**
+ * Make sure the PHP session is intact and correct, or destroyed if
+ * needed.
+ *
+ * @return void
+ */
 function handlesession()
 {
     if (isset($_SESSION['page'])) {
@@ -42,6 +54,11 @@ function handlesession()
     }
 }
 
+/**
+ * Helper function to put the correct CSS style sheet file in place.
+ *
+ * @return void
+ */
 function handlestyle()
 {
     if (!isset($_GET["page"])) {
@@ -53,6 +70,11 @@ function handlestyle()
     }
 }
 
+/**
+ * Helper function to put the correct javascript file in place.
+ *
+ * @return void
+ */
 function handlejavascript()
 {
     if (!isset($_GET["page"])) {
@@ -64,6 +86,12 @@ function handlejavascript()
     }
 }
 
+/**
+ * The main function for drawing the page for a administrator, will
+ * import the underlying logic and model.
+ *
+ * @return void
+ */
 function adminpage()
 {
     insertHead(true);
@@ -81,18 +109,41 @@ function adminpage()
     }
 }
 
+/**
+ * The main function for drawing the page for a member, will
+ * import the underlying logic and model.
+ *
+ * This function is not used in code for real.
+ *
+ * @return void
+ */
 function studentpage()
 {
     insertHead();
     include_once "student.php";
 }
 
+
+/**
+ * Will start the login process by executing the underlying code.
+ *
+ * @return void
+ */
 function loginpage()
 {
     insertHead();
     include_once "login.php";
 }
 
+
+/**
+ * The broker of the system, will take POST requests and process them
+ * to make them execute in the correct part of the system.
+ *
+ * FIXME I assume that this must be better described...
+ *
+ * @return void
+ */
 function handlepost()
 {
     if (!empty($_POST["handler"])) {
@@ -167,6 +218,11 @@ function handlepost()
     }
 }
 
+/**
+ * Extracts all API users and presents them in a structurred array.
+ *
+ * @return mixed
+ */
 function getAPIUsers()
 {
     getConnection();
@@ -178,6 +234,11 @@ function getAPIUsers()
     return $users;
 }
 
+/**
+ * Add record for a API user.
+ *
+ * @return void
+ */
 function addAPIUser()
 {
     getConnection();
@@ -189,6 +250,11 @@ function addAPIUser()
     $result = mysql_query($query);
 }
 
+/**
+ * Delete an API user from the database records.
+ *
+ * @return void
+ */
 function removeAPIUser()
 {
     getConnection();
@@ -197,6 +263,11 @@ function removeAPIUser()
     $result = mysql_query($query);
 }
 
+/**
+ * Add record for an administrator user.
+ *
+ * @return void
+ */
 function addUser()
 {
     getConnection();
@@ -207,6 +278,11 @@ function addUser()
     $result = mysql_query($query);
 }
 
+/**
+ * Delete a administrator user.
+ *
+ * @return void
+ */
 function removeUser()
 {
     getConnection();
@@ -225,6 +301,12 @@ function removeUser()
     }
 }
 
+/**
+ * Extract all administrator users and retirn them in a structurred
+ * array
+ *
+ * @return mixed
+ */
 function getUsers()
 {
     getConnection();
@@ -235,6 +317,15 @@ function getUsers()
     return $users;
 }
 
+/**
+ * API helper function to make sure that the API based request is
+ * indeed allowed to be executed.
+ *
+ * @param string $key  the passphrase like API key
+ * @param string $user a username like identifier
+ *
+ * @return int
+ */
 function authenticateAPIUser($key, $user)
 {
     getConnection();
@@ -250,6 +341,15 @@ function authenticateAPIUser($key, $user)
     }
 }
 
+/**
+ * API helper function that extracts all members and prints them in a
+ * comma separated way to be parsed from the requestor side.
+ *
+ * @param string $pnr A personal number, can contain both numbers and
+ *                    letters. Designed for Swedish customs.
+ *
+ * @return void
+ */
 function getAPIPerson($pnr)
 {
     getConnection();
@@ -271,6 +371,13 @@ function getAPIPerson($pnr)
     }
 }
 
+/**
+ * API helper function to update a member record
+ *
+ * @param string $data Contains a comma separated member profile.
+ *
+ * @return void
+ */
 function setAPIPersonData($data)
 {
     $PSTNR = str_replace(' ', '', $data->PSTNR);
@@ -291,6 +398,13 @@ function setAPIPersonData($data)
     mysql_query($query);
 }
 
+/**
+ * API helper function to add a new member to the records.
+ *
+ * @param string $data Contains a comma separated member profile.
+ *
+ * @return void
+ */
 function addAPIPerson($data)
 {
     getConnection();
@@ -317,6 +431,15 @@ function addAPIPerson($data)
     mysql_query($query);
 }
 
+/**
+ * API helper function to add a payment record for a member.
+ *
+ * FIXME This function is broken in this state.
+ *
+ * @param string $data Contains comma separated payment information.
+ *
+ * @return void
+ */
 function registerAPIPayment($data)
 {
     /* Den här funktionen borde vara beroende av addPayment istället...
@@ -336,6 +459,11 @@ function registerAPIPayment($data)
     $result = mysql_query($query);
 }
 
+/**
+ * Validates the administrator trying to login.
+ *
+ * @return void
+ */
 function checkAdminLogin()
 {
     getConnection();
@@ -352,6 +480,11 @@ function checkAdminLogin()
     }
 }
 
+/**
+ * Registers a payment for a specific member.
+ *
+ * @return void
+ */
 function addPayment()
 {
     getConnection();
@@ -370,6 +503,11 @@ function addPayment()
     $result = mysql_query($query) or die(mysql_error());
 }
 
+/**
+ * Add records for a member.
+ *
+ * @return void
+ */
 function addPerson()
 {
     getConnection();
@@ -396,6 +534,11 @@ function addPerson()
     $_GET['id'] = mysql_insert_id();
 }
 
+/**
+ * Marks a member as deleted from the records.
+ *
+ * @return void
+ */
 function removePerson()
 {
     getConnection();
@@ -407,6 +550,11 @@ function removePerson()
     $result = mysql_query($query);
 }
 
+/**
+ * Inserts a time period
+ *
+ * @return boolean
+ */
 function addPeriod()
 {
     getConnection();
@@ -421,6 +569,11 @@ function addPeriod()
     return false;
 }
 
+/**
+ * Update values for a time period
+ *
+ * @return boolean
+ */
 function changePeriod()
 {
     getConnection();
@@ -435,6 +588,11 @@ function changePeriod()
     return false;
 }
 
+/**
+ * Updates the records for a specific member.
+ *
+ * @return void
+ */
 function updatePerson()
 {
     $person = getPerson(mysql_real_escape_string($_POST['ID']));
@@ -487,6 +645,14 @@ function updatePerson()
     }
 }
 
+/**
+ * Updates the records for a specific member.
+ *
+ * Probably not in use at this moment. Should be merged with others
+ * doing the same.
+ *
+ * @return void
+ */
 function sparaStudent()
 {
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
@@ -510,6 +676,11 @@ function sparaStudent()
 }
 
 
+/**
+ * Updates the fee information.
+ *
+ * @return void
+ */
 function updateAvgift()
 {
     getConnection();
@@ -530,6 +701,12 @@ function updateAvgift()
     mysql_query($query) or die(mysql_error());
 }
 
+/**
+ * Helper function to construct the search URL for the javascript
+ * forwarding.
+ *
+ * @return void
+ */
 function composeSearchURL()
 {
     if (isset($_POST["PNR"]) && !($_POST["PNR"]=="")) {
@@ -551,6 +728,13 @@ function composeSearchURL()
     echo "</script>";
 }
 
+/**
+ * Draws the main page header with menu and stuff.
+ *
+ * @param boolean $menu True if showing the menu is intended.
+ *
+ * @return void
+ */
 function insertHead($menu=false)
 {
     global $customize;
@@ -596,6 +780,20 @@ function insertHead($menu=false)
     putBoxEnd();
 }
 
+/**
+ * Extracts members from the database using a search pattern.
+ * Returns the membes in a structurred array.
+ *
+ * @param boolean $payment  If true the payment information is
+ *                          included.
+ * @param boolean $adress   If true the address of the member is
+ *                          included.
+ * @param int     $page     Indicates a page size limit on number of
+ *                          records.
+ * @param int     $pagesize Defined but not used.
+ *
+ * @return mixed
+ */
 function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
 {
     unset($query);
@@ -625,7 +823,13 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
     return $persons;
 }
 
-
+/**
+ * Extracts information about people registred in the database who are
+ * not currently members.
+ * Returns the information in a structurred array.
+ *
+ * @return mixed
+ */
 function getNonMembers()
 {
     $Persons = getPersons();
@@ -647,7 +851,15 @@ function getNonMembers()
     return $nonmembers;
 }
 
-function putInfoBox($head,$value)
+/**
+ * Helper function to draw information boxes.
+ *
+ * @param string $head  The heading of the information box.
+ * @param string $value The body text of the information box.
+ *
+ * @return void
+ */
+function putInfoBox($head, $value)
 {
     echo "<div class=\"info\">
 			<h3>$head</h3>
@@ -655,6 +867,12 @@ function putInfoBox($head,$value)
 		  </div>";
 }
 
+/**
+ * Counts the number of current members and returns that for further
+ * processing.
+ *
+ * @return int
+ */
 function countMembers()
 {
     $query = "SELECT COUNT(personer_id) AS NumberOfMembers
@@ -670,6 +888,15 @@ function countMembers()
     return $memberCount;
 }
 
+/**
+ * Helper function to check if a personal number is considered as
+ * member or not.
+ *
+ * @param string $pnr A personal number, can contain both numbers and
+ * letters. Based on Swedish customs.
+ *
+ * @return boolean
+ */
 function isMember($pnr)
 {
     $query = "SELECT COUNT(personer_id) AS IsMember
@@ -690,7 +917,18 @@ function isMember($pnr)
     return false;
 }
 
-function getPerson($id,$getdeleted=false)
+/**
+ * Extract information about a member.
+ * Returns the information in a array.
+ *
+ * @param int     $id         A internal identification number of a
+ *                            person.
+ * @param boolean $getdeleted If true a person marked as delted can
+ *                            also be found.
+ *
+ * @return mixed
+ */
+function getPerson($id, $getdeleted=false)
 {
     getConnection();
     $query = "SELECT * FROM personer
@@ -703,6 +941,14 @@ function getPerson($id,$getdeleted=false)
     return $person;
 }
 
+/**
+ * Extract information about all members.
+ * Returns the information in a array.
+ *
+ * A rather stupid function really...
+ *
+ * @return mixed
+ */
 function getPersons()
 {
     getConnection();
@@ -716,7 +962,18 @@ function getPersons()
     return $persons;
 }
 
-function findEMA($ema) {
+/**
+ * Searches for members matching the email field.
+ * Will not search for members marked as deleted.
+ *
+ * FIXME needs work.
+ *
+ * @param string $ema Text to search for in the email field.
+ *
+ * @return mixed
+ */
+function findEMA($ema)
+{
     getConnection();
     $query = "SELECT * FROM personer
               WHERE epost LIKE '$ema' AND deleted != 1";
@@ -746,6 +1003,16 @@ function findEMA($ema) {
     }
 }
 
+/**
+ * Searches for members matching the personal number field.
+ * Will not search for members marked as deleted.
+ *
+ * FIXME needs work.
+ *
+ * @param string $pnr Text to search for in the personal number field.
+ *
+ * @return mixed
+ */
 function findPNR($pnr)
 {
     getConnection();
@@ -777,6 +1044,16 @@ function findPNR($pnr)
     }
 }
 
+/**
+ * Searches for members matching the first name field.
+ * Will not search for members marked as deleted.
+ *
+ * FIXME needs work.
+ *
+ * @param string $fnm Text to search for in the first name field.
+ *
+ * @return mixed
+ */
 function findFNM($fnm)
 {
     getConnection();
@@ -806,6 +1083,16 @@ function findFNM($fnm)
     return $persons;
 }
 
+/**
+ * Searches for members matching the surname field.
+ * Will not search for members marked as deleted.
+ *
+ * FIXME needs work.
+ *
+ * @param string $enm Text to search for in the surname field.
+ *
+ * @return mixed
+ */
 function findENM($enm)
 {
     getConnection();
@@ -835,6 +1122,18 @@ function findENM($enm)
     return $persons;
 }
 
+/**
+ * Searches for members matching the firstname and surname fields.
+ * Will not search for members marked as deleted.
+ *
+ * FIXME needs work.
+ * FIXME can be combined with the specific search stuff. At least.
+ *
+ * @param string $fnm Text to search for in the first name field.
+ * @param string $enm Text to search for in the surname field.
+ *
+ * @return mixed
+ */
 function findNM($fnm, $enm)
 {
     getConnection();
@@ -870,6 +1169,19 @@ function findNM($fnm, $enm)
     return $persons;
 }
 
+/**
+ * Extracts the mandates a member have had.
+ *
+ * FIXME This does probably not work, it's not in real life use at the
+ * FIXME moment.
+ *
+ * FIXME The return is conditioned to at least have something, will
+ * FIXME not return False or such things though.
+ *
+ * @param int $id The internal personal number of a member.
+ *
+ * @return mixed
+ */
 function getMandates($id)
 {
     $query = "SELECT benamning, beskrivning, period, forst, sist FROM personer
@@ -890,6 +1202,18 @@ function getMandates($id)
     }
 }
 
+/**
+ * Some kind of mandate extraction thing. Probably broken.
+ *
+ * FIXME Not in use in a real world example.
+ * FIXME This is horribly broken, uses the assumption that a PNR can
+ * FIXME not have letters in it.
+ *
+ * @param string $pnr A string of letters and numbers representing the
+ *                    personal number, by Swedish customs.
+ *
+ * @return mixed
+ */
 function getCurrentMandates($pnr)
 {
     $query = "SELECT benamning, beskrivning,
@@ -908,6 +1232,13 @@ function getCurrentMandates($pnr)
     return $mandates;
 }
 
+/**
+ * Extrats all payments for a member.
+ *
+ * @param int $id The internal personal number of a member.
+ *
+ * @return mixed
+ */
 function getPayments($id)
 {
     $query = "SELECT betalningar.id AS id, betalsatt.benamning AS betalsatt,
@@ -929,16 +1260,31 @@ function getPayments($id)
     return $payments;
 }
 
+/**
+ * Helper function to draw the standard HTML box start tag.
+ *
+ * @return void
+ */
 function putBoxStart()
 {
     echo "<div class=\"outerdivs\">";
 }
 
+/**
+ * Helper function to draw the standard HTML box end tag.
+ *
+ * @return void
+ */
 function putBoxEnd()
 {
     echo "</div>";
 }
 
+/**
+ * Extracts the current time periods and returns them in a structurred array.
+ *
+ * @return mixed
+ */
 function getPeriods()
 {
     getConnection();
@@ -951,6 +1297,16 @@ function getPeriods()
     return $periods;
 }
 
+/**
+ * Update period information.
+ *
+ * FIXME needs work =)
+ *
+ * @param mixed $period A object representing the period to update
+ *                      information about.
+ *
+ * @return boolean
+ */
 function updatePeriod($period)
 {
 
@@ -980,6 +1336,11 @@ function updatePeriod($period)
     return false;
 }
 
+/**
+ * Extracts the current fees and returns them in a structurred array.
+ *
+ * @return mixed
+ */
 function getAvgifter()
 {
     getConnection();
@@ -994,6 +1355,11 @@ function getAvgifter()
     return $avgifter;
 }
 
+/**
+ * Extract the membership types and returns them in a structurred array.
+ *
+ * @return mixed
+ */
 function getMedlemstyper()
 {
     getConnection();
@@ -1005,6 +1371,11 @@ function getMedlemstyper()
     return $medlemstyper;
 }
 
+/**
+ * Extract the payment types and returns them in a structurred array.
+ *
+ * @return mixed
+ */
 function getBetalsatt()
 {
     getConnection();
@@ -1016,6 +1387,11 @@ function getBetalsatt()
     return $betalsatt;
 }
 
+/**
+ * Marks a payment as deleted.
+ *
+ * @return void
+ */
 function removePayment()
 {
     getConnection();
@@ -1023,6 +1399,13 @@ function removePayment()
     mysql_query($query) or die(mysql_error());
 }
 
+/**
+ * Counts the amount of members for the supplied type of member.
+ *
+ * @param string $benamning Membership type
+ *
+ * @return int
+ */
 function getNumberOfMembers($benamning)
 {
     getConnection();
