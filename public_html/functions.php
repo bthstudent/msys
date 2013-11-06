@@ -363,7 +363,7 @@ function authenticateAPIUser($key, $user)
 function getAPIPerson($pnr)
 {
     getConnection();
-    $query = "SELECT id FROM personer WHERE personnr=" . $pnr;
+    $query = "SELECT id FROM personer WHERE personnr='" . $pnr . "'";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $id = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
     $person = getPerson($id->id);
