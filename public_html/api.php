@@ -161,5 +161,6 @@ case "isMember":
             die();
         }
     }
+    break;
 }
 ?>
