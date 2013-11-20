@@ -33,17 +33,17 @@ $avgift = 0;
 if (isset($_GET["periodid"]) && $_GET["periodid"] > 0) {
     getConnection();
 
-    $periodid = mysql_real_escape_string($_GET["periodid"]);
+    $periodid = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_GET["periodid"]);
     $medlemstypvisibility = "";
     if (isset($_GET["medlemstypid"]) && $_GET["medlemstypid"] > 0) {
-        $medlemstypid = mysql_real_escape_string($_GET["medlemstypid"]);
+        $medlemstypid = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_GET["medlemstypid"]);
         $visibility = "";
 
-        $r = mysql_query("SELECT id, avgift FROM avgift
+        $r = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT id, avgift FROM avgift
                           WHERE perioder_id=".$periodid." AND
                           medlemstyp_id=".$medlemstypid."");
-        if (mysql_affected_rows() > 0) {
-            $a = mysql_fetch_assoc($r);
+        if (mysqli_affected_rows($GLOBALS["___mysqli_ston"]) > 0) {
+            $a = mysqli_fetch_assoc($GLOBALS["___mysqli_ston"], $r);
             $avgiftid = $a["id"];
             $avgift = $a["avgift"];
         }
