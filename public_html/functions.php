@@ -1,6 +1,7 @@
 <?php
 require "../local-config.php";
 require "PDO.interface.class.php";
+require "lib/password.php";
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -245,11 +246,12 @@ function removeAPIUser()
  */
 function addUser()
 {
+    global $globalsalt;
     $DBH = new DB();
-    $password = $_POST['PAS'];
+    $password = password_hash($_POST['USR'] . $_POST['PAS'] . $globalsalt, PASSWORD_BCRYPT, array("cost" => 13));
     $DBH->query("INSERT INTO adminuser(username, hashpass)
               VALUES (:uname,
-              sha1(:pass))");
+              :pass)");
     $DBH->bind(":uname", $_POST['USR']);
     $DBH->bind(":pass", $password);
     $DBH->execute();
@@ -380,17 +382,31 @@ function getAPIMembers()
  */
 function checkAdminLogin()
 {
+    global $globalsalt;
     $DBH = new DB();
-    $DBH->query("SELECT id FROM adminuser
-                 WHERE username = :username AND
-                 hashpass = :hashpass");
+    $DBH->query("SELECT id,hashpass FROM adminuser
+                 WHERE username = :username");
     $DBH->bind(":username", $_POST['username']);
-    $DBH->bind(":hashpass", sha1($_POST['pass']));
     $DBH->execute();
     if (($DBH->rowCount()) == 1) {
         $row = $DBH->single();
-        $_SESSION['page']="admin";
-        $_SESSION['id']=$row['id'];
+        if (password_verify($_POST['username'] . $_POST['pass'] . $globalsalt,
+            $row['hashpass'])) {
+            $_SESSION['page']="admin";
+            $_SESSION['id']=$row['id'];
+        } elseif ($row['hashpass'] == sha1($_POST['pass'])) {
+            $_SESSION['page']="admin";
+            $_SESSION['id']=$row['id'];
+            $password = password_hash($_POST['username'] . $_POST['pass'] .
+                $globalsalt, PASSWORD_BCRYPT, array("cost" => 13));
+
+            $DBH->query("UPDATE adminuser
+                         SET hashpass = :password
+                         WHERE username = :username");
+            $DBH->bind(":password", $password);
+            $DBH->bind(":username", $_POST['username']);
+            $DBH->execute();
+        }
     }
 }
 

@@ -27,7 +27,8 @@ and issues but the system is in daily use both via direct web
 interaction and via the API.
 
 Code can be found at https://gitlab.bthstudent.se/msys/msys, the
-license to adhere to is AGPLv3.
+license to adhere to is AGPLv3. See also the documentation about
+licenses in the file COPYING.
 
 
 INSTALL AND USAGE

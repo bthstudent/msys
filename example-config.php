@@ -24,6 +24,11 @@ $db["user"] = "db_user";
 $db["pass"] = "db_password";
 $db["db"] = "database_name";
 
+/* Default Salt for passwords.
+ * Change this to a random string. Your choice!
+ * */
+$globalsalt = "3f46781d4ad88ad67885122d25a8e47c";
+
 /* Style config, if no other specified default style will be used
  * If multiple stylesheets are used, include these in one master stylesheet
  * eg. master.css
