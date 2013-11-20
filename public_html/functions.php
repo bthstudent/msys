@@ -372,6 +372,21 @@ function getAPIPerson($pnr)
 }
 
 /**
+ * ???
+ *
+ * @param ?? $ssn ??
+ *
+ * @return object
+ */
+function returnAPIPerson($ssn)
+{
+    getConnection();
+    $query = 'SELECT id FROM personer WHERE personnr=' . mysqL_real_escape_string($ssn);
+    $result = mysql_query($query);
+    return mysql_fetch_object($result);
+}
+
+/**
  * API helper function to update a member record
  *
  * @param string $data Contains a comma separated member profile.
@@ -1353,6 +1368,21 @@ function getAvgifter()
         $avgifter[$row["perioder_id"]][] = $row;
     }
     return $avgifter;
+}
+
+/**
+ * ??
+ *
+ * @param ?? $fee ??
+ * @param ?? $membertype ??
+ *
+ * @return object
+ */
+function getFeeId($fee, $membertype){
+    getConnection();
+    $query = "select avgift.id from avgift inner join perioder on avgift.perioder_id=perioder.id inner join medlemstyp on avgift.medlemstyp_id=medlemstyp.id where perioder.period='".$fee."' && avgift.medlemstyp_id=".$membertype;
+    $result = mysql_query($query);
+    return mysql_fetch_object($result);
 }
 
 /**
