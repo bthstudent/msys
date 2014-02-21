@@ -392,9 +392,9 @@ function returnAPIPerson($ssn)
 {
     getConnection();
     $query = "SELECT id FROM personer
-              WHERE personnr='" . mysqL_real_escape_string($ssn)."'";
-    $result = mysql_query($query);
-    return mysql_fetch_object($result);
+              WHERE personnr='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $ssn)."'";
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    return mysqli_fetch_object($result);
 }
 
 /**
@@ -1396,8 +1396,8 @@ function getFeeId($fee, $membertype){
               INNER JOIN medlemstyp on avgift.medlemstyp_id=medlemstyp.id
               WHERE perioder.period='".$fee."' AND
                     avgift.medlemstyp_id=".$membertype;
-    $result = mysql_query($query);
-    return mysql_fetch_object($result);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    return mysqli_fetch_object($result);
 }
 
 /**
