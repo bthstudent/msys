@@ -24,7 +24,7 @@ if (isset($_GET['typ']) && !($_GET['typ']==0)) {
     case "1":
         $filename ="medlemmar" . date("Y") . ".xls";
         getConnection();
-        $persons = getMembers(date("Y-m-d"));
+        $persons = getMembers(true,true);
         $contents = "Personnummer Efternamn Förnamn Epost Telefon Period Medlemstyp Avgift Betalat \n";
         $size = sizeof($persons);
         $i = 0;

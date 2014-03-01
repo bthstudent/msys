@@ -824,10 +824,10 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
 {
     unset($query);
     $query = "SELECT personnr, efternamn, fornamn, epost, telefon";
-    if ($adress) {
+    if ($adress === true) {
         $query .= ", co, adress, postnr, land, feladress, aviseraej";
     }
-    if ($payment) {
+    if ($payment === true) {
         $query .= ", period, benamning, avgift, betalat, benamning";
     }
     $query .= " FROM betalningar
