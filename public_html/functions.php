@@ -301,7 +301,7 @@ function removeUser()
        possible?
     */
     $query  = "DELETE FROM adminusers
-              WHERE id=" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], ,$_POST['id']);
+              WHERE id=" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['id']);
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     if ($_POST['id']==$_SESSION['id']) {
         echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
