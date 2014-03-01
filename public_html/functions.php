@@ -1002,26 +1002,12 @@ function findEMA($ema)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE epost LIKE '$ema' AND deleted != 1";
+              WHERE epost LIKE '%$ema%' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($result)) {
-        $persons[] = $row;
-    } else {
-        $query = "SELECT * FROM personer
-                  WHERE epost LIKE '$ema%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->epost])) {
-                $persons[$row->epost] = $row;
-            }
-        }
-        $query = "SELECT * FROM personer
-                  WHERE epost LIKE '%$ema%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->epost])) {
-                $persons[$row->epost] = $row;
-            }
+    $persons = Null;
+    while ($row = mysqli_fetch_object($result)) {
+        if (!isset($persons[$row->epost])) {
+            $persons[$row->epost] = $row;
         }
     }
     if (isset($persons)) {
@@ -1043,26 +1029,12 @@ function findPNR($pnr)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE personnr LIKE '$pnr' AND deleted != 1";
+              WHERE personnr LIKE '$pnr%' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($result)) {
-        $persons[$row->personnr] = $row;
-    } else {
-        $query = "SELECT * FROM personer
-                  WHERE personnr LIKE '$pnr%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
-        }
-        $query = "SELECT * FROM personer
-                  WHERE personnr LIKE '%$pnr%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
+    $persons = Null;
+    while ($row = mysqli_fetch_object($result)) {
+        if (!isset($persons[$row->personnr])) {
+            $persons[$row->personnr] = $row;
         }
     }
     if (isset($persons)) {
@@ -1084,26 +1056,12 @@ function findFNM($fnm)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE fornamn LIKE '$fnm' AND deleted != 1";
+              WHERE fornamn LIKE '%$fnm%' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($result)) {
-        $persons[$row->personnr] = $row;
-    } else {
-        $query = "SELECT * FROM personer
-                  WHERE fornamn LIKE '$fnm%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
-        }
-        $query = "SELECT * FROM personer
-                  WHERE fornamn LIKE '%$fnm%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
+    $persons = Null;
+    while ($row = mysqli_fetch_object($result)) {
+        if (!isset($persons[$row->personnr])) {
+            $persons[$row->personnr] = $row;
         }
     }
     return $persons;
@@ -1123,26 +1081,12 @@ function findENM($enm)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE efternamn LIKE '$enm' AND deleted != 1";
+              WHERE efternamn LIKE '%$enm%' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($result)) {
-        $persons[$row->personnr] = $row;
-    } else {
-        $query = "SELECT * FROM personer
-                  WHERE efternamn LIKE '$enm%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
-        }
-        $query = "SELECT * FROM personer
-                  WHERE efternamn LIKE '%$enm%' AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
+    $persons = Null;
+    while ($row = mysqli_fetch_object($result)) {
+        if (!isset($persons[$row->personnr])) {
+            $persons[$row->personnr] = $row;
         }
     }
     return $persons;
@@ -1164,32 +1108,14 @@ function findNM($fnm, $enm)
 {
     getConnection();
     $query = "SELECT * FROM personer
-              WHERE fornamn LIKE '$fnm'
-			  AND efternamn LIKE '$enm'
-			  AND deleted != 1";
+              WHERE fornamn LIKE '%$fnm%' AND
+                    efternamn LIKE '%$enm%'
+                    AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($result)) {
-        $persons[$row->personnr] = $row;
-    } else {
-        $query = "SELECT * FROM personer
-                  WHERE fornamn LIKE '$fnm%' AND
-                        efternamn LIKE '$enm%'
-                        AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
-        }
-        $query = "SELECT * FROM personer
-                  WHERE fornamn LIKE '%$fnm%' AND
-                        efternamn LIKE '%$enm%'
-                        AND deleted != 1";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($result)) {
-            if (!isset($persons[$row->personnr])) {
-                $persons[$row->personnr] = $row;
-            }
+    $persons = Null;
+    while ($row = mysqli_fetch_object($result)) {
+        if (!isset($persons[$row->personnr])) {
+            $persons[$row->personnr] = $row;
         }
     }
     return $persons;
