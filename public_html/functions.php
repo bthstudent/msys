@@ -32,7 +32,7 @@ function getConnection()
         die("Error - " . ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<br />
              Code: " . ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_errno($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_errno()) ? $___mysqli_res : false)));
     } else {
-        if(!((bool)mysqli_query($GLOBALS["___mysqli_ston"], "USE " . $db["db"]))) {
+        if(!((bool)mysqli_select_db($GLOBALS["___mysqli_ston"], $db["db"]))) {
             die("cannot select DB");
 	}
     }
