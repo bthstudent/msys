@@ -54,8 +54,8 @@ $pastcolor = "#ffc7c7";
 foreach ($perioder as $rad) {
     echo "<form name=\"changeperiod" . $k . "\" method=\"post\"><table>";
     echo "<input type=\"hidden\" readonly=\"readonly\" value=\"ChangePeriod\" name=\"handler\" />";
-    $forst = strtotime($rad->forst);
-    $sist = strtotime($rad->sist);
+    $forst = strtotime($rad["forst"]);
+    $sist = strtotime($rad["sist"]);
     if ($forst < $today && $today < $sist) {
         $i = 1;
     } elseif ($sist < $today) {
@@ -70,9 +70,9 @@ foreach ($perioder as $rad) {
     } else {
         echo "<tr>";
     }
-    echo "<td><input name=\"period\" type=\"text\" readonly=\"readonly\" value=\"" . $rad->period . "\"</td>
-            <td><input name=\"forst\" type=\"date\" value=\"" . $rad->forst . "\"/></td>
-            <td><input name=\"sist\" type=\"date\" value=\"" . $rad->sist . "\"/></td>
+    echo "<td><input name=\"period\" type=\"text\" readonly=\"readonly\" value=\"" . $rad["period"] . "\"</td>
+            <td><input name=\"forst\" type=\"date\" value=\"" . $rad["forst"] . "\"/></td>
+            <td><input name=\"sist\" type=\"date\" value=\"" . $rad["sist"] . "\"/></td>
             <td><img src=\"misc/save.png\" class=\"cursor\" onclick=\"document.forms['changeperiod" . $k++ . "'].submit();\">
             </td>
         </tr></table></form>";

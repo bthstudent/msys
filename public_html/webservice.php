@@ -54,12 +54,12 @@ $users = getAPIUsers();
 foreach ($users as $row) {
     echo "<hr />";
     echo "<div style=\"text-align:left;float:left\">";
-    echo "<p style=\"font-size:18px\">Användarnamn: " . $row->username . "<br>Permissions: " . $row->permissions . "<br>API-Nyckel: ";
-    echo "<input type=\"text\" value=\"". $row->apikey . "\" readonly float:right/>" . "</p>";
+    echo "<p style=\"font-size:18px\">Användarnamn: " . $row["username"] . "<br>Permissions: " . $row["permissions"] . "<br>API-Nyckel: ";
+    echo "<input type=\"text\" value=\"". $row["apikey"] . "\" readonly float:right/>" . "</p>";
     echo "</div>";
     echo "<form name=\"RemoveAPIUser\" class=\"info\" method=\"post\">
         <input type=\"hidden\" readonly=\"readonly\" value=\"RemoveAPIUser\" name=\"handler\" />
-        <input type=\"hidden\" readonly=\"readonly\" value=\"" . $row->username . "\" name=\"USR\"/>
+        <input type=\"hidden\" readonly=\"readonly\" value=\"" . $row["username"] . "\" name=\"USR\"/>
         <div style=\"text-align:right;float:right\">
             <input type=\"submit\" value=\"Ta Bort API-Användare\">
         </div>

@@ -35,8 +35,8 @@ $today = strtotime(date("Y-m-d"));
 $validcolor = "#c7ffc7";
 $pastcolor = "#ffc7c7";
 foreach ($avgifter as $rad) {
-    $forst = strtotime($rad->Forst);
-    $sist = strtotime($rad->Sist);
+    $forst = strtotime($rad["Forst"]);
+    $sist = strtotime($rad["Sist"]);
     if ($forst < $today && $today < $sist) {
         $i = 1;
     } elseif ($sist < $today) {
@@ -53,10 +53,10 @@ foreach ($avgifter as $rad) {
         echo "bgcolor=\"" . $pastcolor . "\"";
     }
     echo ">";
-    echo "<td><input name=\"period\" value=\"" . $rad->Period . "\" type=\"text\" readonly=\"readonly\" /></td>";
-    echo "<td><input name=\"avg1\" type=\"number\" value=\"" . $rad->Avgift[1] . "\" /></td>";
-    echo "<td><input name=\"avg2\" type=\"number\" value=\"" . $rad->Avgift[2] . "\" /></td>";
-    echo "<td><input name=\"avg3\" type=\"number\" value=\"" . $rad->Avgift[3] . "\" /></td>";
+    echo "<td><input name=\"period\" value=\"" . $rad["Period"] . "\" type=\"text\" readonly=\"readonly\" /></td>";
+    echo "<td><input name=\"avg1\" type=\"number\" value=\"" . $rad["Avgift"][1] . "\" /></td>";
+    echo "<td><input name=\"avg2\" type=\"number\" value=\"" . $rad["Avgift"][2] . "\" /></td>";
+    echo "<td><input name=\"avg3\" type=\"number\" value=\"" . $rad["Avgift"][3] . "\" /></td>";
     echo "<td><img src=\"misc/save.png\" ";
     if ($i==1 || $i==-1) {
         echo "style=\"visibility:hidden\" ";

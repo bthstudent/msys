@@ -23,26 +23,30 @@ if (isset($_GET['typ']) && !($_GET['typ']==0)) {
     switch ($_GET['typ']) {
     case "1":
         $filename ="medlemmar" . date("Y") . ".xls";
-        getConnection();
         $persons = getMembers(true,true);
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon;Period;Medlemstyp;Avgift;Betalat \n";
-        $size = sizeof($persons);
-        $i = 0;
-        while ($i<$size) {
-            $contents .= $persons[$i]->personnr . ";" . $persons[$i]->efternamn . ";" . $persons[$i]->fornamn . ";" . $persons[$i]->epost . ";" . $persons[$i]->telefon . ";" . $persons[$i]->period . ";" . $persons[$i]->benamning . ";" . $persons[$i]->avgift . ";" . $persons[$i]->betalat . " \n";
-            $i++;
+        foreach ($persons as $key => $person) {
+            $contents .= $person["personnr"] . ";" .
+                         $person["efternamn"] . ";" .
+                         $person["fornamn"] . ";" .
+                         $person["epost"] . ";" .
+                         $person["telefon"] . ";" .
+                         $person["period"] . ";" .
+                         $person["benamning"] . ";" .
+                         $person["avgift"] . ";" .
+                         $person["betalat"] . " \n";
         }
         break;
     case "2":
         $filename ="icke-medlemmar" . date("Y") . ".xls";
-        getConnection();
         $persons = getNonMembers();
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon\n";
-        $size = sizeof($persons);
-        $i=0;
-        while ($i<$size) {
-            $contents .= $persons[$i]->personnr . ";" . $persons[$i]->efternamn . ";" . $persons[$i]->fornamn . ";" . $persons[$i]->epost . ";" . $persons[$i]->telefon . " \n";
-                $i++;
+        foreach ($persons as $key => $person) {
+            $contents .= $person["personnr"] . ";" .
+                         $person["efternamn"] . ";" .
+                         $person["fornamn"] . ";" .
+                         $person["epost"] . ";" .
+                         $person["telefon"] . " \n";
         }
         break;
     }

@@ -165,7 +165,8 @@ case "isMember":
 case 'isRegistered':
     if($userPermissions & 16) {
         if(isset($_GET['ssn'])){
-            if(isset(returnAPIPerson($_GET['ssn'])->id)){
+            $APIperson = returnAPIPerson($_GET['ssn']);
+            if(isset($APIperson["id"])){
                 echo true;
             } else {
                 echo false;
@@ -178,8 +179,10 @@ case 'isRegistered':
 case 'registerPayment':
     if($userPermissions & 4) {
         if(isset($_GET['ssn']) && isset($_GET['fee']) && isset($_GET['membertype']) && isset($_GET['date']) && isset($_GET['paysum'])){
-            $data->PNR = returnAPIPerson($_GET['ssn'])->id;
-            $data->PERIOD = getFeeId($_GET['fee'], $_GET['membertype'])->id;
+            $data->PNR = returnAPIPerson($_GET['ssn']);
+            $data->PNR = $data->PNR["id"];
+            $data->PERIOD = getFeeId($_GET['fee'], $_GET['membertype']);
+            $data->PERIOD = $data->PERIOD["id"];
             $data->BETWAY = 3;
             $data->BETDATE = $_GET['date'];
             $data->BET = $_GET['paysum'];

@@ -1,5 +1,6 @@
 <?php
 require "../local-config.php";
+require "PDO.interface.class.php";
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -52,10 +53,11 @@ function handlesession()
 {
     if (isset($_SESSION['page'])) {
         if ($_SESSION['page']=="admin") {
-            getConnection();
-            $query = "SELECT id FROM adminusers WHERE id='" . $_SESSION['id'] . "'";
-            mysqli_query($GLOBALS["___mysqli_ston"], $query);
-            if (mysqli_affected_rows($GLOBALS["___mysqli_ston"])!=1) {
+            $DBH = new DB();
+            $DBH->query("SELECT id FROM adminusers WHERE id = :sid");
+            $DBH->bind(":sid", $_SESSION['id']);
+            $res = $DBH->resultset();
+            if ($DBH->rowCount()!=1) {
                 session_destroy();
                 header("Location: /");
                 exit();
@@ -235,13 +237,9 @@ function handlepost()
  */
 function getAPIUsers()
 {
-    getConnection();
-    $query  = "SELECT * FROM api";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $users = array();
-    while ($row = mysqli_fetch_object($result)) {
-        $users[] = $row;
-    }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM api");
+    $users = $DBH->resultset();
     return $users;
 }
 
@@ -252,13 +250,17 @@ function getAPIUsers()
  */
 function addAPIUser()
 {
-    getConnection();
-    $permission = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['getPerson'] + $_POST['setPerson'] + $_POST['regPayment'] + $_POST['regPerson']  + $_POST['isMember']);
+    $DBH = new DB();
+    $permission = $_POST['getPerson'] + $_POST['setPerson'] + $_POST['regPayment'] + $_POST['regPerson']  + $_POST['isMember'];
     $query = "INSERT INTO api(username, apikey, permissions)
-              VALUES ('" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['USR']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['KEY']) . "',
-                      '" . $permission . "')";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+              VALUES (:usr,
+                      :key,
+                      :perms)";
+    $DBH->query($query);
+    $DBH->bind(":usr", $_POST['USR']);
+    $DBH->bind(":key", $_POST['KEY']);
+    $DBH->bind(":perms", $permission);
+    $DBH->execute();
 }
 
 /**
@@ -268,10 +270,11 @@ function addAPIUser()
  */
 function removeAPIUser()
 {
-    getConnection();
-    $query  = "DELETE FROM api
-              WHERE username='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['USR']) . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH = new DB();
+    $DBH->query("DELETE FROM api
+                WHERE username=:usr");
+    $DBH->bind(":usr", $_POST['USR']);
+    $DBH->execute();
 }
 
 /**
@@ -281,12 +284,14 @@ function removeAPIUser()
  */
 function addUser()
 {
-    getConnection();
-    $password = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PAS']);
-    $query = "INSERT INTO adminusers(username, hashpass)
-              VALUES ('" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['USR']) . "',
-              sha1('" . $password . "'))";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH = new DB();
+    $password = mysql_real_escape_string($_POST['PAS']);
+    $DBH->query("INSERT INTO adminusers(username, hashpass)
+              VALUES (:uname,
+              sha1(:pass))");
+    $DBH->bind(":uname", $_POST['USR']);
+    $DBH->bind(":pass", $password);
+    $DBH->execute();
 }
 
 /**
@@ -296,14 +301,15 @@ function addUser()
  */
 function removeUser()
 {
-    getConnection();
-    /**
+     /**
        OBS! if $_POST['id'] == %?
        possible?
     */
-    $query  = "DELETE FROM adminusers
-              WHERE id=" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['id']);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH = new DB();
+    $DBH->query("DELETE FROM adminusers
+              WHERE id=:auid");
+    $DBH->bind(":auid", $_POST['id']);
+    $DBH->execute();
     if ($_POST['id']==$_SESSION['id']) {
         echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
         echo "<script type=\"text/javascript\">";
@@ -320,11 +326,9 @@ function removeUser()
  */
 function getUsers()
 {
-    getConnection();
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT id, username FROM adminusers");
-    while ($row = mysqli_fetch_object($result)) {
-        $users[] = $row;
-    }
+    $DBH = new DB();
+    $DBH->query("SELECT id, username FROM adminusers");
+    $users = $DBH->resultset();
     return $users;
 }
 
@@ -339,15 +343,14 @@ function getUsers()
  */
 function authenticateAPIUser($key, $user)
 {
-    getConnection();
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT apikey, permissions FROM api
-                           WHERE username='" . $user ."'");
-
-    $endresult = mysqli_fetch_object($result);
-
-    if ($endresult->apikey == $key) {
-        return $endresult->permissions;
-    } else {
+    $DBH = new DB();
+    $DBH->query("SELECT apikey, permissions FROM api
+                WHERE username=:uname");
+    $DBH->bind(":uname", $user);
+    $result = $DBH->single();
+    if($result["apikey"] == $key){
+        return $result["permissions"];
+    }else{
         return 0;
     }
 }
@@ -363,21 +366,22 @@ function authenticateAPIUser($key, $user)
  */
 function getAPIPerson($pnr)
 {
-    getConnection();
-    $query = "SELECT id FROM personer WHERE personnr='" . $pnr . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $id = mysqli_fetch_object($result);
-    $person = getPerson($id->id);
-    $bank = getPayments($id->id);
-    echo $person->personnr . "," . $person->fornamn . "," .
-         $person->efternamn . "," . $person->co . "," .
-         $person->adress . "," . $person->postnr . "," .
-         $person->ort . "," . $person->land . "," .
-         $person->telefon . "," . $person->epost . "," .
-         $person->aviseraej . "," . $person->senastandrad;
+    $DBH = new DB();
+    $DBH->query("SELECT id FROM personer WHERE personnr= :pnr");
+    $DBH->bind(":pnr", $pnr);
+    $id = $DBH->single();
+    $id = $id["id"];
+    $person = getPerson($id);
+    $bank = getPayments($id);
+    echo $person["personnr"] . "," . $person["fornamn"] . "," .
+         $person["efternamn"] . "," . $person["co"] . "," .
+         $person["adress"] . "," . $person["postnr"] . "," .
+         $person["ort"] . "," . $person["land"] . "," .
+         $person["telefon"] . "," . $person["epost"] . "," .
+         $person["aviseraej"] . "," . $person["senastandrad"];
     if (isset($bank)) {
         foreach ($bank as $row) {
-            echo "," . $row->period . "," . $row->benamning . "," . $row->betalat . "," . $row->betaldatum;
+            echo "," . $row["period"] . "," . $row["benamning"] . "," . $row["betalat"] . "," . $row["betaldatum"];
         }
     }
 }
@@ -391,11 +395,12 @@ function getAPIPerson($pnr)
  */
 function returnAPIPerson($ssn)
 {
-    getConnection();
-    $query = "SELECT id FROM personer
-              WHERE personnr='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $ssn)."'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    return mysqli_fetch_object($result);
+    $DBH = new DB();
+    $DBH->query("SELECT id FROM personer
+              WHERE personnr=:ssn");
+    $DBH->bind(":ssn", $ssn);
+    $result = $DBH->single();
+    return $result;
 }
 
 /**
@@ -408,21 +413,32 @@ function returnAPIPerson($ssn)
 function setAPIPersonData($data)
 {
     $PSTNR = str_replace(' ', '', $data->PSTNR);
-    getConnection();
-    $query = "SELECT id FROM personer WHERE personnr=" . $data->PNR;
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $id = mysqli_fetch_object($result);
-    $query = "UPDATE personer SET telefon='" . $data->TEL . "',
-			epost ='" . $data->EMAIL . "',
-			co='" . $data->CO . "',
-			adress='" . $data->ADR . "',
-			postnr='" . $PSTNR . "',
-			ort='". $data->ORT . "',
-			land='" . $data->LAND . "',
-			aviseraej='" . $data->AVISEJ . "',
-			senastandrad=DATE(NOW())
-		WHERE id='" . $id->id . "'";
-    mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH = new DB();
+
+    $DBH->query("SELECT id FROM personer WHERE personnr=:pnr");
+    $DBH->bind(":pnr", $data->PNR);
+    $personID = $DBH->single();
+
+    $DBH->query("UPDATE personer SET telefon='" . $data->TEL . "',
+                    epost ='" . $data->EMAIL . "',
+                    co='" . $data->CO . "',
+                    adress='" . $data->ADR . "',
+                    postnr='" . $PSTNR . "',
+                    ort='". $data->ORT . "',
+                    land='" . $data->LAND . "',
+                    aviseraej='" . $data->AVISEJ . "',
+                    senastandrad=DATE(NOW())
+                WHERE id='" . $id->id . "'");
+    $DBH->bind(":tel", $data->TEL);
+    $DBH->bind(":epost", $data->EMAIL);
+    $DBH->bind(":co", $data->CO);
+    $DBH->bind(":adress", $data->ADR);
+    $DBH->bind(":postnr", $PSTNR);
+    $DBH->bind(":ort", $data->ORT);
+    $DBH->bind(":land", $data->LAND);
+    $DBH->bind(":aviseraej", $data->AVISEJ);
+    $DBH->bind(":id", $personID["id"]);
+    $DBH->execute();
 }
 
 /**
@@ -434,28 +450,34 @@ function setAPIPersonData($data)
  */
 function addAPIPerson($data)
 {
-    getConnection();
-
+    $DBH = new DB();
     $PSTNR = str_replace(' ', '', $data->PSTNR);
-    $query = "INSERT INTO personer(personnr, fornamn, efternamn,
-                                   co, adress, postnr, ort, land,
-                                   telefon, epost,
-                                   aviseraej, feladress, senastandrad
-                                  )
-              VALUES ('" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->PNR) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->FNM) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->ENM) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->CO) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->ADR) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->ORT) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->LAND) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->TEL) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->EMAIL) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->AVISEJ) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $data->FELADR) . "',
-                      DATE(NOW()))";
-    mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH->query("INSERT INTO personer SET personnr = :pnr,
+                fornamn = :fnm,
+                efternamn = :enm,
+                co = :co,
+                adress = :adr,
+                postnr = :psnr,
+                ort = :ort,
+                land = :land,
+                telefon = :tel,
+                epost = :eml,
+                aviseraej = :avis,
+                feladress = :fadr,
+                senastandrad = DATE(NOW())");
+    $DBH->bind(":pnr", $data->PNR);
+    $DBH->bind(":fnm", $data->FNM);
+    $DBH->bind(":enm", $data->ENM);
+    $DBH->bind(":co", $data->CO);
+    $DBH->bind(":adr", $data->ADR);
+    $DBH->bind(":psnr", $PSTNR);
+    $DBH->bind(":ort", $data->ORT);
+    $DBH->bind(":land", $data->LAND);
+    $DBH->bind(":tel", $data->TEL);
+    $DBH->bind(":eml", $data->EMAIL);
+    $DBH->bind(":avis", $data->AVISEJ);
+    $DBH->bind(":fadr", $data->FELADR);
+    $DBH->execute();
 }
 
 /**
@@ -514,20 +536,22 @@ function checkAdminLogin()
  */
 function addPayment()
 {
-    getConnection();
+    $DBH = new DB();
+    $DBH->query("SELECT id AS avgift_id FROM avgift
+                 WHERE medlemstyp_id = :memtypeid AND
+                 perioder_id = :periodid");
+    $DBH->bind(":memtypeid", $_POST['MEDTYPE']);
+    $DBH->bind(":periodid", $_POST['PERIOD']);
+    $a = $DBH->single();
 
-    $r=mysqli_query($GLOBALS["___mysqli_ston"], "SELECT id AS avgift_id FROM avgift
-                 WHERE medlemstyp_id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['MEDTYPE'])." AND
-                 perioder_id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PERIOD'])) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
-    $a=mysqli_fetch_assoc($r);
-
-    $query = "INSERT INTO betalningar (personer_id, avgift_id, betalsatt_id, betaldatum, betalat)
-              VALUES ('" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "',
-                      '" . $a["avgift_id"] . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['BETWAY']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['BETDATE']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['BET']) . "')";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
+    $DBH->query("INSERT INTO betalningar (personer_id, avgift_id, betalsatt_id, betaldatum, betalat)
+                  VALUES (:pid, :avgid, :ptid, :pdate, :payed)");
+    $DBH->bind(":pid", $_POST['ID']);
+    $DBH->bind(":avgid", $a["avgift_id"]);
+    $DBH->bind(":ptid", $_POST['BETWAY']);
+    $DBH->bind(":pdate", $_POST['BETDATE']);
+    $DBH->bind(":payed", $_POST['BET']);
+    $DBH->execute();
 }
 
 /**
@@ -632,50 +656,62 @@ function updatePerson()
     if (!isset($_POST['AVISEJ'])) {
         $_POST['AVISEJ'] = 0;
     }
-    if ($person->personnr != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR'])) {
+    if ($person["personnr"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR'])) {
         $haschanged = true;
-    } else if ($person->fornamn != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM'])) {
+    } else if ($person["fornamn"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM'])) {
         $haschanged = true;
-    } else if ($person->efternamn != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM'])) {
+    } else if ($person["efternamn"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM'])) {
         $haschanged = true;
-    } else if ($person->telefon != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL'])) {
+    } else if ($person["telefon"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL'])) {
         $haschanged = true;
-    } else if ($person->epost != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL'])) {
+    } else if ($person["epost"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL'])) {
         $haschanged = true;
-    } else if ($person->co != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO'])) {
+    } else if ($person["co"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO'])) {
         $haschanged = true;
-    } else if ($person->adress != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR'])) {
+    } else if ($person["adress"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR'])) {
         $haschanged = true;
-    } else if ($person->postnr != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR)) {
+    } else if ($person["postnr"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR)) {
         $haschanged = true;
-    } else if ($person->ort != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT'])) {
+    } else if ($person["ort"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT'])) {
         $haschanged = true;
-    } else if ($person->land != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND'])) {
+    } else if ($person["land"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND'])) {
         $haschanged = true;
-    } else if ($person->feladress != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR'])) {
+    } else if ($person["feladress"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR'])) {
         $haschanged = true;
-    } else if ($person->aviseraej != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ'])) {
+    } else if ($person["aviseraej"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ'])) {
         $haschanged = true;
     }
 
     if ($haschanged) {
-        getConnection();
-        $query = "UPDATE personer
-                  SET personnr='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR']) . "',
-                      fornamn='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM']) . "',
-                      efternamn='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM']) . "',
-                      telefon='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL']) . "',
-                      epost ='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL']) . "',
-                      co='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO']) . "',
-                      adress='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR']) . "',
-                      postnr='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR) . "',
-                      ort='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT']) . "',
-                      land='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND']) . "',
-                      feladress='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR']) . "',
-                      aviseraej='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ']) . "',
-                      senastandrad=DATE(NOW())
-                  WHERE id='". mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "'";
-        $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+        $DBH = new DB();
+        $DBH->query("UPDATE personer
+                  SET personnr = :personnr,
+                      fornamn = :fornamn,
+                      efternamn = :efternamn,
+                      telefon= :telefon,
+                      epost = :epost,
+                      co = :co,
+                      adress = :adress,
+                      postnr = :postnr,
+                      ort = :ort,
+                      land = :land,
+                      feladress = :feladress,
+                      aviseraej = :aviseraej,
+                      senastandrad = DATE(NOW())
+                  WHERE id='". mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "'");
+            $DBH->bind(":personnr", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR']));
+            $DBH->bind(":fornamn", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM']));
+            $DBH->bind(":efternamn", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM']));
+            $DBH->bind(":telefon", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL']));
+            $DBH->bind(":epost", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL']));
+            $DBH->bind(":co", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO']));
+            $DBH->bind(":adress", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR']));
+            $DBH->bind(":postnr", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR));
+            $DBH->bind(":ort", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT']));
+            $DBH->bind(":land", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND']));
+            $DBH->bind(":feladress", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR']));
+            $DBH->bind(":aviseraej", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ']));
+        $DBH->execute();
     }
 }
 
@@ -690,8 +726,6 @@ function updatePerson()
 function sparaStudent()
 {
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    getConnection();
-
     $query = "UPDATE personer
               SET fornamn='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM']) . "',
                   efternamn='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM']) . "',
@@ -706,7 +740,9 @@ function sparaStudent()
                   aviseraej='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ']) . "',
                   senastandrad=DATE(NOW())
               WHERE id='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH = new DB();
+    $DBH->query($query);
+    $DBH->execute();
 }
 
 
@@ -717,7 +753,7 @@ function sparaStudent()
  */
 function updateAvgift()
 {
-    getConnection();
+    $DBH = new DB();
     if (isset($_POST["avgiftid"]) && $_POST["avgiftid"] == -1) {
         // FIXME make period_id + medlemstyp_id a UNIQUE key
         //       then convert this to INSERT INTO tbl ON DUPLICATE KEY UPDATE...
@@ -732,7 +768,8 @@ function updateAvgift()
     } else {
         exit("FATAL ERROR. Execution Stopped.");
     }
-    mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
+    $DBH->query($query);
+    $DBH->execute();
 }
 
 /**
@@ -830,6 +867,7 @@ function insertHead($menu=false)
  */
 function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
 {
+    $DBH = new DB();
     unset($query);
     $query = "SELECT personnr, efternamn, fornamn, epost, telefon";
     if ($adress === true) {
@@ -850,11 +888,13 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
     if ($page>0) {
         $query .= " LIMIT 20";
     }
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH->query($query);
+    $persons = $DBH->resultset();
+    /*$result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $persons = null;
     while ($row = mysqli_fetch_object($result)) {
         $persons[] = $row;
-    }
+    }*/
     return $persons;
 }
 
@@ -869,12 +909,13 @@ function getNonMembers()
 {
     $Persons = getPersons();
     $Members = getMembers();
+    $nonmembers = array();
     $i = 0;
 
     foreach ($Persons as $prs) {
         $add = true;
         foreach ($Members as $mbr) {
-            if ($mbr->personnr == $prs->personnr) {
+            if ($mbr["personnr"] == $prs["personnr"]) {
                 $add = false;
             }
         }
@@ -910,17 +951,16 @@ function putInfoBox($head, $value)
  */
 function countMembers()
 {
-    $query = "SELECT COUNT(personer_id) AS NumberOfMembers
-              FROM betalningar
-              LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
-              LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-              WHERE perioder.forst<=DATE(NOW()) AND
-              perioder.sist>=DATE(NOW()) AND
-              betalningar.deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $row = mysqli_fetch_object($result);
-
-    $memberCount = $row->NumberOfMembers;
+    $DBH = new DB();
+    $DBH->query("SELECT COUNT(personer_id) AS NumberOfMembers
+                FROM betalningar
+                LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
+                LEFT JOIN perioder ON avgift.perioder_id=perioder.id
+                WHERE perioder.forst<=DATE(NOW()) AND
+                perioder.sist>=DATE(NOW()) AND
+                betalningar.deleted != 1");
+    $Count = $DBH->single();
+    $memberCount = $Count["NumberOfMembers"];
     return $memberCount;
 }
 
@@ -935,18 +975,18 @@ function countMembers()
  */
 function isMember($pnr)
 {
-    $query = "SELECT COUNT(personer_id) AS IsMember
-              FROM betalningar
-              LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
-              LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-			  LEFT JOIN personer ON betalningar.personer_id=personer.id
-              WHERE forst<=DATE(NOW()) AND
-              sist>=DATE(NOW()) AND
-              personnr='$pnr'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $row = mysqli_fetch_object($result);
+    $DBH = new DB();
+    $DBH->query("SELECT COUNT(personer_id) AS IsMember
+                FROM betalningar LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
+                LEFT JOIN perioder ON avgift.perioder_id=perioder.id
+                LEFT JOIN personer ON betalningar.personer_id=personer.id
+                WHERE forst<=DATE(NOW()) AND
+                sist>=DATE(NOW()) AND
+                personnr = :pnr");
+    $DBH->bind(":pnr", $pnr);
 
-    $IsMember = $row->IsMember;
+    $IsMember = $DBH->single();
+    $IsMember = $IsMember["IsMember"];
     if ($IsMember>0) {
         return true;
     }
@@ -966,14 +1006,16 @@ function isMember($pnr)
  */
 function getPerson($id, $getdeleted=false)
 {
-    getConnection();
+    $DBH = new DB();
     $query = "SELECT * FROM personer
-              WHERE id=" . $id;
+              WHERE id = :pid";
     if (!$getdeleted) {
         $query .= " AND deleted != 1";
     }
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $person = mysqli_fetch_object($result);
+    $DBH->query($query);
+    $DBH->bind(":pid", $id);
+
+    $person = $DBH->single();
     return $person;
 }
 
@@ -987,14 +1029,9 @@ function getPerson($id, $getdeleted=false)
  */
 function getPersons()
 {
-    getConnection();
-    $query = "SELECT * FROM personer WHERE deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-
-    $i = 0;
-    while ($row = mysqli_fetch_object($result)) {
-        $persons[] = $row;
-    }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM personer WHERE deleted != 1");
+    $persons = $DBH->resultset();
     return $persons;
 }
 
@@ -1010,17 +1047,12 @@ function getPersons()
  */
 function findEMA($ema)
 {
-    getConnection();
-    $query = "SELECT * FROM personer
-              WHERE epost LIKE '%$ema%' AND deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $persons = Null;
-    while ($row = mysqli_fetch_object($result)) {
-        if (!isset($persons[$row->epost])) {
-            $persons[$row->epost] = $row;
-        }
-    }
-    if (isset($persons)) {
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM personer
+                WHERE epost LIKE :ema AND deleted != 1");
+    $DBH->bind(":ema", "%".$ema."%");
+    $persons = $DBH->resultset();
+    if(!empty($persons)){
         return $persons;
     }
 }
@@ -1037,18 +1069,13 @@ function findEMA($ema)
  */
 function findPNR($pnr)
 {
-    getConnection();
+    $DBH = new DB();
     $pnr = str_ireplace("-", "", $pnr);
-    $query = "SELECT * FROM personer
-              WHERE personnr LIKE '$pnr%' AND deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $persons = Null;
-    while ($row = mysqli_fetch_object($result)) {
-        if (!isset($persons[$row->personnr])) {
-            $persons[$row->personnr] = $row;
-        }
-    }
-    if (isset($persons)) {
+    $DBH->query("SELECT * FROM personer
+              WHERE personnr LIKE :pnr AND deleted != 1");
+    $DBH->bind(":pnr", $pnr."%");
+    $persons = $DBH->resultset();
+    if(!empty($persons)){
         return $persons;
     }
 }
@@ -1065,17 +1092,14 @@ function findPNR($pnr)
  */
 function findFNM($fnm)
 {
-    getConnection();
-    $query = "SELECT * FROM personer
-              WHERE fornamn LIKE '%$fnm%' AND deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $persons = Null;
-    while ($row = mysqli_fetch_object($result)) {
-        if (!isset($persons[$row->personnr])) {
-            $persons[$row->personnr] = $row;
-        }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM personer
+              WHERE fornamn LIKE '%$fnm%' AND deleted != 1");
+    $DBH->bind(":fnm", "%".$fnm."%");
+    $persons = $DBH->resultset();
+    if(!empty($persons)){
+        return $persons;
     }
-    return $persons;
 }
 
 /**
@@ -1090,17 +1114,14 @@ function findFNM($fnm)
  */
 function findENM($enm)
 {
-    getConnection();
-    $query = "SELECT * FROM personer
-              WHERE efternamn LIKE '%$enm%' AND deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $persons = Null;
-    while ($row = mysqli_fetch_object($result)) {
-        if (!isset($persons[$row->personnr])) {
-            $persons[$row->personnr] = $row;
-        }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM personer
+              WHERE efternamn LIKE :enm AND deleted != 1");
+    $DBH->bind(":enm", "%".$enm."%");
+    $persons = $DBH->resultset();
+    if(!empty($persons)){
+        return $persons;
     }
-    return $persons;
 }
 
 /**
@@ -1117,19 +1138,17 @@ function findENM($enm)
  */
 function findNM($fnm, $enm)
 {
-    getConnection();
-    $query = "SELECT * FROM personer
-              WHERE fornamn LIKE '%$fnm%' AND
-                    efternamn LIKE '%$enm%'
-                    AND deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $persons = Null;
-    while ($row = mysqli_fetch_object($result)) {
-        if (!isset($persons[$row->personnr])) {
-            $persons[$row->personnr] = $row;
-        }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM personer
+                WHERE fornamn LIKE :fnm AND
+                    efternamn LIKE :enm
+                    AND deleted != 1");
+    $DBH->bind(":fnm", "%".$fnm."%");
+    $DBH->bind(":enm", "%".$enm."%");
+    $persons = $DBH->resultset();
+    if(!empty($persons)){
+        return $persons;
     }
-    return $persons;
 }
 
 /**
@@ -1147,20 +1166,17 @@ function findNM($fnm, $enm)
  */
 function getMandates($id)
 {
+    $DBH = new DB();
     $query = "SELECT benamning, beskrivning, period, forst, sist FROM personer
               LEFT JOIN personer_uppdrag ON personer.id = personer_uppdrag.personer_id
               LEFT JOIN uppdrag ON personer_uppdrag.uppdrag_id=uppdrag.id
               LEFT JOIN perioder ON personer_uppdrag.perioder_id=perioder.id
-              WHERE personer.id='$id'
+              WHERE personer.id=:id
               AND personer.deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($result) {
-        while ($row = mysqli_fetch_object($result)) {
-            $mandates[] = $row;
-        }
-    }
-
-    if (isset($mandates)) {
+    $DBH->query($query);
+    $DBH->bind(":id", $id);
+    $mandates = $DBH->resultset();
+    if(!empty($mandates)){
         return $mandates;
     }
 }
@@ -1179,20 +1195,19 @@ function getMandates($id)
  */
 function getCurrentMandates($pnr)
 {
+    $DBH = new DB();
     $query = "SELECT benamning, beskrivning,
               FROM personer
               LEFT JOIN personer_uppdrag ON personer_uppdrag.person_id = personer.id
               LEFT JOIN uppdrag ON personer_uppdrag.uppdrag_id=uppdrag.id
               LEFT JOIN perioder ON personer_uppdrag.perioder_id=perioder.id
-              WHERE personnr=$pnr AND
+              WHERE personnr=:pnr AND
                     forst<CURDATE() AND
                     sist>CURDATE()
               AND personer.deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_object($result)) {
-        $mandates[] = $row;
-    }
-    return $mandates;
+    $DBH->query($query);
+    $DBH->bind(":pnr", $pnr);
+    $mandates = $DBH->resultset();
 }
 
 /**
@@ -1204,6 +1219,7 @@ function getCurrentMandates($pnr)
  */
 function getPayments($id)
 {
+    $DBH = new DB();
     $query = "SELECT betalningar.id AS id, betalsatt.benamning AS betalsatt,
                      betalningar.betalat AS betalat, betalningar.betaldatum AS betaldatum,
                      avgift.avgift AS avgift, medlemstyp.benamning AS benamning,
@@ -1214,13 +1230,13 @@ function getPayments($id)
               LEFT JOIN betalsatt ON betalningar.betalsatt_id=betalsatt.id
               LEFT JOIN perioder ON avgift.perioder_id=perioder.id
               LEFT JOIN medlemstyp ON avgift.medlemstyp_id=medlemstyp.id
-              WHERE betalningar.personer_id='$id' AND deleted != 1";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
-    $payments = null;
-    while ($row = mysqli_fetch_object($result)) {
-        $payments[] = $row;
+              WHERE betalningar.personer_id=:id AND deleted != 1";
+    $DBH->query($query);
+    $DBH->bind(":id", $id);
+    $payments = $DBH->resultset();
+    if(!empty($payments)){
+        return $payments;
     }
-    return $payments;
 }
 
 /**
@@ -1250,13 +1266,11 @@ function putBoxEnd()
  */
 function getPeriods()
 {
-    getConnection();
+    $DBH = new DB();
     $query = "SELECT id, period, forst, sist FROM perioder
               ORDER BY forst, sist";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_object($result)) {
-        $periods[] = $row;
-    }
+    $DBH->query($query);
+    $periods = $DBH->resultset();
     return $periods;
 }
 
@@ -1306,16 +1320,17 @@ function updatePeriod($period)
  */
 function getAvgifter()
 {
-    getConnection();
+    $DBH = new DB();
     $query = "SELECT perioder.id AS perioder_id, period, medlemstyp_id, avgift, avgift.id AS avgift_id, forst, sist FROM perioder
               LEFT JOIN avgift ON perioder.id=avgift.perioder_id
               ORDER BY forst DESC, sist DESC, medlemstyp_id";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $avgifter = null;
-    while ($row = mysqli_fetch_assoc($result)) {
-        $avgifter[$row["perioder_id"]][] = $row;
+    $DBH->query($query);
+    $avgifter = $DBH->resultset();
+    if(!empty($avgifter)){
+        return $avgifter;
+    }else{
+        return NULL;
     }
-    return $avgifter;
 }
 
 /**
@@ -1327,14 +1342,16 @@ function getAvgifter()
  * @return object
  */
 function getFeeId($fee, $membertype){
-    getConnection();
+    $DBH = new DB();
     $query = "SELECT avgift.id FROM avgift
               INNER JOIN perioder ON avgift.perioder_id=perioder.id
               INNER JOIN medlemstyp on avgift.medlemstyp_id=medlemstyp.id
-              WHERE perioder.period='".$fee."' AND
-                    avgift.medlemstyp_id=".$membertype;
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    return mysqli_fetch_object($result);
+              WHERE perioder.period=:fee AND
+                    avgift.medlemstyp_id=:memtype";
+    $DBH->query($query);
+    $DBH->bind(":fee", $fee);
+    $DBH->bind(":memtype", $membertype);
+    return $DBH->single();
 }
 
 /**
@@ -1344,12 +1361,9 @@ function getFeeId($fee, $membertype){
  */
 function getMedlemstyper()
 {
-    getConnection();
-    $query = "SELECT * FROM medlemstyp";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_assoc($result)) {
-        $medlemstyper[$row["id"]] = $row["benamning"];
-    }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM medlemstyp");
+    $medlemstyper = $DBH->resultset();
     return $medlemstyper;
 }
 
@@ -1360,12 +1374,9 @@ function getMedlemstyper()
  */
 function getBetalsatt()
 {
-    getConnection();
-    $query = "SELECT * FROM betalsatt";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_assoc($result)) {
-        $betalsatt[$row["id"]] = $row["benamning"];
-    }
+    $DBH = new DB();
+    $DBH->query("SELECT * FROM betalsatt");
+    $betalsatt = $DBH->resultset();
     return $betalsatt;
 }
 
@@ -1376,9 +1387,11 @@ function getBetalsatt()
  */
 function removePayment()
 {
-    getConnection();
-    $query = "UPDATE betalningar SET deleted='1' WHERE id='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['betid']) . "'";
-    mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
+    $DBH = new DB();
+    $DBH->query("UPDATE betalningar SET deleted='1' 
+                WHERE id=:bid");
+    $DBH->bind(":bid", $_POST['betid']);
+    $DBH->execute();
 }
 
 /**
@@ -1390,15 +1403,16 @@ function removePayment()
  */
 function getNumberOfMembers($benamning)
 {
-    getConnection();
+    $DBH = new DB();
     $query = "SELECT count(betalningar.id) AS antal, medlemstyp.benamning
               FROM betalningar
               LEFT JOIN avgift ON betalningar.avgift_id = avgift.id
               LEFT JOIN medlemstyp ON avgift.medlemstyp_id = medlemstyp.id
-              WHERE betalningar.deleted = 0 AND medlemstyp.benamning = '". $benamning ."'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
-    $row = mysqli_fetch_object($result);
+              WHERE betalningar.deleted = 0 AND medlemstyp.benamning = :benamning";
+    $DBH->query($query);
+    $DBH->bind(":benamning",$benamning);
+    $result = $DBH->single();
 
-    return $row->antal;
+    return $result["antal"];
 }
 ?>

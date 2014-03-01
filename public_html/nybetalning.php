@@ -30,7 +30,7 @@
                         Gå tillbaka till
                         <?php 
                             $person = getPerson($_GET['id']);
-                            echo $person->fornamn . " " . $person->efternamn;
+                            echo $person["fornamn"] . " " . $person["efternamn"];
                         ?>
                     </a>
                 </td>
@@ -43,8 +43,8 @@
 <?php
 $perioder = getPeriods();
 foreach ($perioder as $rad) {
-    if ($rad->sist > date("Y-m-d")) {
-        echo "<option value=\"" . $rad->id . "\">" . $rad->period . "</option>\n";
+    if ($rad["sist"] > date("Y-m-d")) {
+        echo "<option value=\"" . $rad["id"] . "\">" . $rad["period"] . "</option>\n";
     }
 }
 ?>
@@ -52,9 +52,9 @@ foreach ($perioder as $rad) {
 				<td>Medlemstyp:</td>
 				<td><select name="MEDTYPE">
 <?php
-$medlemstyp = getMedlemstyper();
-foreach ($medlemstyp as $id => $benamning) {
-    echo "<option value=\"" . $id . "\">" . $benamning . "</option>\n";
+$medlemstyper = getMedlemstyper();
+foreach ($medlemstyper as $medlemstyp) {
+    echo "<option value=\"" . $medlemstyp["id"] . "\">" . $medlemstyp["benamning"] . "</option>\n";
 }
 ?>
 				</select></td>
@@ -64,8 +64,8 @@ foreach ($medlemstyp as $id => $benamning) {
 				<td><select name = "BETWAY">
 <?php
 $betalsatt = getBetalsatt();
-foreach ($betalsatt as $id => $benamning) {
-    echo "<option value=\"" . $id . "\">" . $benamning . "</option>\n";
+foreach ($betalsatt as $satt) {
+    echo "<option value=\"" . $satt["id"] . "\">" . $satt["benamning"] . "</option>\n";
 }
 ?>
 				</select></td>

@@ -26,39 +26,39 @@ putBoxStart();
     <table>
     	<tr>
             <td>Personnr:</td>
-            <td><input type="text" name="PNR" readonly="readonly" value="<?php echo $result->PersonNr;?>" tabindex="1"/></td>
+            <td><input type="text" name="PNR" readonly="readonly" value="<?php echo $result["PersonNr"];?>" tabindex="1"/></td>
             <td>C/O:</td>
-            <td><input type="text" name="CO" value="<?php echo $result->CO;?>" tabindex="4" /></td>
+            <td><input type="text" name="CO" value="<?php echo $result["CO"];?>" tabindex="4" /></td>
             <td>Fel Adress:</td>
-            <td><input type="checkbox" name="FELADR" value="1" <?php if ($result->FelAdress) { echo "checked"; }?> tabindex="12" /></td>
+            <td><input type="checkbox" name="FELADR" value="1" <?php if ($result["FelAdress"]) { echo "checked"; }?> tabindex="12" /></td>
         </tr>
         <tr>
             <td>Förnamn:</td>
-            <td><input type="text" name="FNM" value="<?php echo $result->Fornamn;?>" tabindex="2"/></td>
+            <td><input type="text" name="FNM" value="<?php echo $result["Fornamn"];?>" tabindex="2"/></td>
             <td>Adress:</td>
-            <td><input type="text" name="ADR" value="<?php echo $result->Adress;?>" tabindex="5" /></td>
+            <td><input type="text" name="ADR" value="<?php echo $result["Adress"];?>" tabindex="5" /></td>
             <td>Avisera ej:</td>
-            <td><input type="checkbox" name="AVISEJ" value="1" <?php if ($result->AviseraEj) { echo "checked"; } ?> tabindex="13" /></td>
+            <td><input type="checkbox" name="AVISEJ" value="1" <?php if ($result["AviseraEj"]) { echo "checked"; } ?> tabindex="13" /></td>
         </tr>
         <tr>
             <td>Efternamn:</td>
-            <td><input type="text" name="ENM" value="<?php echo $result->Efternamn;?>" tabindex="3"/></td>
+            <td><input type="text" name="ENM" value="<?php echo $result["Efternamn"];?>" tabindex="3"/></td>
             <td>Postnummer:</td>
-            <td><input type="text" name="PSTNR" value="<?php echo $result->PostNr;?>" tabindex="6" /></td>
+            <td><input type="text" name="PSTNR" value="<?php echo $result["PostNr"];?>" tabindex="6" /></td>
             <td>Senast ändrad</td>
-            <td><?php echo $result->SenastAndrad;?></td>
+            <td><?php echo $result["SenastAndrad"];?></td>
         </tr>
         <tr>
             <td>Telefon:</td>
-            <td><input type="text" name="TEL" value="<?php echo $result->Telefon;?>" tabindex="10" /></td>
+            <td><input type="text" name="TEL" value="<?php echo $result["Telefon"];?>" tabindex="10" /></td>
             <td>Ort:</td>
-            <td><input type="text" name="ORT" value="<?php echo $result->Ort;?>" tabindex="7" /></td>
+            <td><input type="text" name="ORT" value="<?php echo $result["Ort"];?>" tabindex="7" /></td>
         </tr>
         <tr>
             <td>Epost:</td>
-            <td><input type="text" name="EMAIL" value="<?php echo $result->Epost;?>" tabindex="11" /></td>
+            <td><input type="text" name="EMAIL" value="<?php echo $result["Epost"];?>" tabindex="11" /></td>
             <td>Land:</td>
-            <td><input type="text" name="LAND" value="<?php echo $result->Land;?>" tabindex="8" /></td>
+            <td><input type="text" name="LAND" value="<?php echo $result["Land"];?>" tabindex="8" /></td>
         </tr>
 	</table>
     <div style="text-align:right">

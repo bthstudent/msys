@@ -43,12 +43,12 @@ $users = getUsers();
 foreach ($users as $row) {
     echo "<hr />";
     echo "<div style=\"text-align:right;float:left\">";
-    echo "<p style=\"font-size:20px\">Användarnamn: " . $row->username . "</p>";
+    echo "<p style=\"font-size:20px\">Användarnamn: " . $row["username"] . "</p>";
     echo "</div>";
-    if ($row->id != $_SESSION['id']) {
+    if ($row["id"] != $_SESSION['id']) {
         echo "<form name=\"RemoveUser\" class=\"info\" method=\"post\">
 				<input type=\"hidden\" readonly=\"readonly\" value=\"RemoveUser\" name=\"handler\" />
-				<input type=\"hidden\" readonly=\"readonly\" value=\"" . $row->id . "\" name=\"id\"/>
+				<input type=\"hidden\" readonly=\"readonly\" value=\"" . $row["id"] . "\" name=\"id\"/>
 				<div style=\"text-align:right;float:right\">
 					<input type=\"submit\" value=\"Ta Bort Användare\">
 				</div>

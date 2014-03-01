@@ -31,21 +31,22 @@ $medlemstypvisibility = "style=\"visibility:hidden\"";
 $avgiftid = -1;
 $avgift = 0;
 if (isset($_GET["periodid"]) && $_GET["periodid"] > 0) {
-    getConnection();
-
+    $DBH = new DB();
     $periodid = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_GET["periodid"]);
     $medlemstypvisibility = "";
     if (isset($_GET["medlemstypid"]) && $_GET["medlemstypid"] > 0) {
         $medlemstypid = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_GET["medlemstypid"]);
         $visibility = "";
 
-        $r = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT id, avgift FROM avgift
-                          WHERE perioder_id=".$periodid." AND
-                          medlemstyp_id=".$medlemstypid."");
-        if (mysqli_affected_rows($GLOBALS["___mysqli_ston"]) > 0) {
-            $a = mysqli_fetch_assoc($r);
-            $avgiftid = $a["id"];
-            $avgift = $a["avgift"];
+        $DBH->query("SELECT id, avgift FROM avgift
+                    WHERE perioder_id=:pid AND
+                    medlemstyp_id=:mtid");
+        $DBH->bind(":pid", $periodid);
+        $DBH->bind(":mtid", $medlemstypid);
+        $r = $DBH->resultset();
+        if($DBH->rowCount() > 0){
+            $avgiftid = $r[0]['id'];
+            $avgift = $r[0]['avgift'];
         }
     }
 }
@@ -64,12 +65,12 @@ echo "    <input type=\"hidden\" readonly=\"readonly\" value=\"ChangeAvgift\" na
                 <select name=\"period_id\" onchange=\"window.location = '?page=avgifter&amp;periodid='+(document.forms.avgift.period_id[document.forms.avgift.period_id.selectedIndex].value);\">
                     <option value=\"-1\">Ange period</option>\n";
 foreach ($perioder as $period) {
-    if (strtotime($period->forst) > date("U")) {
+    if (strtotime($period["forst"]) > date("U")) {
         $selected = "";
-        if ($period->id == $periodid) {
+        if ($period["id"] == $periodid) {
             $selected = "SELECTED";
         }
-        echo "                    <option value=\"".$period->id."\" $selected>".$period->period."</option>\n";
+        echo "                    <option value=\"".$period["id"]."\" $selected>".$period["period"]."</option>\n";
     }
 }
 echo"                </select>
@@ -79,10 +80,10 @@ echo"                </select>
                     <option value=\"-1\">Ange medlemstyp</option>\n";
 foreach ($medlemstyper as $id => $medlemstyp) {
     $selected = "";
-    if ($id == $medlemstypid) {
+    if ($medlemstyp["id"] == $medlemstypid) {
         $selected = "SELECTED";
     }
-    echo "                    <option value=\"".$id."\" $selected>".$medlemstyp."</option>\n";
+    echo "                    <option value=\"".$medlemstyp["id"]."\" $selected>".$medlemstyp["benamning"]."</option>\n";
 }
 
 
