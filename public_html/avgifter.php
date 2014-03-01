@@ -43,7 +43,7 @@ if (isset($_GET["periodid"]) && $_GET["periodid"] > 0) {
                           WHERE perioder_id=".$periodid." AND
                           medlemstyp_id=".$medlemstypid."");
         if (mysqli_affected_rows($GLOBALS["___mysqli_ston"]) > 0) {
-            $a = mysqli_fetch_assoc($GLOBALS["___mysqli_ston"], $r);
+            $a = mysqli_fetch_assoc($r);
             $avgiftid = $a["id"];
             $avgift = $a["avgift"];
         }

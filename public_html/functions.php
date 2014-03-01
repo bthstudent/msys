@@ -238,7 +238,7 @@ function getAPIUsers()
     getConnection();
     $query  = "SELECT * FROM api";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $users[] = $row;
     }
     return $users;
@@ -321,7 +321,7 @@ function getUsers()
 {
     getConnection();
     $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT id, username FROM adminusers");
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $users[] = $row;
     }
     return $users;
@@ -342,7 +342,7 @@ function authenticateAPIUser($key, $user)
     $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT apikey, permissions FROM api
                            WHERE username='" . $user ."'");
 
-    $endresult = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $endresult = mysqli_fetch_object($result);
 
     if ($endresult->apikey == $key) {
         return $endresult->permissions;
@@ -365,7 +365,7 @@ function getAPIPerson($pnr)
     getConnection();
     $query = "SELECT id FROM personer WHERE personnr='" . $pnr . "'";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $id = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $id = mysqli_fetch_object($result);
     $person = getPerson($id->id);
     $bank = getPayments($id->id);
     echo $person->personnr . "," . $person->fornamn . "," .
@@ -410,7 +410,7 @@ function setAPIPersonData($data)
     getConnection();
     $query = "SELECT id FROM personer WHERE personnr=" . $data->PNR;
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $id = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $id = mysqli_fetch_object($result);
     $query = "UPDATE personer SET telefon='" . $data->TEL . "',
 			epost ='" . $data->EMAIL . "',
 			co='" . $data->CO . "',
