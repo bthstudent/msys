@@ -500,7 +500,7 @@ function checkAdminLogin()
               AND hashpass='" . $hashpass . "'";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     if (mysqli_affected_rows($GLOBALS["___mysqli_ston"]) == 1) {
-        $row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+        $row = mysqli_fetch_object($result);
         $_SESSION['page']="admin";
         $_SESSION['id']=$row->id;
     }
@@ -518,7 +518,7 @@ function addPayment()
     $r=mysqli_query($GLOBALS["___mysqli_ston"], "SELECT id AS avgift_id FROM avgift
                  WHERE medlemstyp_id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['MEDTYPE'])." AND
                  perioder_id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PERIOD'])) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
-    $a=mysqli_fetch_assoc($GLOBALS["___mysqli_ston"], $r);
+    $a=mysqli_fetch_assoc($r);
 
     $query = "INSERT INTO betalningar (personer_id, avgift_id, betalsatt_id, betaldatum, betalat)
               VALUES ('" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "',
@@ -843,7 +843,7 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
     }
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $persons = null;
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $persons[] = $row;
     }
     return $persons;
@@ -908,7 +908,7 @@ function countMembers()
               WHERE perioder.forst<DATE(NOW()) AND
               perioder.sist>DATE(NOW())";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $row = mysqli_fetch_object($result);
 
     $memberCount = $row->NumberOfMembers;
     return $memberCount;
@@ -934,7 +934,7 @@ function isMember($pnr)
               sist>DATE(NOW()) AND
               personnr='$pnr'";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $row = mysqli_fetch_object($result);
 
     $IsMember = $row->IsMember;
     if ($IsMember>0) {
@@ -963,7 +963,7 @@ function getPerson($id, $getdeleted=false)
         $query .= " AND deleted != 1";
     }
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $person = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $person = mysqli_fetch_object($result);
     return $person;
 }
 
@@ -982,7 +982,7 @@ function getPersons()
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 
     $i = 0;
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $persons[] = $row;
     }
     return $persons;
@@ -1004,13 +1004,13 @@ function findEMA($ema)
     $query = "SELECT * FROM personer
               WHERE epost LIKE '$ema' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    if ($row = mysqli_fetch_object($result)) {
         $persons[] = $row;
     } else {
         $query = "SELECT * FROM personer
                   WHERE epost LIKE '$ema%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->epost])) {
                 $persons[$row->epost] = $row;
             }
@@ -1018,7 +1018,7 @@ function findEMA($ema)
         $query = "SELECT * FROM personer
                   WHERE epost LIKE '%$ema%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->epost])) {
                 $persons[$row->epost] = $row;
             }
@@ -1045,13 +1045,13 @@ function findPNR($pnr)
     $query = "SELECT * FROM personer
               WHERE personnr LIKE '$pnr' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    if ($row = mysqli_fetch_object($result)) {
         $persons[$row->personnr] = $row;
     } else {
         $query = "SELECT * FROM personer
                   WHERE personnr LIKE '$pnr%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1059,7 +1059,7 @@ function findPNR($pnr)
         $query = "SELECT * FROM personer
                   WHERE personnr LIKE '%$pnr%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1086,13 +1086,13 @@ function findFNM($fnm)
     $query = "SELECT * FROM personer
               WHERE fornamn LIKE '$fnm' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    if ($row = mysqli_fetch_object($result)) {
         $persons[$row->personnr] = $row;
     } else {
         $query = "SELECT * FROM personer
                   WHERE fornamn LIKE '$fnm%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1100,7 +1100,7 @@ function findFNM($fnm)
         $query = "SELECT * FROM personer
                   WHERE fornamn LIKE '%$fnm%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1125,13 +1125,13 @@ function findENM($enm)
     $query = "SELECT * FROM personer
               WHERE efternamn LIKE '$enm' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    if ($row = mysqli_fetch_object($result)) {
         $persons[$row->personnr] = $row;
     } else {
         $query = "SELECT * FROM personer
                   WHERE efternamn LIKE '$enm%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1139,7 +1139,7 @@ function findENM($enm)
         $query = "SELECT * FROM personer
                   WHERE efternamn LIKE '%$enm%' AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1168,7 +1168,7 @@ function findNM($fnm, $enm)
 			  AND efternamn LIKE '$enm'
 			  AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    if ($row = mysqli_fetch_object($result)) {
         $persons[$row->personnr] = $row;
     } else {
         $query = "SELECT * FROM personer
@@ -1176,7 +1176,7 @@ function findNM($fnm, $enm)
                         efternamn LIKE '$enm%'
                         AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1186,7 +1186,7 @@ function findNM($fnm, $enm)
                         efternamn LIKE '%$enm%'
                         AND deleted != 1";
         $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             if (!isset($persons[$row->personnr])) {
                 $persons[$row->personnr] = $row;
             }
@@ -1218,7 +1218,7 @@ function getMandates($id)
               AND personer.deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     if ($result) {
-        while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+        while ($row = mysqli_fetch_object($result)) {
             $mandates[] = $row;
         }
     }
@@ -1252,7 +1252,7 @@ function getCurrentMandates($pnr)
                     sist>CURDATE()
               AND personer.deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $mandates[] = $row;
     }
     return $mandates;
@@ -1280,7 +1280,7 @@ function getPayments($id)
               WHERE betalningar.personer_id='$id' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
     $payments = null;
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $payments[] = $row;
     }
     return $payments;
@@ -1317,7 +1317,7 @@ function getPeriods()
     $query = "SELECT id, period, forst, sist FROM perioder
               ORDER BY forst, sist";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_object($result)) {
         $periods[] = $row;
     }
     return $periods;
@@ -1375,7 +1375,7 @@ function getAvgifter()
               ORDER BY forst DESC, sist DESC, medlemstyp_id";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $avgifter = null;
-    while ($row = mysqli_fetch_assoc($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_assoc($result)) {
         $avgifter[$row["perioder_id"]][] = $row;
     }
     return $avgifter;
@@ -1410,7 +1410,7 @@ function getMedlemstyper()
     getConnection();
     $query = "SELECT * FROM medlemstyp";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_assoc($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_assoc($result)) {
         $medlemstyper[$row["id"]] = $row["benamning"];
     }
     return $medlemstyper;
@@ -1426,7 +1426,7 @@ function getBetalsatt()
     getConnection();
     $query = "SELECT * FROM betalsatt";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    while ($row = mysqli_fetch_assoc($GLOBALS["___mysqli_ston"], $result)) {
+    while ($row = mysqli_fetch_assoc($result)) {
         $betalsatt[$row["id"]] = $row["benamning"];
     }
     return $betalsatt;
@@ -1460,7 +1460,7 @@ function getNumberOfMembers($benamning)
               LEFT JOIN medlemstyp ON avgift.medlemstyp_id = medlemstyp.id
               WHERE betalningar.deleted = 0 AND medlemstyp.benamning = '". $benamning ."'";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
-    $row = mysqli_fetch_object($GLOBALS["___mysqli_ston"], $result);
+    $row = mysqli_fetch_object($result);
 
     return $row->antal;
 }
