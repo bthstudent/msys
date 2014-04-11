@@ -835,8 +835,8 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
                 LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
                 LEFT JOIN perioder ON avgift.perioder_id=perioder.id
                 LEFT JOIN medlemstyp ON avgift.medlemstyp_id=medlemstyp.id
-                WHERE forst<DATE(NOW()) AND
-                      sist>DATE(NOW())
+                WHERE forst<=DATE(NOW()) AND
+                      sist>=DATE(NOW())
                 ORDER BY personnr DESC";
     if ($page>0) {
         $query .= " LIMIT 20";
@@ -905,8 +905,8 @@ function countMembers()
               FROM betalningar
               LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
               LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-              WHERE perioder.forst<DATE(NOW()) AND
-              perioder.sist>DATE(NOW())";
+              WHERE perioder.forst<=DATE(NOW()) AND
+              perioder.sist>=DATE(NOW())";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $row = mysqli_fetch_object($result);
 
@@ -930,8 +930,8 @@ function isMember($pnr)
               LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
               LEFT JOIN perioder ON avgift.perioder_id=perioder.id
 			  LEFT JOIN personer ON betalningar.personer_id=personer.id
-              WHERE forst<DATE(NOW()) AND
-              sist>DATE(NOW()) AND
+              WHERE forst<=DATE(NOW()) AND
+              sist>=DATE(NOW()) AND
               personnr='$pnr'";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $row = mysqli_fetch_object($result);
