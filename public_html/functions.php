@@ -844,7 +844,8 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
                 LEFT JOIN perioder ON avgift.perioder_id=perioder.id
                 LEFT JOIN medlemstyp ON avgift.medlemstyp_id=medlemstyp.id
                 WHERE forst<=DATE(NOW()) AND
-                      sist>=DATE(NOW())
+                      sist>=DATE(NOW()) AND
+                      betalningar.deleted != 1
                 ORDER BY personnr DESC";
     if ($page>0) {
         $query .= " LIMIT 20";
