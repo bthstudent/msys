@@ -625,6 +625,13 @@ function updatePerson()
     $person = getPerson(mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']));
     $haschanged = false;
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
+    // The ugly way to make sure that checkboxes are "set" when not ticked...
+    if (!isset($_POST['FELADR'])) {
+        $_POST['FELADR'] = 0;
+    }
+    if (!isset($_POST['AVISEJ'])) {
+        $_POST['AVISEJ'] = 0;
+    }
     if ($person->personnr != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR'])) {
         $haschanged = true;
     } else if ($person->fornamn != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM'])) {
