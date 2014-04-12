@@ -1029,6 +1029,7 @@ function findEMA($ema)
 function findPNR($pnr)
 {
     getConnection();
+    $pnr = str_ireplace("-", "", $pnr);
     $query = "SELECT * FROM personer
               WHERE personnr LIKE '$pnr%' AND deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
