@@ -25,11 +25,11 @@ if (isset($_GET['typ']) && !($_GET['typ']==0)) {
         $filename ="medlemmar" . date("Y") . ".xls";
         getConnection();
         $persons = getMembers(true,true);
-        $contents = "Personnummer Efternamn Förnamn Epost Telefon Period Medlemstyp Avgift Betalat \n";
+        $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon;Period;Medlemstyp;Avgift;Betalat \n";
         $size = sizeof($persons);
         $i = 0;
         while ($i<$size) {
-            $contents = $contents . $persons[$i]->personnr . " " . $persons[$i]->efternamn . " " . $persons[$i]->fornamn . " " . $persons[$i]->epost . " " . $persons[$i]->telefon . " " . $persons[$i]->period . " " . $persons[$i]->benamning . " " . $persons[$i]->avgift . " " . $persons[$i]->betalat . " \n";
+            $contents .= $persons[$i]->personnr . ";" . $persons[$i]->efternamn . ";" . $persons[$i]->fornamn . ";" . $persons[$i]->epost . ";" . $persons[$i]->telefon . ";" . $persons[$i]->period . ";" . $persons[$i]->benamning . ";" . $persons[$i]->avgift . ";" . $persons[$i]->betalat . " \n";
             $i++;
         }
         break;
@@ -37,11 +37,11 @@ if (isset($_GET['typ']) && !($_GET['typ']==0)) {
         $filename ="icke-medlemmar" . date("Y") . ".xls";
         getConnection();
         $persons = getNonMembers();
-        $contents = "Personnummer Efternamn Förnamn Epost Telefon\n";
+        $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon\n";
         $size = sizeof($persons);
         $i=0;
         while ($i<$size) {
-            $contents = $contents . $persons[$i]->personnr . " " . $persons[$i]->efternamn . " " . $persons[$i]->fornamn . " " . $persons[$i]->epost . " " . $persons[$i]->telefon . " \n";
+            $contents .= $persons[$i]->personnr . ";" . $persons[$i]->efternamn . ";" . $persons[$i]->fornamn . ";" . $persons[$i]->epost . ";" . $persons[$i]->telefon . " \n";
                 $i++;
         }
         break;
