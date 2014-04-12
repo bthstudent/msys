@@ -238,6 +238,7 @@ function getAPIUsers()
     getConnection();
     $query  = "SELECT * FROM api";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $users = array();
     while ($row = mysqli_fetch_object($result)) {
         $users[] = $row;
     }
