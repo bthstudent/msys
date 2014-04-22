@@ -915,7 +915,8 @@ function countMembers()
               LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
               LEFT JOIN perioder ON avgift.perioder_id=perioder.id
               WHERE perioder.forst<=DATE(NOW()) AND
-              perioder.sist>=DATE(NOW())";
+              perioder.sist>=DATE(NOW()) AND
+              betalningar.deleted != 1";
     $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
     $row = mysqli_fetch_object($result);
 
