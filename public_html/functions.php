@@ -1408,7 +1408,11 @@ function getNumberOfMembers($benamning)
               FROM betalningar
               LEFT JOIN avgift ON betalningar.avgift_id = avgift.id
               LEFT JOIN medlemstyp ON avgift.medlemstyp_id = medlemstyp.id
-              WHERE betalningar.deleted = 0 AND medlemstyp.benamning = :benamning";
+              LEFT JOIN perioder ON avgift.perioder_id=perioder.id
+              WHERE perioder.forst<=DATE(NOW()) AND
+              perioder.sist>=DATE(NOW()) AND
+              betalningar.deleted = 0 AND
+              medlemstyp.benamning = :benamning";
     $DBH->query($query);
     $DBH->bind(":benamning",$benamning);
     $result = $DBH->single();
