@@ -29,7 +29,7 @@ putInfoBox("Antal studenter", 4000);
 putInfoBox("Anslutningsgrad", round(((countMembers()/4000)*100), 2) . "%");
 putInfoBox("Antal campusmedlemmar", getNumberOfMembers('Campus'));
 putInfoBox("Antal distans/Doktorandmedlemmar", getNumberOfMembers('Distans/Doktorand'));
-putInfoBox("Antal stödmedlemmar", getNumberOfMembers('Stöd'));
+putInfoBox("Antal stödmedlemmar", getNumberOfMembers('Stod'));
 ?>
 </div>
 <?php

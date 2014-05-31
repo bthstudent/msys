@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS medlemstyp (
 -- FIXME #1013
 INSERT INTO medlemstyp(benamning) VALUES('Campus');
 INSERT INTO medlemstyp(benamning) VALUES('Distans/Doktorand');
-INSERT INTO medlemstyp(benamning) VALUES('Stöd');
+INSERT INTO medlemstyp(benamning) VALUES('Stod');
 
 
 
