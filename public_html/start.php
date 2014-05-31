@@ -20,17 +20,6 @@
 require_once "functions.php";
 putBoxStart();
 getConnection();
-
-$month = date("m");
-$year  = date("y");
-
-if ((int)$month < 7) {
-    $term  = "HT" . ((int)$year - 1);
-    $term2 = "VT" . ((int)$year - 1);
-} else {
-    $term  = "VT" . $year;
-    $term2 = "HT" . ((int)$year - 1);
-}
 ?>
 <h2>Blekinge studentkårs medlemsregister</h2>
 <div id="infoBoxes">
@@ -41,16 +30,6 @@ putInfoBox("Anslutningsgrad", round(((countMembers()/4000)*100), 2) . "%");
 putInfoBox("Antal campusmedlemmar", getNumberOfMembers('Campus'));
 putInfoBox("Antal distans/Doktorandmedlemmar", getNumberOfMembers('Distans/Doktorand'));
 putInfoBox("Antal stödmedlemmar", getNumberOfMembers('Stöd'));
-putInfoBox("Antal helårsmedlemmar", countMembers());
-putInfoBox("Antal halvårsmedlemmar", countMembers());
-putInfoBox("Antal får på Gotland", 60504 . "<a href=\"http://lmgtfy.com/?q=hur+m%C3%A5nga+f%C3%A5r+finns+det+p%C3%A5+gotland%3F&l=1\">*</a>");
-putInfoBox("Antal helavgift", countMembers());
-putInfoBox("Antal halvavgift", countMembers());
-putInfoBox("Antal stödmedlemmar", countMembers());
-putInfoBox("Nya medlemmar denna vecka", countMembers());
-putInfoBox("Anslutningsgrad " . $term, countMembers() . "%");
-putInfoBox("Anslutningsgrad " . $term2, countMembers() . "%");
-putInfoBox("Antal bultar i Ölandsbron", 7428954);
 ?>
 </div>
 <?php
