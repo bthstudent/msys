@@ -428,7 +428,7 @@ function setAPIPersonData($data)
                     land='" . $data->LAND . "',
                     aviseraej='" . $data->AVISEJ . "',
                     senastandrad=DATE(NOW())
-                WHERE id='" . $id->id . "'");
+                WHERE id='" . $personID["id"] . "'");
     $DBH->bind(":tel", $data->TEL);
     $DBH->bind(":epost", $data->EMAIL);
     $DBH->bind(":co", $data->CO);
