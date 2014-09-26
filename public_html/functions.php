@@ -656,29 +656,29 @@ function updatePerson()
     if (!isset($_POST['AVISEJ'])) {
         $_POST['AVISEJ'] = 0;
     }
-    if ($person["personnr"] != mysql_real_escape_string($_POST['PNR'])) {
+    if ($person["personnr"] != $_POST['PNR']) {
         $haschanged = true;
-    } else if ($person["fornamn"] != mysql_real_escape_string($_POST['FNM'])) {
+    } else if ($person["fornamn"] != $_POST['FNM']) {
         $haschanged = true;
-    } else if ($person["efternamn"] != mysql_real_escape_string($_POST['ENM'])) {
+    } else if ($person["efternamn"] != $_POST['ENM']) {
         $haschanged = true;
-    } else if ($person["telefon"] != mysql_real_escape_string($_POST['TEL'])) {
+    } else if ($person["telefon"] != $_POST['TEL']) {
         $haschanged = true;
-    } else if ($person["epost"] != mysql_real_escape_string($_POST['EMAIL'])) {
+    } else if ($person["epost"] != $_POST['EMAIL']) {
         $haschanged = true;
-    } else if ($person["co"] != mysql_real_escape_string($_POST['CO'])) {
+    } else if ($person["co"] != $_POST['CO']) {
         $haschanged = true;
-    } else if ($person["adress"] != mysql_real_escape_string($_POST['ADR'])) {
+    } else if ($person["adress"] != $_POST['ADR']) {
         $haschanged = true;
-    } else if ($person["postnr"] != mysql_real_escape_string($PSTNR)) {
+    } else if ($person["postnr"] != $PSTNR) {
         $haschanged = true;
-    } else if ($person["ort"] != mysql_real_escape_string($_POST['ORT'])) {
+    } else if ($person["ort"] != $_POST['ORT']) {
         $haschanged = true;
-    } else if ($person["land"] != mysql_real_escape_string($_POST['LAND'])) {
+    } else if ($person["land"] != $_POST['LAND']) {
         $haschanged = true;
-    } else if ($person["feladress"] != mysql_real_escape_string($_POST['FELADR'])) {
+    } else if ($person["feladress"] != $_POST['FELADR']) {
         $haschanged = true;
-    } else if ($person["aviseraej"] != mysql_real_escape_string($_POST['AVISEJ'])) {
+    } else if ($person["aviseraej"] != $_POST['AVISEJ']) {
         $haschanged = true;
     }
 
@@ -698,19 +698,19 @@ function updatePerson()
                       feladress = :feladress,
                       aviseraej = :aviseraej,
                       senastandrad = DATE(NOW())
-                  WHERE id='". mysql_real_escape_string($_POST['ID']) . "'");
-            $DBH->bind(":personnr", mysql_real_escape_string($_POST['PNR']));
-            $DBH->bind(":fornamn", mysql_real_escape_string($_POST['FNM']));
-            $DBH->bind(":efternamn", mysql_real_escape_string($_POST['ENM']));
-            $DBH->bind(":telefon", mysql_real_escape_string($_POST['TEL']));
-            $DBH->bind(":epost", mysql_real_escape_string($_POST['EMAIL']));
-            $DBH->bind(":co", mysql_real_escape_string($_POST['CO']));
-            $DBH->bind(":adress", mysql_real_escape_string($_POST['ADR']));
-            $DBH->bind(":postnr", mysql_real_escape_string($PSTNR));
-            $DBH->bind(":ort", mysql_real_escape_string($_POST['ORT']));
-            $DBH->bind(":land", mysql_real_escape_string($_POST['LAND']));
-            $DBH->bind(":feladress", mysql_real_escape_string($_POST['FELADR']));
-            $DBH->bind(":aviseraej", mysql_real_escape_string($_POST['AVISEJ']));
+                  WHERE id='". $_POST['ID'] . "'");
+            $DBH->bind(":personnr", $_POST['PNR']);
+            $DBH->bind(":fornamn", $_POST['FNM']);
+            $DBH->bind(":efternamn", $_POST['ENM']);
+            $DBH->bind(":telefon", $_POST['TEL']);
+            $DBH->bind(":epost", $_POST['EMAIL']);
+            $DBH->bind(":co", $_POST['CO']);
+            $DBH->bind(":adress", $_POST['ADR']);
+            $DBH->bind(":postnr", $PSTNR);
+            $DBH->bind(":ort", $_POST['ORT']);
+            $DBH->bind(":land", $_POST['LAND']);
+            $DBH->bind(":feladress", $_POST['FELADR']);
+            $DBH->bind(":aviseraej", $_POST['AVISEJ']);
         $DBH->execute();
     }
 }
