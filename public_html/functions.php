@@ -646,7 +646,7 @@ function changePeriod()
  */
 function updatePerson()
 {
-    $person = getPerson(mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']));
+    $person = getPerson(mysql_real_escape_string($_POST['ID']));
     $haschanged = false;
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     // The ugly way to make sure that checkboxes are "set" when not ticked...
@@ -656,29 +656,29 @@ function updatePerson()
     if (!isset($_POST['AVISEJ'])) {
         $_POST['AVISEJ'] = 0;
     }
-    if ($person["personnr"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR'])) {
+    if ($person["personnr"] != mysql_real_escape_string($_POST['PNR'])) {
         $haschanged = true;
-    } else if ($person["fornamn"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM'])) {
+    } else if ($person["fornamn"] != mysql_real_escape_string($_POST['FNM'])) {
         $haschanged = true;
-    } else if ($person["efternamn"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM'])) {
+    } else if ($person["efternamn"] != mysql_real_escape_string($_POST['ENM'])) {
         $haschanged = true;
-    } else if ($person["telefon"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL'])) {
+    } else if ($person["telefon"] != mysql_real_escape_string($_POST['TEL'])) {
         $haschanged = true;
-    } else if ($person["epost"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL'])) {
+    } else if ($person["epost"] != mysql_real_escape_string($_POST['EMAIL'])) {
         $haschanged = true;
-    } else if ($person["co"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO'])) {
+    } else if ($person["co"] != mysql_real_escape_string($_POST['CO'])) {
         $haschanged = true;
-    } else if ($person["adress"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR'])) {
+    } else if ($person["adress"] != mysql_real_escape_string($_POST['ADR'])) {
         $haschanged = true;
-    } else if ($person["postnr"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR)) {
+    } else if ($person["postnr"] != mysql_real_escape_string($PSTNR)) {
         $haschanged = true;
-    } else if ($person["ort"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT'])) {
+    } else if ($person["ort"] != mysql_real_escape_string($_POST['ORT'])) {
         $haschanged = true;
-    } else if ($person["land"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND'])) {
+    } else if ($person["land"] != mysql_real_escape_string($_POST['LAND'])) {
         $haschanged = true;
-    } else if ($person["feladress"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR'])) {
+    } else if ($person["feladress"] != mysql_real_escape_string($_POST['FELADR'])) {
         $haschanged = true;
-    } else if ($person["aviseraej"] != mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ'])) {
+    } else if ($person["aviseraej"] != mysql_real_escape_string($_POST['AVISEJ'])) {
         $haschanged = true;
     }
 
@@ -698,19 +698,19 @@ function updatePerson()
                       feladress = :feladress,
                       aviseraej = :aviseraej,
                       senastandrad = DATE(NOW())
-                  WHERE id='". mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "'");
-            $DBH->bind(":personnr", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR']));
-            $DBH->bind(":fornamn", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM']));
-            $DBH->bind(":efternamn", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM']));
-            $DBH->bind(":telefon", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL']));
-            $DBH->bind(":epost", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL']));
-            $DBH->bind(":co", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO']));
-            $DBH->bind(":adress", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR']));
-            $DBH->bind(":postnr", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR));
-            $DBH->bind(":ort", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT']));
-            $DBH->bind(":land", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND']));
-            $DBH->bind(":feladress", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR']));
-            $DBH->bind(":aviseraej", mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ']));
+                  WHERE id='". mysql_real_escape_string($_POST['ID']) . "'");
+            $DBH->bind(":personnr", mysql_real_escape_string($_POST['PNR']));
+            $DBH->bind(":fornamn", mysql_real_escape_string($_POST['FNM']));
+            $DBH->bind(":efternamn", mysql_real_escape_string($_POST['ENM']));
+            $DBH->bind(":telefon", mysql_real_escape_string($_POST['TEL']));
+            $DBH->bind(":epost", mysql_real_escape_string($_POST['EMAIL']));
+            $DBH->bind(":co", mysql_real_escape_string($_POST['CO']));
+            $DBH->bind(":adress", mysql_real_escape_string($_POST['ADR']));
+            $DBH->bind(":postnr", mysql_real_escape_string($PSTNR));
+            $DBH->bind(":ort", mysql_real_escape_string($_POST['ORT']));
+            $DBH->bind(":land", mysql_real_escape_string($_POST['LAND']));
+            $DBH->bind(":feladress", mysql_real_escape_string($_POST['FELADR']));
+            $DBH->bind(":aviseraej", mysql_real_escape_string($_POST['AVISEJ']));
         $DBH->execute();
     }
 }
