@@ -899,24 +899,21 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
  */
 function getNonMembers()
 {
-    $Persons = getPersons();
-    $Members = getMembers();
-    $nonmembers = array();
-    $i = 0;
-
-    foreach ($Persons as $prs) {
-        $add = true;
-        foreach ($Members as $mbr) {
-            if ($mbr["personnr"] == $prs["personnr"]) {
-                $add = false;
-            }
-        }
-        if ($add) {
-            $nonmembers[$i] = $prs;
-            $i++;
+    $DBH = new DB();
+    unset($query);
+    $query = "SELECT personnr, efternamn, fornamn, epost, telefon";
+    $query .= " FROM personer
+                GROUP BY personnr
+                ORDER BY personnr DESC";
+    $DBH->query($query);
+    $persons = $DBH->resultset();
+    $result = Array();
+    foreach ($persons as $person) {
+        if(!isMember($person["personnr"])) {
+            $result[] = $person;
         }
     }
-    return $nonmembers;
+    return $result;
 }
 
 /**
