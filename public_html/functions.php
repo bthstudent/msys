@@ -873,29 +873,21 @@ function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
     if ($adress === true) {
         $query .= ", co, adress, postnr, land, feladress, aviseraej";
     }
-    if ($payment === true) {
-        $query .= ", period, benamning, avgift, betalat, benamning";
-    }
-    $query .= " FROM betalningar
-                LEFT JOIN personer ON betalningar.personer_id=personer.id
-                LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
-                LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-                LEFT JOIN medlemstyp ON avgift.medlemstyp_id=medlemstyp.id
-                WHERE forst<=DATE(NOW()) AND
-                      sist>=DATE(NOW()) AND
-                      betalningar.deleted != 1
+    $query .= " FROM personer
+		GROUP BY personnr
                 ORDER BY personnr DESC";
     if ($page>0) {
         $query .= " LIMIT 20";
     }
     $DBH->query($query);
     $persons = $DBH->resultset();
-    /*$result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $persons = null;
-    while ($row = mysqli_fetch_object($result)) {
-        $persons[] = $row;
-    }*/
-    return $persons;
+    $result = Array();
+    foreach ($persons as $person) {
+        if(isMember($person["personnr"])) {
+	    $result[] = $person;
+	}
+    }
+    return $result;
 }
 
 /**
