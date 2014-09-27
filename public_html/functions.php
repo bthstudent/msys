@@ -944,7 +944,7 @@ function putInfoBox($head, $value)
 function countMembers()
 {
     $DBH = new DB();
-    $DBH->query("SELECT COUNT(personer_id) AS NumberOfMembers
+    $DBH->query("SELECT COUNT(DISTINCT personer_id) AS NumberOfMembers
                 FROM betalningar
                 LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
                 LEFT JOIN perioder ON avgift.perioder_id=perioder.id
