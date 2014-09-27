@@ -285,7 +285,7 @@ function removeAPIUser()
 function addUser()
 {
     $DBH = new DB();
-    $password = mysql_real_escape_string($_POST['PAS']);
+    $password = $_POST['PAS'];
     $DBH->query("INSERT INTO adminusers(username, hashpass)
               VALUES (:uname,
               sha1(:pass))");
@@ -646,7 +646,7 @@ function changePeriod()
  */
 function updatePerson()
 {
-    $person = getPerson(mysql_real_escape_string($_POST['ID']));
+    $person = getPerson($_POST['ID']);
     $haschanged = false;
     $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
     // The ugly way to make sure that checkboxes are "set" when not ticked...
