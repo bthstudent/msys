@@ -26,51 +26,51 @@
         <table>
             <tr>
                 <td colspan="2">
-                    <a href="?page=person&id=<?php echo $_GET['id']; ?>">
+                    <a href="?page=member&id=<?php echo $_GET['id']; ?>">
                         Gå tillbaka till
                         <?php 
-                            $person = getPerson($_GET['id']);
-                            echo $person["fornamn"] . " " . $person["efternamn"];
+                            $member = getMember($_GET['id']);
+                            echo $member["firstname"] . " " . $member["lastname"];
                         ?>
                     </a>
                 </td>
                 <td>Betaldatum:</td>
-                <td><input type="text" name="BETDATE" value="<?php echo date("Y-m-d");?>"/></td>
+                <td><input type="text" name="PAYDATE" value="<?php echo date("Y-m-d");?>"/></td>
             </tr>
             <tr>
                 <td>Period:</td>
                 <td><select name="PERIOD">
 <?php
-$perioder = getPeriods();
-foreach ($perioder as $rad) {
-    if ($rad["sist"] > date("Y-m-d")) {
-        echo "<option value=\"" . $rad["id"] . "\">" . $rad["period"] . "</option>\n";
+$periods = getPeriods();
+foreach ($periods as $row) {
+    if ($row["last"] > date("Y-m-d")) {
+        echo "<option value=\"" . $row["id"] . "\">" . $row["period"] . "</option>\n";
     }
 }
 ?>
 				</select></td>
 				<td>Medlemstyp:</td>
-				<td><select name="MEDTYPE">
+				<td><select name="MEMTYPE">
 <?php
-$medlemstyper = getMedlemstyper();
-foreach ($medlemstyper as $medlemstyp) {
-    echo "<option value=\"" . $medlemstyp["id"] . "\">" . $medlemstyp["benamning"] . "</option>\n";
+$membershiptypes = getMembershiptypes();
+foreach ($membershiptypes as $membershiptype) {
+    echo "<option value=\"" . $membershiptype["id"] . "\">" . $membershiptype["naming"] . "</option>\n";
 }
 ?>
 				</select></td>
 			</tr>
 			<tr>
 				<td>Betalsätt:</td>
-				<td><select name = "BETWAY">
+				<td><select name = "PAYWAY">
 <?php
-$betalsatt = getBetalsatt();
+$betalsatt = getPaymentway();
 foreach ($betalsatt as $satt) {
-    echo "<option value=\"" . $satt["id"] . "\">" . $satt["benamning"] . "</option>\n";
+    echo "<option value=\"" . $satt["id"] . "\">" . $satt["naming"] . "</option>\n";
 }
 ?>
 				</select></td>
 				<td>Betalat:</td>
-				<td><input type="text" name="BET" \></td>
+				<td><input type="text" name="PAID" \></td>
 			</tr>
 
 		</table>

@@ -1,0 +1,150 @@
+<?php
+require "../db/functions.php";
+$DBH = new DB();
+
+function stopconvert($source, $target)
+{
+    exit ("Databse inconsistency. The '$source' table can not be renamed in this state. Make sure the old table is there and that the target name '$target' is available.");
+}
+
+if (tableexists("adminusers") && ! tableexists("adminuser")) {
+    $DBH->query("RENAME TABLE adminusers TO adminuser");
+    $DBH->execute();
+} else {
+    stopconvert("$adminusers", "$adminuser");
+}
+
+if (tableexists("api")) {
+    $DBH->query("ALTER TABLE api CHANGE permissions permission int(11) NOT NULL");
+    $DBH->execute();
+}
+
+
+if (tableexists("avgift") && ! tableexists("fee")) {
+    $DBH->query("RENAME TABLE avgift TO fee");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE fee CHANGE perioder_id period_id int(4) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE fee CHANGE medlemstyp_id membershiptype_id int(11) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE fee CHANGE avgift fee int(11) NOT NULL");
+    $DBH->execute();
+} else {
+    stopconvert("$avgift", "$fee");
+}
+
+if (tableexists("betalningar") && ! tableexists("payment")) {
+    $DBH->query("RENAME TABLE betalningar TO payment");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE payment CHANGE personer_id member_id int(12) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE payment CHANGE avgift_id fee_id int(11) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE payment CHANGE betalsatt_id paymenttype_id int(11) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE payment CHANGE betaldatum paymentdate date NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE payment CHANGE betalat paid int(11) NOT NULL");
+    $DBH->execute();
+} else {
+    stopconvert("$betalningar", "$payment");
+}
+
+if (tableexists("betalsatt") && ! tableexists("paymenttype")) {
+    $DBH->query("RENAME TABLE betalsatt TO paymenttype");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE paymenttype CHANGE benamning naming text");
+    $DBH->execute();
+} else {
+    stopconvert("$betalsatt", "$paymenttype");
+}
+
+if (tableexists("medlemstyp") && ! tableexists("membershiptype")) {
+    $DBH->query("RENAME TABLE medlemstyp TO membershiptype");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE membershiptype CHANGE benamning naming text");
+    $DBH->execute();
+} else {
+    stopconvert("$medlemstyp", "$membershiptype");
+}
+
+if (tableexists("perioder") && ! tableexists("period")) {
+    $DBH->query("RENAME TABLE perioder TO period");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE period CHANGE forst first date");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE period CHANGE sist last date");
+    $DBH->execute();
+} else {
+    stopconvert("$perioder", "$period");
+}
+
+if (tableexists("personer") && ! tableexists("member")) {
+    $DBH->query("RENAME TABLE personer TO member");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE personnr ssn char(12) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE fornamn firstname varchar(255) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE efternamn lastname varchar(255) NOT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE co co varchar(255) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE adress address varchar(255) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE postnr postalnr int(5) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE ort city varchar(255) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE land country varchar(255) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE telefon phone varchar(255) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE epost email varchar(255) DEFAULT NULL");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE aviseraej donotadvertise tinyint(1) NOT NULL DEFAULT '0'");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE feladress wrongaddress tinyint(1) NOT NULL DEFAULT '0'");
+    $DBH->execute();
+
+    $DBH->query("ALTER TABLE member CHANGE senastandrad lastedit date");
+    $DBH->execute();
+} else {
+    stopconvert("$personer", "$member");
+}
+
+if (tableexists("personer_uppdrag")) {
+    $DBH->query("DROP TABLE personer_uppdrag");
+    $DBH->execute();
+}
+
+if (tableexists("uppdrag")) {
+    $DBH->query("DROP TABLE uppdrag");
+    $DBH->execute();
+}
+
+?>

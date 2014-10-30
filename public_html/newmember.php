@@ -20,42 +20,42 @@
 ?>
 <div class="outerdivs">
 	<h2>Lägg till person</h2>
-	<form name="addPerson" class="info" method="post">
-		<input type="hidden" readonly="readonly" value="AddPerson" name="handler" />
+	<form name="addMember" class="info" method="post">
+		<input type="hidden" readonly="readonly" value="AddMember" name="handler" />
 		<table>
 			<tr>
 				<td>Personnr:</td>
-				<td><input type="text" name="PNR" tabindex="5" /></td>
+				<td><input type="text" name="SSN" tabindex="5" /></td>
 				<td>C/O:</td>
 				<td><input type="text" name="CO" tabindex="10" /></td>
 				<td class="right_col">Fel Adress:</td>
-				<td class="right_col"><input type="checkbox" name="FELADR" value="1" tabindex="-1" /></td>
+				<td class="right_col"><input type="checkbox" name="WRONGADDR" value="1" tabindex="-1" /></td>
 			</tr>
 			<tr>
 				<td>F&ouml;rnamn:</td>
 				<td><input type="text" name="FNM" tabindex="6" /></td>
 				<td>Adress:</td>
-				<td><input type="text" name="ADR" tabindex="11" /></td>
+				<td><input type="text" name="ADDR" tabindex="11" /></td>
 				<td>Avisera ej:</td>
-				<td><input type="checkbox" name="AVISEJ" value="1" tabindex="-1" /></td>
+				<td><input type="checkbox" name="DONOTAD" value="1" tabindex="-1" /></td>
 			</tr>
 			<tr>
 				<td>Efternamn:</td>
-				<td><input type="text" name="ENM" tabindex="7" /></td>
+				<td><input type="text" name="LNM" tabindex="7" /></td>
 				<td>Postnummer:</td>
 				<td><input type="text" name="PSTNR" tabindex="12" /></td>
 			</tr>
 			<tr>
 				<td>Telefon:</td>
-				<td><input type="text" name="TEL" tabindex="8" /></td>
+				<td><input type="text" name="PHO" tabindex="8" /></td>
 				<td>Ort:</td>
-				<td><input type="text" name="ORT" tabindex="13" /></td>
+				<td><input type="text" name="CITY" tabindex="13" /></td>
 			</tr>
 			<tr>
 				<td>Epost:</td>
 				<td><input type="text" name="EMAIL" tabindex="9" /></td>
 				<td>Land:</td>
-				<td><input type="text" name="LAND" tabindex="14" /></td>
+				<td><input type="text" name="COUNTRY" tabindex="14" /></td>
 			</tr>
 		</table>
 		<div style="text-align:right">

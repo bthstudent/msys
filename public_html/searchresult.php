@@ -19,22 +19,17 @@
 */
 require_once "functions.php";
 putBoxStart();
-if (isset($_GET["pnr"])) {
-    getConnection();
-    $result = findPNR($_GET["pnr"]);
+if (isset($_GET["ssn"])) {
+    $result = findPNR($_GET["ssn"]);
 } elseif (isset($_GET["fnm"])) {
-    if (isset($_GET["enm"])) {
-        getConnection();
-        $result = findNM($_GET["fnm"], $_GET["enm"]);
+    if (isset($_GET["lnm"])) {
+        $result = findNM($_GET["fnm"], $_GET["lnm"]);
     } else {
-        getConnection();
         $result = findFNM($_GET["fnm"]);
     }
-} elseif (isset($_GET["enm"])) {
-    getConnection();
-    $result = findENM($_GET["enm"]);
+} elseif (isset($_GET["lnm"])) {
+    $result = findLNM($_GET["lnm"]);
 } elseif (isset($_GET["email"])) {
-    getConnection();
     $result = findEMA($_GET["email"]);
 }
 if ($result) {
@@ -57,14 +52,14 @@ if ($result) {
     $i = 0;
     foreach ($result as $value) {
         $color = $bgcolor[$i%2];
-        echo "        <tr bgcolor='" . $color . "' onmouseover=\"this.bgColor='" . $hovercolor . "'; this.className='cursor';\" onmouseout=\"this.bgColor='" . $color . "'\" onclick=\" location.href='?page=person&amp;id=" . $value["id"] . "'\">
-            <td>" . $value["personnr"] . "</td>
-            <td>" . $value["fornamn"] . "</td>
-            <td>" . $value["efternamn"] . "</td>
-            <td>" . $value["adress"] . "</td>
-            <td>" . $value["postnr"] . "</td>
-            <td>" . $value["ort"] . "</td>
-            <td>" . $value["epost"] . "</td>
+        echo "        <tr bgcolor='" . $color . "' onmouseover=\"this.bgColor='" . $hovercolor . "'; this.className='cursor';\" onmouseout=\"this.bgColor='" . $color . "'\" onclick=\" location.href='?page=member&amp;id=" . $value["id"] . "'\">
+            <td>" . $value["ssn"] . "</td>
+            <td>" . $value["firstname"] . "</td>
+            <td>" . $value["lastname"] . "</td>
+            <td>" . $value["address"] . "</td>
+            <td>" . $value["postalnr"] . "</td>
+            <td>" . $value["city"] . "</td>
+            <td>" . $value["email"] . "</td>
         </tr>";
         $i++;
     }

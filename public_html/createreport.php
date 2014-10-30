@@ -19,22 +19,24 @@
 */
 require_once "functions.php";
 
-if (isset($_GET['typ']) && !($_GET['typ']==0)) {
-    switch ($_GET['typ']) {
+if (isset($_GET['type']) && !($_GET['type']==0)) {
+    switch ($_GET['type']) {
     case "1":
         $filename ="medlemmar" . date("Y") . ".xls";
         $persons = getMembers(true,true);
+        print_r($persons);
+        exit();
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon;Period;Medlemstyp;Avgift;Betalat \n";
         foreach ($persons as $key => $person) {
-            $contents .= $person["personnr"] . ";" .
-                         $person["efternamn"] . ";" .
-                         $person["fornamn"] . ";" .
-                         $person["epost"] . ";" .
-                         $person["telefon"] . ";" .
+            $contents .= $person["ssn"] . ";" .
+                         $person["lastname"] . ";" .
+                         $person["firstname"] . ";" .
+                         $person["email"] . ";" .
+                         $person["phone"] . ";" .
                          $person["period"] . ";" .
-                         $person["benamning"] . ";" .
-                         $person["avgift"] . ";" .
-                         $person["betalat"] . " \n";
+                         $person["membershiptype"] . ";" .
+                         $person["fee"] . ";" .
+                         $person["paid"] . " \n";
         }
         break;
     case "2":
@@ -42,11 +44,11 @@ if (isset($_GET['typ']) && !($_GET['typ']==0)) {
         $persons = getNonMembers();
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon\n";
         foreach ($persons as $key => $person) {
-            $contents .= $person["personnr"] . ";" .
-                         $person["efternamn"] . ";" .
-                         $person["fornamn"] . ";" .
-                         $person["epost"] . ";" .
-                         $person["telefon"] . " \n";
+            $contents .= $person["ssn"] . ";" .
+                         $person["lastname"] . ";" .
+                         $person["firstname"] . ";" .
+                         $person["email"] . ";" .
+                         $person["phone"] . " \n";
         }
         break;
     }

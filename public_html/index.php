@@ -39,8 +39,6 @@ session_start();
 if (isset($_SESSION["page"])) {
     if ($_SESSION["page"] == "admin") {
         adminpage();
-    } elseif ($_SESSION["page"] == "student") {
-        studentpage();
     }
 } else {
     loginpage();

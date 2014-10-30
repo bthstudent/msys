@@ -21,29 +21,6 @@ require "PDO.interface.class.php";
 */
 
 /**
- * Opens a connection to the database server.
- *
- * @return resource
- */
-function getConnection()
-{
-    global $db;
-    $mysql = ($GLOBALS["___mysqli_ston"] = mysqli_connect($db["host"],  $db["user"],  $db["pass"]));
-    if (!$mysql) {
-        die("Error - " . ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<br />
-             Code: " . ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_errno($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_errno()) ? $___mysqli_res : false)));
-    } else {
-        if(!((bool)mysqli_select_db($GLOBALS["___mysqli_ston"], $db["db"]))) {
-            die("cannot select DB");
-	}
-    }
-
-    $mysql->set_charset("utf8");
-
-    return $mysql;
-}
-
-/**
  * Make sure the PHP session is intact and correct, or destroyed if
  * needed.
  *
@@ -54,7 +31,7 @@ function handlesession()
     if (isset($_SESSION['page'])) {
         if ($_SESSION['page']=="admin") {
             $DBH = new DB();
-            $DBH->query("SELECT id FROM adminusers WHERE id = :sid");
+            $DBH->query("SELECT id FROM adminuser WHERE id = :sid");
             $DBH->bind(":sid", $_SESSION['id']);
             $res = $DBH->resultset();
             if ($DBH->rowCount()!=1) {
@@ -122,21 +99,6 @@ function adminpage()
 }
 
 /**
- * The main function for drawing the page for a member, will
- * import the underlying logic and model.
- *
- * This function is not used in code for real.
- *
- * @return void
- */
-function studentpage()
-{
-    insertHead();
-    include_once "student.php";
-}
-
-
-/**
  * Will start the login process by executing the underlying code.
  *
  * @return void
@@ -163,9 +125,6 @@ function handlepost()
         case "composeSearchURL":
             composeSearchURL();
             break;
-        case "StudentLogin":
-            $_SESSION['page'] = "student";
-            break;
         case "AdminLogin":
             checkAdminLogin();
             break;
@@ -176,15 +135,12 @@ function handlepost()
             echo "location.href=''";
             echo "</script>";
             break;
-        case "AddPerson":
-            addPerson();
+        case "AddMember":
+            addMember();
             echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
             echo "<script type=\"text/javascript\">";
-            echo "location.href='?page=person&id=" . $_GET['id'] . "'";
+            echo "location.href='?page=member&id=" . $_GET['id'] . "'";
             echo "</script>";
-            break;
-        case "SparaStudent":
-            sparaStudent();
             break;
         case "AddPeriod":
             addPeriod();
@@ -193,23 +149,23 @@ function handlepost()
             addPayment();
             echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
             echo "<script type=\"text/javascript\">";
-            echo "location.href='?page=person&id=" . $_GET['id'] . "'";
+            echo "location.href='?page=member&id=" . $_GET['id'] . "'";
             echo "</script>";
             break;
         case "RemovePayment":
             removePayment();
             break;
-        case "ChangePerson":
-            updatePerson();
+        case "ChangeMember":
+            updateMember();
             break;
         case "ChangePeriod":
             changePeriod();
             break;
-        case "ChangeAvgift":
-            updateAvgift();
+        case "ChangeFee":
+            updateFee();
             break;
-        case "RemovePerson":
-            removePerson();
+        case "RemoveMember":
+            removeMember();
             break;
         case "RemoveUser":
             removeUser();
@@ -225,6 +181,9 @@ function handlepost()
             break;
         default:
             echo "Du har försökt skicka något med metoden 'POST' som sidan inte känner igen,<br />";
+            echo "<script type=\"text/javascript\">";
+            echo "alert('Du har försökt skicka något med metoden 'POST' som sidan inte känner igen');";
+            echo "</script>";
             break;
         }
     }
@@ -278,7 +237,7 @@ function removeAPIUser()
 }
 
 /**
- * Add record for an administrator user.
+ * Add record for an administrator.
  *
  * @return void
  */
@@ -286,7 +245,7 @@ function addUser()
 {
     $DBH = new DB();
     $password = $_POST['PAS'];
-    $DBH->query("INSERT INTO adminusers(username, hashpass)
+    $DBH->query("INSERT INTO adminuser(username, hashpass)
               VALUES (:uname,
               sha1(:pass))");
     $DBH->bind(":uname", $_POST['USR']);
@@ -295,7 +254,7 @@ function addUser()
 }
 
 /**
- * Delete a administrator user.
+ * Delete a administrator.
  *
  * @return void
  */
@@ -306,7 +265,7 @@ function removeUser()
        possible?
     */
     $DBH = new DB();
-    $DBH->query("DELETE FROM adminusers
+    $DBH->query("DELETE FROM adminuser
               WHERE id=:auid");
     $DBH->bind(":auid", $_POST['id']);
     $DBH->execute();
@@ -319,7 +278,7 @@ function removeUser()
 }
 
 /**
- * Extract all administrator users and retirn them in a structurred
+ * Extract all administrator users and return them in a structurred
  * array
  *
  * @return mixed
@@ -327,7 +286,7 @@ function removeUser()
 function getUsers()
 {
     $DBH = new DB();
-    $DBH->query("SELECT id, username FROM adminusers");
+    $DBH->query("SELECT id, username FROM adminuser");
     $users = $DBH->resultset();
     return $users;
 }
@@ -348,9 +307,9 @@ function authenticateAPIUser($key, $user)
                 WHERE username=:uname");
     $DBH->bind(":uname", $user);
     $result = $DBH->single();
-    if($result["apikey"] == $key){
+    if ($result["apikey"] == $key) {
         return $result["permissions"];
-    }else{
+    } else {
         return 0;
     }
 }
@@ -359,153 +318,31 @@ function authenticateAPIUser($key, $user)
  * API helper function that extracts all members and prints them in a
  * comma separated way to be parsed from the requestor side.
  *
- * @param string $pnr A personal number, can contain both numbers and
+ * @param string $ssn A personal number, can contain both numbers and
  *                    letters. Designed for Swedish customs.
  *
  * @return void
  */
-function getAPIPerson($pnr)
+function getAPIMember($ssn)
 {
     $DBH = new DB();
-    $DBH->query("SELECT id FROM personer WHERE personnr= :pnr");
-    $DBH->bind(":pnr", $pnr);
+    $DBH->query("SELECT id FROM member WHERE ssn= :ssn");
+    $DBH->bind(":ssn", $ssn);
     $id = $DBH->single();
     $id = $id["id"];
-    $person = getPerson($id);
-    $bank = getPayments($id);
-    echo $person["personnr"] . "," . $person["fornamn"] . "," .
-         $person["efternamn"] . "," . $person["co"] . "," .
-         $person["adress"] . "," . $person["postnr"] . "," .
-         $person["ort"] . "," . $person["land"] . "," .
-         $person["telefon"] . "," . $person["epost"] . "," .
-         $person["aviseraej"] . "," . $person["senastandrad"];
-    if (isset($bank)) {
-        foreach ($bank as $row) {
-            echo "," . $row["period"] . "," . $row["benamning"] . "," . $row["betalat"] . "," . $row["betaldatum"];
+    $person = getMember($id);
+    $payments = getPayments($id);
+    echo $person["ssn"] . "," . $person["firstname"] . "," .
+         $person["lastname"] . "," . $person["co"] . "," .
+         $person["address"] . "," . $person["postalnr"] . "," .
+         $person["city"] . "," . $person["country"] . "," .
+         $person["phone"] . "," . $person["email"] . "," .
+         $person["donotadvertise"] . "," . $person["lastedit"];
+    if (isset($payments)) {
+        foreach ($payments as $row) {
+            echo "," . $row["period"] . "," . $row["naming"] . "," . $row["paid"] . "," . $row["paymentdate"];
         }
     }
-}
-
-/**
- * ???
- *
- * @param ?? $ssn ??
- *
- * @return object
- */
-function returnAPIPerson($ssn)
-{
-    $DBH = new DB();
-    $DBH->query("SELECT id FROM personer
-              WHERE personnr=:ssn");
-    $DBH->bind(":ssn", $ssn);
-    $result = $DBH->single();
-    return $result;
-}
-
-/**
- * API helper function to update a member record
- *
- * @param string $data Contains a comma separated member profile.
- *
- * @return void
- */
-function setAPIPersonData($data)
-{
-    $PSTNR = str_replace(' ', '', $data->PSTNR);
-    $DBH = new DB();
-
-    $DBH->query("SELECT id FROM personer WHERE personnr=:pnr");
-    $DBH->bind(":pnr", $data->PNR);
-    $personID = $DBH->single();
-
-    $DBH->query("UPDATE personer SET telefon = :tel,
-                    epost = :epost,
-                    co = :co,
-                    adress = :adress,
-                    postnr = :postnr,
-                    ort = :ort,
-                    land = :land,
-                    aviseraej = :aviseraej,
-                    senastandrad=DATE(NOW())
-                WHERE id = :id");
-    $DBH->bind(":tel", $data->TEL);
-    $DBH->bind(":epost", $data->EMAIL);
-    $DBH->bind(":co", $data->CO);
-    $DBH->bind(":adress", $data->ADR);
-    $DBH->bind(":postnr", $PSTNR);
-    $DBH->bind(":ort", $data->ORT);
-    $DBH->bind(":land", $data->LAND);
-    $DBH->bind(":aviseraej", $data->AVISEJ);
-    $DBH->bind(":id", $personID["id"]);
-    $DBH->execute();
-}
-
-/**
- * API helper function to add a new member to the records.
- *
- * @param string $data Contains a comma separated member profile.
- *
- * @return void
- */
-function addAPIPerson($data)
-{
-    $DBH = new DB();
-    $PSTNR = str_replace(' ', '', $data->PSTNR);
-    $DBH->query("INSERT INTO personer SET personnr = :pnr,
-                fornamn = :fnm,
-                efternamn = :enm,
-                co = :co,
-                adress = :adr,
-                postnr = :psnr,
-                ort = :ort,
-                land = :land,
-                telefon = :tel,
-                epost = :eml,
-                aviseraej = :avis,
-                feladress = :fadr,
-                senastandrad = DATE(NOW())");
-    $DBH->bind(":pnr", $data->PNR);
-    $DBH->bind(":fnm", $data->FNM);
-    $DBH->bind(":enm", $data->ENM);
-    $DBH->bind(":co", $data->CO);
-    $DBH->bind(":adr", $data->ADR);
-    $DBH->bind(":psnr", $PSTNR);
-    $DBH->bind(":ort", $data->ORT);
-    $DBH->bind(":land", $data->LAND);
-    $DBH->bind(":tel", $data->TEL);
-    $DBH->bind(":eml", $data->EMAIL);
-    $DBH->bind(":avis", $data->AVISEJ);
-    $DBH->bind(":fadr", $data->FELADR);
-    $DBH->execute();
-}
-
-/**
- * API helper function to add a payment record for a member.
- *
- * FIXME This function is broken in this state.
- *
- * @param string $data Contains comma separated payment information.
- *
- * @return void
- */
-function registerAPIPayment($data)
-{
-    /* Den här funktionen borde vara beroende av addPayment istället...
-     * FIXME!!
-     * Not even close. PNR && PERIOD && MED>TYPE är fel. */
-    getConnection();
-    $query = "INSERT INTO betalningar(personer_id, avgift_id,
-                                      betalsatt_id, betaldatum, betalat,
-                                      deleted
-                                     )
-              VALUES ('". $data->PNR . "',
-                      '" . $data->PERIOD . "',
-                      '" . $data->BETWAY . "',
-                      '" . $data->BETDATE . "',
-                      '" . $data->BET . "',
-                      '" . $data->MEDTYPE . "')";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
 }
 
 /**
@@ -515,74 +352,152 @@ function registerAPIPayment($data)
  */
 function checkAdminLogin()
 {
-    getConnection();
-    $anvNamn = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['username']);
-    $hashpass = sha1($_POST['pass2']);
-    $query = "SELECT id FROM adminusers
-              WHERE username='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $anvNamn) . "'
-              AND hashpass='" . $hashpass . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if (mysqli_affected_rows($GLOBALS["___mysqli_ston"]) == 1) {
-        $row = mysqli_fetch_object($result);
+    $DBH = new DB();
+    $DBH->query("SELECT id FROM adminuser
+                 WHERE username = :username AND
+                 hashpass = :hashpass");
+    $DBH->bind(":username", $_POST['username']);
+    $DBH->bind(":hashpass", sha1($_POST['pass']));
+    $DBH->execute();
+    if (($DBH->rowCount()) == 1) {
+        $row = $DBH->single();
         $_SESSION['page']="admin";
-        $_SESSION['id']=$row->id;
+        $_SESSION['id']=$row['id'];
     }
 }
 
 /**
  * Registers a payment for a specific member.
  *
+ * @param object $data API request data.
+ *
  * @return void
  */
-function addPayment()
+function addPayment($data=false)
 {
-    $DBH = new DB();
-    $DBH->query("SELECT id AS avgift_id FROM avgift
-                 WHERE medlemstyp_id = :memtypeid AND
-                 perioder_id = :periodid");
-    $DBH->bind(":memtypeid", $_POST['MEDTYPE']);
-    $DBH->bind(":periodid", $_POST['PERIOD']);
-    $a = $DBH->single();
+    if ($data) {
+        $DBH = new DB();
+        $DBH->query("SELECT id FROM member
+                     WHERE ssn = :ssn");
+        $DBH->bind(":ssn", $data->SSN);
+        $DBH->execute();
+        $pid = $DBH->single();
 
-    $DBH->query("INSERT INTO betalningar (personer_id, avgift_id, betalsatt_id, betaldatum, betalat)
-                  VALUES (:pid, :avgid, :ptid, :pdate, :payed)");
-    $DBH->bind(":pid", $_POST['ID']);
-    $DBH->bind(":avgid", $a["avgift_id"]);
-    $DBH->bind(":ptid", $_POST['BETWAY']);
-    $DBH->bind(":pdate", $_POST['BETDATE']);
-    $DBH->bind(":payed", $_POST['BET']);
-    $DBH->execute();
+        $DBH->query("SELECT id FROM membershiptype
+                     WHERE naming = :mtp");
+        $DBH->bind(":mtp", $data->MEMTYPE);
+        $DBH->execute();
+        $mtp = $DBH->single();
+
+        $DBH->query("SELECT id FROM period
+                     WHERE period = :per");
+        $DBH->bind(":per", $data->PERIOD);
+        $DBH->execute();
+        $per = $DBH->single();
+
+        $DBH->query("SELECT id AS fee_id FROM fee
+                     WHERE membershiptype_id = :memtypeid AND
+                     period_id = :periodid");
+        $DBH->bind(":memtypeid", $mtp['id']);
+        $DBH->bind(":periodid", $per['id']);
+        $a = $DBH->single();
+
+        $DBH->query("INSERT INTO payment (member_id, fee_id, paymenttype_id, paymentdate, paid)
+                      VALUES (:pid, :feeid, :ptid, :pdate, :payed)");
+        $DBH->bind(":pid", $pid['id']);
+        $DBH->bind(":feeid", $a["fee_id"]);
+        $DBH->bind(":ptid", $data->PAYWAY);
+        $DBH->bind(":pdate", $data->PAYDATE);
+        $DBH->bind(":payed", $data->PAID);
+        $DBH->execute();
+    } else {
+        $DBH = new DB();
+        $DBH->query("SELECT id AS fee_id FROM fee
+                     WHERE membershiptype_id = :memtypeid AND
+                     period_id = :periodid");
+        $DBH->bind(":memtypeid", $_POST['MEMTYPE']);
+
+        $a = $DBH->single();
+
+        $DBH->query("INSERT INTO payment (member_id, fee_id, paymenttype_id, paymentdate, paid)
+                      VALUES (:pid, :feeid, :ptid, :pdate, :payed)");
+        $DBH->bind(":pid", $_POST['ID']);
+        $DBH->bind(":feeid", $a["fee_id"]);
+        $DBH->bind(":ptid", $_POST['PAYWAY']);
+        $DBH->bind(":pdate", $_POST['PAYDATE']);
+        $DBH->bind(":payed", $_POST['PAID']);
+        $DBH->execute();
+    }
 }
 
 /**
  * Add records for a member.
  *
+ * @param object $data API request data.
+ *
  * @return void
  */
-function addPerson()
+function addMember($data=false)
 {
-    getConnection();
-    $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    $query = "INSERT INTO personer(personnr, fornamn, efternamn, co,
-                                   adress, postnr, ort, land, telefon,
-                                   epost, aviseraej, feladress
-                                  )
-              VALUES (
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['PNR']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR']) . "'
-                     )";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $_GET['id'] = mysqli_insert_id($GLOBALS["___mysqli_ston"]);
+    if ($data) {
+        $DBH = new DB();
+        $PSTNR = str_replace(' ', '', $data->PSTNR);
+        $DBH->query("INSERT INTO member SET ssn = :ssn,
+                    firstname = :fnm,
+                    lastname = :enm,
+                    co = :co,
+                    address = :addr,
+                    postalnr = :psnr,
+                    city = :city,
+                    country = :country,
+                    phone = :phone,
+                    email = :eml,
+                    donotadvertise= :avis,
+                    wrongaddress = :fadr,
+                    lastedit = DATE(NOW())");
+        $DBH->bind(":ssn", $data->SSN);
+        $DBH->bind(":fnm", $data->FNM);
+        $DBH->bind(":enm", $data->LNM);
+        $DBH->bind(":co", $data->CO);
+        $DBH->bind(":addr", $data->ADDR);
+        $DBH->bind(":psnr", $PSTNR);
+        $DBH->bind(":city", $data->CITY);
+        $DBH->bind(":country", $data->COUNTRY);
+        $DBH->bind(":phone", $data->PHONE);
+        $DBH->bind(":eml", $data->EMAIL);
+        $DBH->bind(":avis", $data->AVISEJ);
+        $DBH->bind(":fadr", $data->WRNADDR);
+        $DBH->execute();
+    } else {
+        $DBH = new DB();
+        $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
+        $DBH->query("INSERT INTO member SET ssn = :ssn,
+                    firstname = :fnm,
+                    lastname = :lnm,
+                    co = :co,
+                    address = :addr,
+                    postalnr = :psnr,
+                    city = :city,
+                    country = :country,
+                    phone = :pho,
+                    email = :eml,
+                    donotadvertise= :donotad,
+                    wrongaddress = :wrngaddr,
+                    lastedit = DATE(NOW())");
+        $DBH->bind(":ssn", $_POST['SSN']);
+        $DBH->bind(":fnm", $_POST['FNM']);
+        $DBH->bind(":lnm", $_POST['LNM']);
+        $DBH->bind(":co", $_POST['CO']);
+        $DBH->bind(":addr", $_POST['ADDR']);
+        $DBH->bind(":psnr", $PSTNR);
+        $DBH->bind(":city", $_POST['CITY']);
+        $DBH->bind(":country", $_POST['COUNTRY']);
+        $DBH->bind(":pho", $_POST['PHO']);
+        $DBH->bind(":eml", $_POST['EMAIL']);
+        $DBH->bind(":donotad", "0");
+        $DBH->bind(":wrngaddr", $_POST['WRONGADDR']);
+        $DBH->execute();
+    }
 }
 
 /**
@@ -590,34 +505,37 @@ function addPerson()
  *
  * @return void
  */
-function removePerson()
+function removeMember()
 {
-    getConnection();
-    $query = "UPDATE betalningar SET deleted='1'
-              WHERE personer_id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    $query = "UPDATE personer SET deleted='1'
-              WHERE id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']);
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
+    $DBH = new DB();
+    $DBH->query("UPDATE payment SET deleted = '1'
+                WHERE member_id = :id");
+    $DBH->bind(":id", $_POST['ID']);
+    $DBH->execute();
+
+    $DBH->query("UPDATE member SET deleted = '1'
+                WHERE id = :id");
+    $DBH->bind(":id", $_POST['ID']);
+    $DBH->execute();
+
+
 }
 
 /**
  * Inserts a time period
  *
- * @return boolean
+ * @return void
  */
 function addPeriod()
 {
-    getConnection();
-    $query = "INSERT INTO perioder (period, forst, sist)
-              VALUES ('" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['period']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['forst']) . "',
-                      '" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['sist']) . "')";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if (mysqli_affected_rows($GLOBALS["___mysqli_ston"])>0) {
-        return true;
-    }
-    return false;
+    $DBH = new DB();
+    $DBH->query("INSERT INTO period SET period = :period,
+                first = :first,
+                last = :last");
+    $DBH->bind(":period", $_POST['period']);
+    $DBH->bind(":first", $_POST['first']);
+    $DBH->bind(":last", $_POST['last']);
+    $DBH->execute();
 }
 
 /**
@@ -627,148 +545,152 @@ function addPeriod()
  */
 function changePeriod()
 {
-    getConnection();
-    $query = "UPDATE perioder
-              SET forst='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['forst']) . "',
-                  sist='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['sist']) . "'
-              WHERE period='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['period']) . "'";
-    $result = mysqli_query($GLOBALS["___mysqli_ston"], $query);
-    if (mysqli_affected_rows($GLOBALS["___mysqli_ston"])>0) {
-        return true;
-    }
-    return false;
-}
-
-/**
- * Updates the records for a specific member.
- *
- * @return void
- */
-function updatePerson()
-{
-    $person = getPerson($_POST['ID']);
-    $haschanged = false;
-    $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    // The ugly way to make sure that checkboxes are "set" when not ticked...
-    if (!isset($_POST['FELADR'])) {
-        $_POST['FELADR'] = 0;
-    }
-    if (!isset($_POST['AVISEJ'])) {
-        $_POST['AVISEJ'] = 0;
-    }
-    if ($person["personnr"] != $_POST['PNR']) {
-        $haschanged = true;
-    } else if ($person["fornamn"] != $_POST['FNM']) {
-        $haschanged = true;
-    } else if ($person["efternamn"] != $_POST['ENM']) {
-        $haschanged = true;
-    } else if ($person["telefon"] != $_POST['TEL']) {
-        $haschanged = true;
-    } else if ($person["epost"] != $_POST['EMAIL']) {
-        $haschanged = true;
-    } else if ($person["co"] != $_POST['CO']) {
-        $haschanged = true;
-    } else if ($person["adress"] != $_POST['ADR']) {
-        $haschanged = true;
-    } else if ($person["postnr"] != $PSTNR) {
-        $haschanged = true;
-    } else if ($person["ort"] != $_POST['ORT']) {
-        $haschanged = true;
-    } else if ($person["land"] != $_POST['LAND']) {
-        $haschanged = true;
-    } else if ($person["feladress"] != $_POST['FELADR']) {
-        $haschanged = true;
-    } else if ($person["aviseraej"] != $_POST['AVISEJ']) {
-        $haschanged = true;
-    }
-
-    if ($haschanged) {
-        $DBH = new DB();
-        $DBH->query("UPDATE personer
-                  SET personnr = :personnr,
-                      fornamn = :fornamn,
-                      efternamn = :efternamn,
-                      telefon= :telefon,
-                      epost = :epost,
-                      co = :co,
-                      adress = :adress,
-                      postnr = :postnr,
-                      ort = :ort,
-                      land = :land,
-                      feladress = :feladress,
-                      aviseraej = :aviseraej,
-                      senastandrad = DATE(NOW())
-                  WHERE id='". $_POST['ID'] . "'");
-            $DBH->bind(":personnr", $_POST['PNR']);
-            $DBH->bind(":fornamn", $_POST['FNM']);
-            $DBH->bind(":efternamn", $_POST['ENM']);
-            $DBH->bind(":telefon", $_POST['TEL']);
-            $DBH->bind(":epost", $_POST['EMAIL']);
-            $DBH->bind(":co", $_POST['CO']);
-            $DBH->bind(":adress", $_POST['ADR']);
-            $DBH->bind(":postnr", $PSTNR);
-            $DBH->bind(":ort", $_POST['ORT']);
-            $DBH->bind(":land", $_POST['LAND']);
-            $DBH->bind(":feladress", $_POST['FELADR']);
-            $DBH->bind(":aviseraej", $_POST['AVISEJ']);
-        $DBH->execute();
-    }
-}
-
-/**
- * Updates the records for a specific member.
- *
- * Probably not in use at this moment. Should be merged with others
- * doing the same.
- *
- * @return void
- */
-function sparaStudent()
-{
-    $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
-    $query = "UPDATE personer
-              SET fornamn='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FNM']) . "',
-                  efternamn='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ENM']) . "',
-                  telefon='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['TEL']) . "',
-                  epost ='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['EMAIL']) . "',
-                  co='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['CO']) . "',
-                  adress='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ADR']) . "',
-                  postnr='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $PSTNR) . "',
-                  ort='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ORT']) . "',
-                  land='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['LAND']) . "',
-                  feladress='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['FELADR']) . "',
-                  aviseraej='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['AVISEJ']) . "',
-                  senastandrad=DATE(NOW())
-              WHERE id='" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['ID']) . "'";
     $DBH = new DB();
-    $DBH->query($query);
+    $DBH->query("UPDATE period
+        SET first = :firstname,
+            last = :lastname
+        WHERE period= :period");
+    $DBH->bind(":firstname", $_POST['first']);
+    $DBH->bind(":lastname", $_POST['last']);
+    $DBH->bind(":period", $_POST['period']);
     $DBH->execute();
 }
 
+/**
+ * Updates the records for a specific member.
+ *
+ * @param object $data API request data.
+ *
+ * @return void
+ */
+function updateMember($data=false)
+{
+    if ($data) {
+        $PSTNR = str_replace(' ', '', $data->PSTNR);
+        $DBH = new DB();
+
+        $DBH->query("SELECT id FROM member WHERE ssn=:ssn");
+        $DBH->bind(":ssn", $data->SSN);
+        $memberID = $DBH->single();
+        $DBH->query("UPDATE member SET phone= :phone,
+                        email = :email,
+                        co= :co,
+                        address= :address,
+                        postalnr= :postalnr,
+                        city= :city,
+                        country= :country,
+                        donotadvertise= :donotadvertise,
+                        lastedit= DATE(NOW())
+                    WHERE id= :id");
+        $DBH->bind(":phone", $data->PHO);
+        $DBH->bind(":email", $data->EMAIL);
+        $DBH->bind(":co", $data->CO);
+        $DBH->bind(":address", $data->ADDR);
+        $DBH->bind(":postalnr", $PSTNR);
+        $DBH->bind(":city", $data->CITY);
+        $DBH->bind(":country", $data->COUNTRY);
+        $DBH->bind(":donotadvertise", $data->DONOTAD);
+        $DBH->bind(":id", $memberID["id"]);
+        $DBH->execute();
+    } else {
+        $member = getMember($_POST['ID']);
+        $haschanged = false;
+        $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
+        // The ugly way to make sure that checkboxes are "set" when not ticked...
+        if (!isset($_POST['WRONGADDR'])) {
+            $_POST['WRONGADDR'] = 0;
+        }
+        if (!isset($_POST['DONOTAD'])) {
+            $_POST['DONOTAD'] = 0;
+        }
+        if ($member["ssn"] != $_POST['SSN']) {
+            $haschanged = true;
+        } else if ($member["firstname"] != $_POST['FNM']) {
+            $haschanged = true;
+        } else if ($member["lastname"] != $_POST['LNM']) {
+            $haschanged = true;
+        } else if ($member["phone"] != $_POST['PHO']) {
+            $haschanged = true;
+        } else if ($member["email"] != $_POST['EMAIL']) {
+            $haschanged = true;
+        } else if ($member["co"] != $_POST['CO']) {
+            $haschanged = true;
+        } else if ($member["address"] != $_POST['ADDR']) {
+            $haschanged = true;
+        } else if ($member["postalnr"] != $PSTNR) {
+            $haschanged = true;
+        } else if ($member["city"] != $_POST['CITY']) {
+            $haschanged = true;
+        } else if ($member["country"] != $_POST['COUNTRY']) {
+            $haschanged = true;
+        } else if ($member["wrongaddress"] != $_POST['WRONGADDR']) {
+            $haschanged = true;
+        } else if ($member["donotadvertise"] != $_POST['DONOTAD']) {
+            $haschanged = true;
+        }
+
+        if ($haschanged) {
+            $DBH = new DB();
+            $DBH->query("UPDATE member
+                      SET ssn = :ssn,
+                          firstname = :firstname,
+                          lastname = :lastname,
+                          phone= :phone,
+                          email = :email,
+                          co = :co,
+                          address = :address,
+                          postalnr = :postalnr,
+                          city = :city,
+                          country = :country,
+                          wrongaddress = :wrongaddress,
+                          donotadvertise = :donotadvertise,
+                          lastedit = DATE(NOW())
+                      WHERE id='". $_POST['ID'] . "'");
+                $DBH->bind(":ssn", $_POST['SSN']);
+                $DBH->bind(":firstname", $_POST['FNM']);
+                $DBH->bind(":lastname", $_POST['LNM']);
+                $DBH->bind(":phone", $_POST['PHO']);
+                $DBH->bind(":email", $_POST['EMAIL']);
+                $DBH->bind(":co", $_POST['CO']);
+                $DBH->bind(":address", $_POST['ADDR']);
+                $DBH->bind(":postalnr", $PSTNR);
+                $DBH->bind(":city", $_POST['CITY']);
+                $DBH->bind(":country", $_POST['COUNTRY']);
+                $DBH->bind(":wrongaddress", $_POST['WRONGADDR']);
+                $DBH->bind(":donotadvertise", $_POST['DONOTAD']);
+            $DBH->execute();
+        }
+    }
+}
 
 /**
  * Updates the fee information.
  *
  * @return void
  */
-function updateAvgift()
+function updateFee()
 {
     $DBH = new DB();
-    if (isset($_POST["avgiftid"]) && $_POST["avgiftid"] == -1) {
+    if (isset($_POST["feeid"]) && $_POST["feeid"] == -1) {
         // FIXME make period_id + medlemstyp_id a UNIQUE key
         //       then convert this to INSERT INTO tbl ON DUPLICATE KEY UPDATE...
-        $query = "INSERT INTO avgift (perioder_id, medlemstyp_id, avgift)
-                  VALUES (" . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['period_id']) . ",
-                          " . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['medlemstyp_id']) . ",
-                          " . mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['avgiften']) . ")";
-    } elseif (isset($_POST["avgiftid"]) && $_POST["avgiftid"] > 0) {
-        $query = "UPDATE avgift
-                  SET avgift = ".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['avgiften'])."
-                  WHERE id=".mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_POST['avgiftid']);
+        $DBH->query("INSERT INTO fee
+                      SET period_id = :period_id,
+                          membershiptype_id = :membershiptype_id,
+                          fee = :fee");
+        $DBH->bind(":period_id", $_POST['period_id']);
+        $DBH->bind(":membershiptype_id", $_POST['membershiptype_id']);
+        $DBH->bind(":fee", $_POST['fee']);
+    } elseif (isset($_POST["feeid"]) && $_POST["feeid"] > 0) {
+
+        $DBH->query("UPDATE fee
+            SET fee = :fee
+            WHERE id= :feeid");
+        $DBH->bind(":fee", $_POST['fee']);
+        $DBH->bind(":feeid", $_POST['feeid']);
     } else {
         exit("FATAL ERROR. Execution Stopped.");
     }
-    $DBH->query($query);
     $DBH->execute();
 }
 
@@ -780,16 +702,16 @@ function updateAvgift()
  */
 function composeSearchURL()
 {
-    if (isset($_POST["PNR"]) && !($_POST["PNR"]=="")) {
-        $url = "?page=searchresult&pnr=" . $_POST["PNR"];
+    if (isset($_POST["SSN"]) && !($_POST["SSN"]=="")) {
+        $url = "?page=searchresult&ssn=" . $_POST["SSN"];
     } elseif (isset($_POST["FNM"]) && !($_POST["FNM"]=="")) {
-        if (isset($_POST["ENM"]) && !($_POST["ENM"]=="")) {
-            $url = "?page=searchresult&fnm=" . $_POST["FNM"] . "&enm=" . $_POST["ENM"];
+        if (isset($_POST["LNM"]) && !($_POST["LNM"]=="")) {
+            $url = "?page=searchresult&fnm=" . $_POST["FNM"] . "&lnm=" . $_POST["LNM"];
         } else {
             $url = "?page=searchresult&fnm=" . $_POST["FNM"];
         }
-    } elseif (isset($_POST["ENM"]) && !($_POST["ENM"]=="")) {
-        $url = "?page=searchresult&enm=" . $_POST["ENM"];
+    } elseif (isset($_POST["LNM"]) && !($_POST["LNM"]=="")) {
+        $url = "?page=searchresult&lnm=" . $_POST["LNM"];
     } elseif (isset($_POST["EMAIL"]) && !($_POST["EMAIL"]=="")) {
         $url = "?page=searchresult&email=" . $_POST["EMAIL"];
     }
@@ -819,34 +741,28 @@ function insertHead($menu=false)
 
     if ($menu) {
         echo "<div id=\"logout\">
-				<form name=\"logout\" method=\"post\">
-					<select name=\"Medlem\" onChange=\"location = '?page='+this.options[this.selectedIndex].value; this.selectedIndex=0;\">
-						<option value=\"0\" selected=\"selected\">-Medlemmar</option>
-						<option value=\"nyperson\">Ny person</option>
-						<!-- <option value=\"felaktigbetalning\">Felaktiga betalningar</option> -->
-						<!-- <option value=\"okoppladbetalning\">Okopplade betalningar</option> -->
-						<!-- <option value=\"senastandrad\">Senast ändrad</option> -->
-					</select>
-					<select name=\"Rapporter\" onChange=\"window.open('/skaparapport.php?typ='+this.options[this.selectedIndex].value); this.selectedIndex=0;\">
-						<option value=\"0\" selected=\"selected\">-Rapporter</option>
-						<option value=\"1\">Vilka har betalat?</option>
-						<option value=\"2\">Vilka har ej betalat?</option>
-					</select>
-					<select name=\"Administration\" onChange=\"location = '?page='+this.options[this.selectedIndex].value; this.selectedIndex=0;\">
-						<option value=\"0\" selected=\"selected\">-Administration</option>
-						<option value=\"avgifter\">Avgifter</option>
-						<option value=\"perioder\">Perioduppgifter</option>
-						<!-- <option value=\"uppdrag\">Uppdrag</option> -->
-						<option value=\"anvandare\">Användarkonton</option>
-						<!-- <option value=\"avimeddelande\">Avimeddelande</option> -->
-						<!-- <option value=\"bankgiro\">Bankgiro</option> -->
-						<option value=\"webservice\">Webservice</option>
-					</select>
-					<img class=\"menu_button\" src=\"misc/logout.png\" onclick=\"document.forms['logout'].submit();\" />
-					<img class=\"menu_button\" src=\"misc/about.png\" onclick=\"location = '?page=om';\" />
-					<input type=\"hidden\" readonly=\"readonly\" value=\"Logout\" name=\"handler\" />
-				</form>
-			  </div>";
+                <form name=\"logout\" method=\"post\">
+                    <select name=\"Medlem\" onChange=\"location = '?page='+this.options[this.selectedIndex].value; this.selectedIndex=0;\">
+                        <option value=\"0\" selected=\"selected\">-Medlemmar</option>
+                        <option value=\"newmember\">Ny person</option>
+                    </select>
+                    <select name=\"Rapporter\" onChange=\"window.open('/createreport.php?type='+this.options[this.selectedIndex].value); this.selectedIndex=0;\">
+                        <option value=\"0\" selected=\"selected\">-Rapporter</option>
+                        <option value=\"1\">Vilka har betalat?</option>
+                        <option value=\"2\">Vilka har ej betalat?</option>
+                    </select>
+                    <select name=\"Administration\" onChange=\"location = '?page='+this.options[this.selectedIndex].value; this.selectedIndex=0;\">
+                        <option value=\"0\" selected=\"selected\">-Administration</option>
+                        <option value=\"fees\">Avgifter</option>
+                        <option value=\"periods\">Perioduppgifter</option>
+                        <option value=\"user\">Användarkonton</option>
+                        <option value=\"webservice\">Webservice</option>
+                    </select>
+                    <img class=\"menu_button\" src=\"misc/logout.png\" onclick=\"document.forms['logout'].submit();\" />
+                    <img class=\"menu_button\" src=\"misc/about.png\" onclick=\"location = '?page=om';\" />
+                    <input type=\"hidden\" readonly=\"readonly\" value=\"Logout\" name=\"handler\" />
+                </form>
+              </div>";
     }
     putBoxEnd();
 }
@@ -857,7 +773,7 @@ function insertHead($menu=false)
  *
  * @param boolean $payment  If true the payment information is
  *                          included.
- * @param boolean $adress   If true the address of the member is
+ * @param boolean $address  If true the address of the member is
  *                          included.
  * @param int     $page     Indicates a page size limit on number of
  *                          records.
@@ -865,27 +781,27 @@ function insertHead($menu=false)
  *
  * @return mixed
  */
-function getMembers($payment=true,$adress=false,$page=0,$pagesize=20)
+function getMembers($payment=true,$address=false,$page=0,$pagesize=20)
 {
     $DBH = new DB();
     unset($query);
-    $query = "SELECT personnr, efternamn, fornamn, epost, telefon";
-    if ($adress === true) {
-        $query .= ", co, adress, postnr, land, feladress, aviseraej";
+    $query = "SELECT ssn, lastname, firstname, email, phone";
+    if ($address === true) {
+        $query .= ", co, address, postalnr, country, wrongaddress, donotadvertise";
     }
-    $query .= " FROM personer
-		GROUP BY personnr
-                ORDER BY personnr DESC";
+    $query .= " FROM member
+        GROUP BY ssn
+                ORDER BY ssn DESC";
     if ($page>0) {
         $query .= " LIMIT 20";
     }
     $DBH->query($query);
-    $persons = $DBH->resultset();
+    $members = $DBH->resultset();
     $result = Array();
-    foreach ($persons as $person) {
-        if(isMember($person["personnr"])) {
-	    $result[] = $person;
-	}
+    foreach ($members as $member) {
+        if (isMember($member["ssn"])) {
+            $result[] = $member;
+        }
     }
     return $result;
 }
@@ -901,16 +817,16 @@ function getNonMembers()
 {
     $DBH = new DB();
     unset($query);
-    $query = "SELECT personnr, efternamn, fornamn, epost, telefon";
-    $query .= " FROM personer
-                GROUP BY personnr
-                ORDER BY personnr DESC";
+    $query = "SELECT ssn, lastname, firstname, email, phone";
+    $query .= " FROM member
+                GROUP BY ssn
+                ORDER BY ssn DESC";
     $DBH->query($query);
-    $persons = $DBH->resultset();
+    $members = $DBH->resultset();
     $result = Array();
-    foreach ($persons as $person) {
-        if(!isMember($person["personnr"])) {
-            $result[] = $person;
+    foreach ($members as $member) {
+        if (!isMember($member["ssn"])) {
+            $result[] = $member;
         }
     }
     return $result;
@@ -927,9 +843,9 @@ function getNonMembers()
 function putInfoBox($head, $value)
 {
     echo "<div class=\"info\">
-			<h3>$head</h3>
-			<h7>" . $value . "</h7>
-		  </div>";
+            <h3>$head</h3>
+            <h7>" . $value . "</h7>
+          </div>";
 }
 
 /**
@@ -941,13 +857,13 @@ function putInfoBox($head, $value)
 function countMembers()
 {
     $DBH = new DB();
-    $DBH->query("SELECT COUNT(DISTINCT personer_id) AS NumberOfMembers
-                FROM betalningar
-                LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
-                LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-                WHERE perioder.forst<=DATE(NOW()) AND
-                perioder.sist>=DATE(NOW()) AND
-                betalningar.deleted != 1");
+    $DBH->query("SELECT COUNT(DISTINCT member_id) AS NumberOfMembers
+                FROM payment
+                LEFT JOIN fee ON payment.fee_id=fee.id
+                LEFT JOIN period ON fee.period_id=period.id
+                WHERE period.first<=DATE(NOW()) AND
+                period.last>=DATE(NOW()) AND
+                payment.deleted != 1");
     $Count = $DBH->single();
     $memberCount = $Count["NumberOfMembers"];
     return $memberCount;
@@ -957,22 +873,22 @@ function countMembers()
  * Helper function to check if a personal number is considered as
  * member or not.
  *
- * @param string $pnr A personal number, can contain both numbers and
+ * @param string $ssn A personal number, can contain both numbers and
  * letters. Based on Swedish customs.
  *
  * @return boolean
  */
-function isMember($pnr)
+function isMember($ssn)
 {
     $DBH = new DB();
-    $DBH->query("SELECT COUNT(personer_id) AS IsMember
-                FROM betalningar LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
-                LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-                LEFT JOIN personer ON betalningar.personer_id=personer.id
-                WHERE forst<=DATE(NOW()) AND
-                sist>=DATE(NOW()) AND
-                personnr = :pnr");
-    $DBH->bind(":pnr", $pnr);
+    $DBH->query("SELECT COUNT(member_id) AS IsMember
+                FROM payment LEFT JOIN fee ON payment.fee_id=fee.id
+                LEFT JOIN period ON fee.period_id=period.id
+                LEFT JOIN member ON payment.member_id=member.id
+                WHERE first<=DATE(NOW()) AND
+                last>=DATE(NOW()) AND
+                ssn = :ssn");
+    $DBH->bind(":ssn", $ssn);
 
     $IsMember = $DBH->single();
     $IsMember = $IsMember["IsMember"];
@@ -993,10 +909,10 @@ function isMember($pnr)
  *
  * @return mixed
  */
-function getPerson($id, $getdeleted=false)
+function getMember($id, $getdeleted=false)
 {
     $DBH = new DB();
-    $query = "SELECT * FROM personer
+    $query = "SELECT * FROM member
               WHERE id = :pid";
     if (!$getdeleted) {
         $query .= " AND deleted != 1";
@@ -1004,8 +920,29 @@ function getPerson($id, $getdeleted=false)
     $DBH->query($query);
     $DBH->bind(":pid", $id);
 
-    $person = $DBH->single();
-    return $person;
+    $member = $DBH->single();
+    return $member;
+}
+
+/**
+ * Extract information about a person that is registered.
+ * Even if the person is deleted
+ * Returns the information in a array.
+ *
+ * @param int $ssn The person Socialsecuritynumber
+ *
+ * @return mixed
+ */
+function getRegisteredPersonBySsn($ssn)
+{
+    $DBH = new DB();
+    $query = "SELECT * FROM member
+              WHERE ssn = :ssn";
+    $DBH->query($query);
+    $DBH->bind(":ssn", $ssn);
+
+    $member = $DBH->single();
+    return $member;
 }
 
 /**
@@ -1019,9 +956,9 @@ function getPerson($id, $getdeleted=false)
 function getPersons()
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM personer WHERE deleted != 1");
-    $persons = $DBH->resultset();
-    return $persons;
+    $DBH->query("SELECT * FROM member WHERE deleted != 1");
+    $members = $DBH->resultset();
+    return $members;
 }
 
 /**
@@ -1037,12 +974,12 @@ function getPersons()
 function findEMA($ema)
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM personer
-                WHERE epost LIKE :ema AND deleted != 1");
+    $DBH->query("SELECT * FROM member
+                WHERE email LIKE :ema AND deleted != 1");
     $DBH->bind(":ema", "%".$ema."%");
-    $persons = $DBH->resultset();
-    if(!empty($persons)){
-        return $persons;
+    $members = $DBH->resultset();
+    if (!empty($members)) {
+        return $members;
     }
 }
 
@@ -1052,20 +989,20 @@ function findEMA($ema)
  *
  * FIXME needs work.
  *
- * @param string $pnr Text to search for in the personal number field.
+ * @param string $ssn Text to search for in the personal number field.
  *
  * @return mixed
  */
-function findPNR($pnr)
+function findPNR($ssn)
 {
     $DBH = new DB();
-    $pnr = str_ireplace("-", "", $pnr);
-    $DBH->query("SELECT * FROM personer
-              WHERE personnr LIKE :pnr AND deleted != 1");
-    $DBH->bind(":pnr", $pnr."%");
-    $persons = $DBH->resultset();
-    if(!empty($persons)){
-        return $persons;
+    $ssn = str_ireplace("-", "", $ssn);
+    $DBH->query("SELECT * FROM member
+              WHERE ssn LIKE :ssn AND deleted != 1");
+    $DBH->bind(":ssn", $ssn."%");
+    $members = $DBH->resultset();
+    if (!empty($members)) {
+        return $members;
     }
 }
 
@@ -1082,12 +1019,12 @@ function findPNR($pnr)
 function findFNM($fnm)
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM personer
-              WHERE fornamn LIKE '%$fnm%' AND deleted != 1");
+    $DBH->query("SELECT * FROM member
+              WHERE firstname LIKE '%$fnm%' AND deleted != 1");
     $DBH->bind(":fnm", "%".$fnm."%");
-    $persons = $DBH->resultset();
-    if(!empty($persons)){
-        return $persons;
+    $members = $DBH->resultset();
+    if (!empty($members)) {
+        return $members;
     }
 }
 
@@ -1097,19 +1034,19 @@ function findFNM($fnm)
  *
  * FIXME needs work.
  *
- * @param string $enm Text to search for in the surname field.
+ * @param string $lnm Text to search for in the surname field.
  *
  * @return mixed
  */
-function findENM($enm)
+function findLNM($lnm)
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM personer
-              WHERE efternamn LIKE :enm AND deleted != 1");
-    $DBH->bind(":enm", "%".$enm."%");
-    $persons = $DBH->resultset();
-    if(!empty($persons)){
-        return $persons;
+    $DBH->query("SELECT * FROM member
+              WHERE lastname LIKE :lnm AND deleted != 1");
+    $DBH->bind(":lnm", "%".$lnm."%");
+    $members = $DBH->resultset();
+    if (!empty($members)) {
+        return $members;
     }
 }
 
@@ -1121,82 +1058,23 @@ function findENM($enm)
  * FIXME can be combined with the specific search stuff. At least.
  *
  * @param string $fnm Text to search for in the first name field.
- * @param string $enm Text to search for in the surname field.
+ * @param string $lnm Text to search for in the surname field.
  *
  * @return mixed
  */
-function findNM($fnm, $enm)
+function findNM($fnm, $lnm)
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM personer
-                WHERE fornamn LIKE :fnm AND
-                    efternamn LIKE :enm
+    $DBH->query("SELECT * FROM member
+                WHERE firstname LIKE :fnm AND
+                    lastname LIKE :lnm
                     AND deleted != 1");
     $DBH->bind(":fnm", "%".$fnm."%");
-    $DBH->bind(":enm", "%".$enm."%");
-    $persons = $DBH->resultset();
-    if(!empty($persons)){
-        return $persons;
+    $DBH->bind(":lnm", "%".$lnm."%");
+    $members = $DBH->resultset();
+    if (!empty($members)) {
+        return $members;
     }
-}
-
-/**
- * Extracts the mandates a member have had.
- *
- * FIXME This does probably not work, it's not in real life use at the
- * FIXME moment.
- *
- * FIXME The return is conditioned to at least have something, will
- * FIXME not return False or such things though.
- *
- * @param int $id The internal personal number of a member.
- *
- * @return mixed
- */
-function getMandates($id)
-{
-    $DBH = new DB();
-    $query = "SELECT benamning, beskrivning, period, forst, sist FROM personer
-              LEFT JOIN personer_uppdrag ON personer.id = personer_uppdrag.personer_id
-              LEFT JOIN uppdrag ON personer_uppdrag.uppdrag_id=uppdrag.id
-              LEFT JOIN perioder ON personer_uppdrag.perioder_id=perioder.id
-              WHERE personer.id=:id
-              AND personer.deleted != 1";
-    $DBH->query($query);
-    $DBH->bind(":id", $id);
-    $mandates = $DBH->resultset();
-    if(!empty($mandates)){
-        return $mandates;
-    }
-}
-
-/**
- * Some kind of mandate extraction thing. Probably broken.
- *
- * FIXME Not in use in a real world example.
- * FIXME This is horribly broken, uses the assumption that a PNR can
- * FIXME not have letters in it.
- *
- * @param string $pnr A string of letters and numbers representing the
- *                    personal number, by Swedish customs.
- *
- * @return mixed
- */
-function getCurrentMandates($pnr)
-{
-    $DBH = new DB();
-    $query = "SELECT benamning, beskrivning,
-              FROM personer
-              LEFT JOIN personer_uppdrag ON personer_uppdrag.person_id = personer.id
-              LEFT JOIN uppdrag ON personer_uppdrag.uppdrag_id=uppdrag.id
-              LEFT JOIN perioder ON personer_uppdrag.perioder_id=perioder.id
-              WHERE personnr=:pnr AND
-                    forst<CURDATE() AND
-                    sist>CURDATE()
-              AND personer.deleted != 1";
-    $DBH->query($query);
-    $DBH->bind(":pnr", $pnr);
-    $mandates = $DBH->resultset();
 }
 
 /**
@@ -1209,21 +1087,21 @@ function getCurrentMandates($pnr)
 function getPayments($id)
 {
     $DBH = new DB();
-    $query = "SELECT betalningar.id AS id, betalsatt.benamning AS betalsatt,
-                     betalningar.betalat AS betalat, betalningar.betaldatum AS betaldatum,
-                     avgift.avgift AS avgift, medlemstyp.benamning AS benamning,
-                     perioder.forst AS forst, perioder.sist AS sist,
-                     perioder.period AS period
-              FROM betalningar
-              LEFT JOIN avgift ON betalningar.avgift_id=avgift.id
-              LEFT JOIN betalsatt ON betalningar.betalsatt_id=betalsatt.id
-              LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-              LEFT JOIN medlemstyp ON avgift.medlemstyp_id=medlemstyp.id
-              WHERE betalningar.personer_id=:id AND deleted != 1";
+    $query = "SELECT payment.id AS id, paymenttype.naming AS paymenttype,
+                     payment.paid AS paid, payment.paymentdate AS paymentdate,
+                     fee.fee AS fee, membershiptype.naming AS membershiptype,
+                     period.first AS first, period.last AS last,
+                     period.period AS period
+              FROM payment
+              LEFT JOIN fee ON payment.fee_id=fee.id
+              LEFT JOIN paymenttype ON payment.paymenttype_id=paymenttype.id
+              LEFT JOIN period ON fee.period_id=period.id
+              LEFT JOIN membershiptype ON fee.membershiptype_id=membershiptype.id
+              WHERE payment.member_id=:id AND deleted != 1";
     $DBH->query($query);
     $DBH->bind(":id", $id);
     $payments = $DBH->resultset();
-    if(!empty($payments)){
+    if (!empty($payments)) {
         return $payments;
     }
 }
@@ -1256,8 +1134,8 @@ function putBoxEnd()
 function getPeriods()
 {
     $DBH = new DB();
-    $query = "SELECT id, period, forst, sist FROM perioder
-              ORDER BY forst, sist";
+    $query = "SELECT id, period, first, last FROM period
+              ORDER BY first, last";
     $DBH->query($query);
     $periods = $DBH->resultset();
     return $periods;
@@ -1307,36 +1185,37 @@ function updatePeriod($period)
  *
  * @return mixed
  */
-function getAvgifter()
+function getFees()
 {
     $DBH = new DB();
-    $query = "SELECT perioder.id AS perioder_id, period, medlemstyp_id, avgift, avgift.id AS avgift_id, forst, sist FROM perioder
-              LEFT JOIN avgift ON perioder.id=avgift.perioder_id
-              ORDER BY forst DESC, sist DESC, medlemstyp_id";
+    $query = "SELECT period.id AS period_id, period, membershiptype_id, fee, fee.id AS fee_id, first, last FROM period
+              LEFT JOIN fee ON period.id=fee.period_id
+              ORDER BY first DESC, last DESC, membershiptype_id";
     $DBH->query($query);
-    $avgifter = $DBH->resultset();
-    if(!empty($avgifter)){
-        return $avgifter;
-    }else{
-        return NULL;
+    $fees = $DBH->resultset();
+    if (!empty($fees)) {
+        return $fees;
+    } else {
+        return null;
     }
 }
 
 /**
  * ??
  *
- * @param ?? $fee ??
+ * @param ?? $fee        ??
  * @param ?? $membertype ??
  *
  * @return object
  */
-function getFeeId($fee, $membertype){
+function getFeeId($fee, $membertype)
+{
     $DBH = new DB();
-    $query = "SELECT avgift.id FROM avgift
-              INNER JOIN perioder ON avgift.perioder_id=perioder.id
-              INNER JOIN medlemstyp on avgift.medlemstyp_id=medlemstyp.id
-              WHERE perioder.period=:fee AND
-                    avgift.medlemstyp_id=:memtype";
+    $query = "SELECT fee.id FROM fee
+              INNER JOIN period ON fee.period_id=period.id
+              INNER JOIN membershiptype on fee.membershiptype_id=membershiptype.id
+              WHERE period.period=:fee AND
+                    fee.membershiptype_id=:memtype";
     $DBH->query($query);
     $DBH->bind(":fee", $fee);
     $DBH->bind(":memtype", $membertype);
@@ -1348,12 +1227,12 @@ function getFeeId($fee, $membertype){
  *
  * @return mixed
  */
-function getMedlemstyper()
+function getMembershiptypes()
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM medlemstyp");
-    $medlemstyper = $DBH->resultset();
-    return $medlemstyper;
+    $DBH->query("SELECT * FROM membershiptype");
+    $membershiptypes = $DBH->resultset();
+    return $membershiptypes;
 }
 
 /**
@@ -1361,12 +1240,12 @@ function getMedlemstyper()
  *
  * @return mixed
  */
-function getBetalsatt()
+function getPaymentway()
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM betalsatt");
-    $betalsatt = $DBH->resultset();
-    return $betalsatt;
+    $DBH->query("SELECT * FROM paymenttype");
+    $paymentway = $DBH->resultset();
+    return $paymentway;
 }
 
 /**
@@ -1377,35 +1256,35 @@ function getBetalsatt()
 function removePayment()
 {
     $DBH = new DB();
-    $DBH->query("UPDATE betalningar SET deleted='1' 
+    $DBH->query("UPDATE payment SET deleted='1'
                 WHERE id=:bid");
-    $DBH->bind(":bid", $_POST['betid']);
+    $DBH->bind(":bid", $_POST['paymentId']);
     $DBH->execute();
 }
 
 /**
  * Counts the amount of members for the supplied type of member.
  *
- * @param string $benamning Membership type
+ * @param string $membershiptype Membership type
  *
  * @return int
  */
-function getNumberOfMembers($benamning)
+function getNumberOfMembers($membershiptype)
 {
     $DBH = new DB();
-    $query = "SELECT count(betalningar.id) AS antal, medlemstyp.benamning
-              FROM betalningar
-              LEFT JOIN avgift ON betalningar.avgift_id = avgift.id
-              LEFT JOIN medlemstyp ON avgift.medlemstyp_id = medlemstyp.id
-              LEFT JOIN perioder ON avgift.perioder_id=perioder.id
-              WHERE perioder.forst<=DATE(NOW()) AND
-              perioder.sist>=DATE(NOW()) AND
-              betalningar.deleted = 0 AND
-              medlemstyp.benamning = :benamning";
+    $query = "SELECT count(payment.id) AS count, membershiptype.naming
+              FROM payment
+              LEFT JOIN fee ON payment.fee_id = fee.id
+              LEFT JOIN membershiptype ON fee.membershiptype_id = membershiptype.id
+              LEFT JOIN period ON fee.period_id=period.id
+              WHERE period.first<=DATE(NOW()) AND
+              period.last>=DATE(NOW()) AND
+              payment.deleted = 0 AND
+              membershiptype.naming = :naming";
     $DBH->query($query);
-    $DBH->bind(":benamning",$benamning);
+    $DBH->bind(":naming", $membershiptype);
     $result = $DBH->single();
 
-    return $result["antal"];
+    return $result["count"];
 }
 ?>

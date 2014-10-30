@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -21,38 +21,38 @@ putBoxStart();
 ?>
 <h2>Avgifter</h2>
 <?php
-$avgifter = getAvgifter();
-$perioder = getPeriods();
-$medlemstyper = getMedlemstyper();
+$fees = getFees();
+$periods = getPeriods();
+$membershiptypes = getMembershiptypes();
 $periodid = -1;
-$medlemstypid = -1;
+$membershiptype_id = -1;
 $visibility = "style=\"visibility:hidden\"";
-$medlemstypvisibility = "style=\"visibility:hidden\"";
-$avgiftid = -1;
-$avgift = 0;
+$membertypevisibility = "style=\"visibility:hidden\"";
+$feeid = -1;
+$fee = 0;
 if (isset($_GET["periodid"]) && $_GET["periodid"] > 0) {
     $DBH = new DB();
-    $periodid = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_GET["periodid"]);
-    $medlemstypvisibility = "";
-    if (isset($_GET["medlemstypid"]) && $_GET["medlemstypid"] > 0) {
-        $medlemstypid = mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $_GET["medlemstypid"]);
+    $periodid = $_GET["periodid"];
+    $membertypevisibility = "";
+    if (isset($_GET["membershiptype_id"]) && $_GET["membershiptype_id"] > 0) {
+        $membershiptype_id = $_GET["membershiptype_id"];
         $visibility = "";
 
-        $DBH->query("SELECT id, avgift FROM avgift
-                    WHERE perioder_id=:pid AND
-                    medlemstyp_id=:mtid");
+        $DBH->query("SELECT id, fee FROM fee
+                    WHERE period_id=:pid AND
+                    membershiptype_id=:mtid");
         $DBH->bind(":pid", $periodid);
-        $DBH->bind(":mtid", $medlemstypid);
+        $DBH->bind(":mtid", $membershiptype_id);
         $r = $DBH->resultset();
         if($DBH->rowCount() > 0){
-            $avgiftid = $r[0]['id'];
-            $avgift = $r[0]['avgift'];
+            $feeid = $r[0]['id'];
+            $fee = $r[0]['fee'];
         }
     }
 }
 
-echo "<form name=\"avgift\" method=\"post\">\n";
-echo "    <input type=\"hidden\" readonly=\"readonly\" value=\"ChangeAvgift\" name=\"handler\" />
+echo "<form name=\"fee\" method=\"post\">\n";
+echo "    <input type=\"hidden\" readonly=\"readonly\" value=\"ChangeFee\" name=\"handler\" />
     <table>
         <tr class=\"toptr\">
             <td><p>Period</p></td>
@@ -62,10 +62,10 @@ echo "    <input type=\"hidden\" readonly=\"readonly\" value=\"ChangeAvgift\" na
         </tr>
         <tr>
             <td>
-                <select name=\"period_id\" onchange=\"window.location = '?page=avgifter&amp;periodid='+(document.forms.avgift.period_id[document.forms.avgift.period_id.selectedIndex].value);\">
+                <select name=\"period_id\" onchange=\"window.location = '?page=fees&amp;periodid='+(document.forms.fee.period_id[document.forms.fee.period_id.selectedIndex].value);\">
                     <option value=\"-1\">Ange period</option>\n";
-foreach ($perioder as $period) {
-    if (strtotime($period["forst"]) > date("U")) {
+foreach ($periods as $period) {
+    if (strtotime($period["first"]) > date("U")) {
         $selected = "";
         if ($period["id"] == $periodid) {
             $selected = "SELECTED";
@@ -76,25 +76,25 @@ foreach ($perioder as $period) {
 echo"                </select>
             </td>
             <td>
-                <select $medlemstypvisibility name=\"medlemstyp_id\" onchange=\"window.location = '?page=avgifter&amp;periodid=$periodid&amp;medlemstypid='+(document.forms.avgift.medlemstyp_id[document.forms.avgift.medlemstyp_id.selectedIndex].value);\">
+                <select $membertypevisibility name=\"membershiptype_id\" onchange=\"window.location = '?page=fees&amp;periodid=$periodid&amp;membershiptype_id='+(document.forms.fee.membershiptype_id[document.forms.fee.membershiptype_id.selectedIndex].value);\">
                     <option value=\"-1\">Ange medlemstyp</option>\n";
-foreach ($medlemstyper as $id => $medlemstyp) {
+foreach ($membershiptypes as $id => $membershiptype) {
     $selected = "";
-    if ($medlemstyp["id"] == $medlemstypid) {
+    if ($membershiptype["id"] == $membershiptype_id) {
         $selected = "SELECTED";
     }
-    echo "                    <option value=\"".$medlemstyp["id"]."\" $selected>".$medlemstyp["benamning"]."</option>\n";
+    echo "                    <option value=\"".$membershiptype["id"]."\" $selected>".$membershiptype["naming"]."</option>\n";
 }
 
 
 echo "                </select>
             </td>
             <td>
-                <input type=\"hidden\" name=\"avgiftid\" value=\"$avgiftid\" />
-                <input $visibility type=\"text\" name=\"avgiften\" size=\"10\" value=\"$avgift\" />
+                <input type=\"hidden\" name=\"feeid\" value=\"$feeid\" />
+                <input $visibility type=\"text\" name=\"fee\" size=\"10\" value=\"$fee\" />
             </td>
             <td>
-                <img src=\"misc/save.png\" $visibility class=\"cursor\" onclick=\"document.forms['avgift'].submit();\" />
+                <img src=\"misc/save.png\" $visibility class=\"cursor\" onclick=\"document.forms['fee'].submit();\" />
             </td>
         </tr>
     </table>

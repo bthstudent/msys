@@ -18,28 +18,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-getConnection();
-
+$DBH = new DB();
+$DBH->query("SHOW TABLES LIKE 'settings'");
+$DBH->execute();
 $dbversion = -1;
-$nbr = 0;
-if ($r=mysqli_query($GLOBALS["___mysqli_ston"], "SHOW TABLES LIKE 'settings'")) {
-    $nbr=mysqli_num_rows($r);
-}
-if ($nbr == 0) {
+if ($DBH->rowCount()!=1) {
     $dbversion = 0;
     // initial upgrade of database if needed. Will add the dbversion 0 setting.
     include "../db/upgrade/$dbversion.db";
 }
 
-$r = mysqli_query(
-    $GLOBALS["___mysqli_ston"],
-    "SELECT option_value FROM settings
-    WHERE option_name = 'db-version'"
-);
-if (mysqli_num_rows($r) == 1) {
-    $a = mysqli_fetch_assoc($r);
-
-    $dbversion = $a["option_value"];
+$DBH->query("SELECT option_value FROM settings WHERE option_name = 'db-version'");
+$res = $DBH->single();
+if ($DBH->rowCount()==1) {
+    $dbversion = $res["option_value"];
 
     $upgrades = glob("../db/upgrade/*.db");
     foreach ($upgrades as $file) {
@@ -51,31 +43,16 @@ if (mysqli_num_rows($r) == 1) {
             continue;
         } else {
             include $file;
-            mysqli_query(
-                "UPDATE settings SET option_value='".$availableupgrade[1]."'
-                WHERE option_name='db-version'"
-            );
+            $DBH = new DB();
+            $DBH->query("UPDATE settings SET option_value=:version WHERE option_name='db-version'");
+            $DBH->bind(":version", $availableupgrade[1]);
+            $DBH->execute();
         }
     }
 } else {
     exit("<h1>ERROR: Database version missing in settings. Contact a database administrator for assistance.</h1>");
 }
 ?>
-<div class="logindivs" id="logindivleft">
-	<form name="student" method="post">
-    	<input type="hidden" readonly value="StudentLogin" name="handler" />
-        <h2>Studentinlogg</h2>
-        <div class="field_holder">
-            <label>Akronym:</label>
-            <input name="akronym" type="text" value="Student Login Disabled" tabindex="1" disabled ><br>
-            <label>Lösenord:</label>
-            <input name="pass1" type="password" tabindex="2" disabled >
-        </div>
-        <div class="right_align">
-			<input type="submit" value="Logga in" disabled >
-        </div>
-    </form>
-</div>
 <div class="logindivs">
     <form name="admin" method="post">
     	<input type="hidden" readonly value="AdminLogin" name="handler" />
@@ -84,7 +61,7 @@ if (mysqli_num_rows($r) == 1) {
             <label>Användarnamn:</label>
             <input name="username" type="text" tabindex="3"><br>
             <label>Lösenord:</label>
-            <input name="pass2" type="password" tabindex="4">
+            <input name="pass" type="password" tabindex="4">
         </div>
         <div class="right_align">
 	        <input type="submit" value="Logga in">

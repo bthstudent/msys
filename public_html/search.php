@@ -42,13 +42,13 @@ putBoxStart();
         </tr>
         <tr>
             <td style="padding:0 5;">
-            	<input type="text" name="PNR" tabindex="1" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
+            	<input type="text" name="SSN" tabindex="1" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
             </td>
             <td style="padding:0 5;">
 	            <input type="text" name="FNM" tabindex="2" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
             </td>
             <td style="padding:0 5;">
-	            <input type="text" name="ENM" tabindex="3" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
+	            <input type="text" name="LNM" tabindex="3" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>
             </td>
             <td style="padding:0 5;">
                 <input type="text" name="EMAIL" tabindex="4" onkeydown="if(event.keyCode==13) document.forms['Search'].submit()"/>

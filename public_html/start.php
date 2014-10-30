@@ -19,7 +19,6 @@
 */
 require_once "functions.php";
 putBoxStart();
-getConnection();
 ?>
 <h2>Blekinge studentkårs medlemsregister</h2>
 <div id="infoBoxes">

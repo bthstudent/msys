@@ -41,52 +41,53 @@ if (isset($_GET['cmd'])) {
 $userPermissions = authenticateAPIUser($apiKey, $username);
 
 switch($command) {
-case "getPerson":
+case "getMember":
     if ($userPermissions & 1) {
-        if (isset($_GET['pnr'])) {
-            $pnr = $_GET['pnr'];
+        if (isset($_GET['ssn'])) {
+            $ssn = $_GET['ssn'];
         } else {
-            echo "No Personalnumber included";
+            echo "No Socialsecuritynumber included";
             die();
         }
-        getAPIPerson($pnr);
+        getAPIMember($ssn);
     } else {
         echo "Insufficient permissions";
         die();
     }
     break;
-case "setPerson":
+case "setMember":
     if ($userPermissions & 2) {
-        if (isset($_GET['pnr'])) {
-            $data->PNR = $_GET['pnr'];
+        if (isset($_GET['ssn'])) {
+            $data->SSN = $_GET['ssn'];
         } else {
-            echo "No Personalnumber included";
+            echo "No Socialsecuritynumber included";
             die();
         }
-        $data->CO     = $_GET['cof'];
+        $data->CO     = $_GET['co'];
         $data->EMAIL  = $_GET['ema'];
-        $data->ADR    = $_GET['adr'];
+        $data->ADDR    = $_GET['addr'];
         $data->PSTNR  = $_GET['psn'];
-        $data->ORT    = $_GET['ort'];
-        $data->LAND   = $_GET['lan'];
-        $data->AVISEJ = $_GET['ave'];
-        setAPIPersonData($data);
+        $data->CITY    = $_GET['city'];
+        $data->COUNTRY   = $_GET['cou'];
+        $data->DONOTAD = $_GET['adv'];
+        $data->PHO = $_GET['pho'];
+        updateMember($data);
     } else {
         echo "Insufficient permissions";
         die();
     }
     break;
-case "registerPay":
+case "registerPayment":
     if ($userPermissions & 4) {
-        if (isset($_GET['pnr'])) {
-            $data->PNR = $_GET['pnr'];
+        if (isset($_GET['ssn'])) {
+            $data->SSN = $_GET['ssn'];
         } else {
-            echo "No Personalnumber included";
+            echo "No Socialsecuritynumber included";
             die();
         }
 
-        if (isset($_GET['btw'])) {
-            $data->BETWAY = $_GET['btw'];
+        if (isset($_GET['pwy'])) {
+            $data->PAYWAY = $_GET['pwy'];
         } else {
             echo "No Way of payment included";
             die();
@@ -99,50 +100,49 @@ case "registerPay":
             die();
         }
 
-        if (isset($_GET['dat'])) {
-            $data->BETDATE = $_GET['dat'];
+        if (isset($_GET['pda'])) {
+            $data->PAYDATE = $_GET['pda'];
         } else {
             echo "No date of payment included";
             die();
         }
 
-        if (isset($_GET['bet'])) {
-            $data->BET = $_GET['bet'];
+        if (isset($_GET['paid'])) {
+            $data->PAID = $_GET['paid'];
         } else {
             echo "No paysum included";
             die();
         }
 
-        if (isset($_GET['med'])) {
-            $data->MEDTYPE = $_GET['med'];
+        if (isset($_GET['met'])) {
+            $data->MEMTYPE = $_GET['met'];
         } else {
             echo "No Membershiptype included";
             die();
         }
-
-        registerAPIPayment($data);
+        $data->PAYWAY = 3;
+        addPayment($data);
     }
     break;
-case "registerPerson":
+case "registerMember":
     if ($userPermissions & 8) {
-        if (isset($_GET['pnr'])) {
-            $data->PNR = $_GET['pnr'];
+        if (isset($_GET['ssn'])) {
+            $data->SSN = $_GET['ssn'];
         } else {
-            echo "No Personalnumber included";
+            echo "No Socialsecuritynumber included";
             die();
         }
         $data->FNM    = urldecode($_GET['fnm']);
-        $data->ENM    = urldecode($_GET['enm']);
-        $data->CO     = urldecode($_GET['cof']);
+        $data->LNM    = urldecode($_GET['lnm']);
+        $data->CO     = urldecode($_GET['co']);
         $data->EMAIL  = urldecode($_GET['ema']);
-        $data->ADR    = urldecode($_GET['adr']);
+        $data->ADDR    = urldecode($_GET['addr']);
         $data->PSTNR  = urldecode($_GET['psn']);
-        $data->ORT    = urldecode($_GET['ort']);
-        $data->LAND   = urldecode($_GET['lan']);
-        $data->AVISEJ = urldecode($_GET['ave']);
-        $data->FELADR = 0;
-        $data->TEL    = "0";
-        addAPIPerson($data);
+        $data->CITY    = urldecode($_GET['city']);
+        $data->COUNTRY   = urldecode($_GET['coun']);
+        $data->DONOTAD = urldecode($_GET['adv']);
+        $data->WRNADDR = 0;
+        addMember($data);
     } else {
         echo "Insufficient permissions";
         die();
@@ -150,15 +150,15 @@ case "registerPerson":
     break;
 case "isMember":
     if ($userPermissions & 16) {
-        if (isset($_GET['pnr'])) {
-            $IsMember = isMember($_GET['pnr']);
+        if (isset($_GET['ssn'])) {
+            $IsMember = isMember($_GET['ssn']);
             if ($IsMember) {
-                echo $_GET['pnr'] . ",1";
+                echo $_GET['ssn'] . ",1";
             } else {
-                echo $_GET['pnr'] . ",0";
+                echo $_GET['ssn'] . ",0";
             }
         } else {
-            echo "No Personalnumber included";
+            echo "No Socialsecuritynumber included";
             die();
         }
     }
@@ -166,29 +166,14 @@ case "isMember":
 case 'isRegistered':
     if($userPermissions & 16) {
         if(isset($_GET['ssn'])){
-            $APIperson = returnAPIPerson($_GET['ssn']);
-            if(isset($APIperson["id"])){
+            $member = getRegisteredPersonBySsn($_GET['ssn']);
+            if(isset($member["id"])){
                 echo true;
             } else {
                 echo false;
             }
         } else {
             echo false;
-        }
-    }
-    break;
-case 'registerPayment':
-    if($userPermissions & 4) {
-        if(isset($_GET['ssn']) && isset($_GET['fee']) && isset($_GET['membertype']) && isset($_GET['date']) && isset($_GET['paysum'])){
-            $data->PNR = returnAPIPerson($_GET['ssn']);
-            $data->PNR = $data->PNR["id"];
-            $data->PERIOD = getFeeId($_GET['fee'], $_GET['membertype']);
-            $data->PERIOD = $data->PERIOD["id"];
-            $data->BETWAY = 3;
-            $data->BETDATE = $_GET['date'];
-            $data->BET = $_GET['paysum'];
-            $data->MEDTYPE = false;
-            registerAPIPayment($data);
         }
     }
     break;

@@ -19,58 +19,57 @@
 */
 require_once "functions.php";
 putBoxStart();
-getConnection();
-$result = getPerson($_GET["id"]);
-echo "<h2>Personuppgifter</h2>";
+$result = getMember($_GET["id"]);
+echo "<h2>Medlemsuppgifter</h2>";
 if ($result) {
-    echo "<form name=\"Person\" class=\"info\" method=\"post\">
-			<input type=\"hidden\" readonly=\"readonly\" value=\"ChangePerson\" name=\"handler\" />
+    echo "<form name=\"Member\" class=\"info\" method=\"post\">
+			<input type=\"hidden\" readonly=\"readonly\" value=\"ChangeMember\" name=\"handler\" />
 			<input name=\"ID\" readonly=\"readonly\" type=\"hidden\" value=\"" . $result["id"] . "\">
 			<input name=\"url\" readonly=\"readonly\" type=\"hidden\" value=\"" . "?" . $_SERVER['QUERY_STRING'] . "\">
 			<table>
 				<tr>
 					<td>Personnr:</td>
-					<td><input type=\"text\" name=\"PNR\" value=\"" . $result["personnr"] . "\" tabindex=\"1\"/></td>
+					<td><input type=\"text\" name=\"SSN\" value=\"" . $result["ssn"] . "\" tabindex=\"1\"/></td>
 					<td>C/O:</td>
 					<td><input type=\"text\" name=\"CO\" value=\"" . $result["co"] . "\" tabindex=\"4\" /></td>
 					<td class=\"right_col\">Fel Adress:</td>
-					<td class=\"right_col\"><input type=\"checkbox\" name=\"FELADR\" value=\"1\" onclick=\"document.forms['Person'].submit()\" ";
-    if ($result["feladress"]) {
+					<td class=\"right_col\"><input type=\"checkbox\" name=\"FELADR\" value=\"1\" onclick=\"document.forms['Member'].submit()\" ";
+    if ($result["wrongaddress"]) {
         echo "checked";
     }
     echo			" tabindex=\"12\" /></td>
 				</tr>
 				<tr>
 					<td>Förnamn:</td>
-					<td><input type=\"text\" name=\"FNM\" value=\"" . $result["fornamn"] . "\" tabindex=\"2\"/></td>
+					<td><input type=\"text\" name=\"FNM\" value=\"" . $result["firstname"] . "\" tabindex=\"2\"/></td>
 					<td>Adress:</td>
-					<td><input type=\"text\" name=\"ADR\" value=\"" . $result["adress"] . "\" tabindex=\"5\" /></td>
+					<td><input type=\"text\" name=\"ADDR\" value=\"" . $result["address"] . "\" tabindex=\"5\" /></td>
 					<td>Avisera ej:</td>
-					<td><input type=\"checkbox\" name=\"AVISEJ\" value=\"1\" onclick=\"document.forms['Person'].submit()\" ";
-    if ($result["aviseraej"] == 1) {
+					<td><input type=\"checkbox\" name=\"DONOTAD\" value=\"1\" onclick=\"document.forms['Member'].submit()\" ";
+    if ($result["donotadvertise"] == 1) {
         echo "checked";
     }
     echo 			" tabindex=\"13\" /></td>
 				</tr>
 				<tr>
 					<td>Efternamn:</td>
-					<td><input type=\"text\" name=\"ENM\" value=\"" . $result["efternamn"] . "\" tabindex=\"3\"/></td>
+					<td><input type=\"text\" name=\"LNM\" value=\"" . $result["lastname"] . "\" tabindex=\"3\"/></td>
 					<td>Postnummer:</td>
-					<td><input type=\"text\" name=\"PSTNR\" value=\"" . $result["postnr"] . "\" tabindex=\"6\" /></td>
+					<td><input type=\"text\" name=\"PSTNR\" value=\"" . $result["postalnr"] . "\" tabindex=\"6\" /></td>
 					<td>Senast ändrad</td>
-					<td>" . $result["senastandrad"] . "</td>
+					<td>" . $result["lastedit"] . "</td>
 				</tr>
 				<tr>
 					<td>Telefon:</td>
-					<td><input type=\"text\" name=\"TEL\" value=\"" . $result["telefon"] . "\" tabindex=\"10\" /></td>
+					<td><input type=\"text\" name=\"PHO\" value=\"" . $result["phone"] . "\" tabindex=\"10\" /></td>
 					<td>Ort:</td>
-					<td><input type=\"text\" name=\"ORT\" value=\"" . $result["ort"] . "\" tabindex=\"7\" /></td>
+					<td><input type=\"text\" name=\"CITY\" value=\"" . $result["city"] . "\" tabindex=\"7\" /></td>
 				</tr>
 				<tr>
 					<td>Epost:</td>
-					<td><input type=\"text\" name=\"EMAIL\" value=\"" . $result["epost"] . "\" tabindex=\"11\" /></td>
+					<td><input type=\"text\" name=\"EMAIL\" value=\"" . $result["email"] . "\" tabindex=\"11\" /></td>
 					<td>Land:</td>
-					<td><input type=\"text\" name=\"LAND\" value=\"" . $result["land"] . "\" tabindex=\"8\" /></td>
+					<td><input type=\"text\" name=\"COUNTRY\" value=\"" . $result["country"] . "\" tabindex=\"8\" /></td>
 				</tr>
 			</table>
 			<div style=\"text-align:right\">
@@ -79,7 +78,7 @@ if ($result) {
 		  </form>";
 
     echo "<form name=\"Whatever\" class=\"info\" method=\"post\">
-		  <input type=\"hidden\" readonly=\"readonly\" value=\"RemovePerson\" name=\"handler\" />
+		  <input type=\"hidden\" readonly=\"readonly\" value=\"RemoveMember\" name=\"handler\" />
 		  <input name=\"ID\" readonly=\"readonly\" type=\"hidden\" value=\"" . $_GET['id'] . "\">
 		  <div style=\"text-align:right\">
 		  <input type=\"submit\" value=\"Ta Bort Högvördige Medlem\">
@@ -107,24 +106,24 @@ if ($result) {
     if ($result) {
         $today = strtotime(date("Y-m-d"));
         foreach ($result as $value) {
-            $forst = strtotime($value["forst"]);
-            $sist = strtotime($value["sist"]);
-            if (!($forst < $today && $today < $sist)) {
+            $first = strtotime($value["first"]);
+            $last = strtotime($value["last"]);
+            if (!($first < $today && $today < $last)) {
                 $color = $bgcolor[$i%2];
             } else {
                 $color = $validcolor;
             }
             echo "<tr bgcolor=\"" . $color . "\" onmouseover=\"this.bgColor='" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $color . "'\">
                     <td>" . $value["period"] . "</td>
-                    <td>" . $value["benamning"] . "</td>
-                    <td>" . $value["avgift"] . "</td>
-                    <td>" . $value["betalat"] . "</td>
-                    <td>" . $value["betaldatum"] . "</td>
-                    <td>" . $value["betalsatt"] . "</td>
+                    <td>" . $value["membershiptype"] . "</td>
+                    <td>" . $value["fee"] . "</td>
+                    <td>" . $value["paid"] . "</td>
+                    <td>" . $value["paymentdate"] . "</td>
+                    <td>" . $value["paymenttype"] . "</td>
                     <td>
                       <form name=\"RemovePayment\" class=\"info\" method=\"post\">
                         <input type=\"hidden\" readonly=\"readonly\" value=\"RemovePayment\" name=\"handler\" />
-                        <input type=\"hidden\" readonly=\"readonly\" value=\"" . $value["id"] . "\" name=\"betid\"/>
+                        <input type=\"hidden\" readonly=\"readonly\" value=\"" . $value["id"] . "\" name=\"paymentId\"/>
                         <div style=\"text-align:right;float:right\">
                           <input type=\"submit\" value=\"X\">
                         </div>
@@ -145,51 +144,15 @@ if ($result) {
                  </tr>";
     }
     echo "</table>
-                <form style=\"margin:0\" name=\"Betalning\" action=\"?page=nybetalning&amp;id=" . $_GET['id'] . "\" method=\"post\">
+                <form style=\"margin:0\" name=\"Betalning\" action=\"?page=registerpayment&amp;id=" . $_GET['id'] . "\" method=\"post\">
                 <input name=\"url\" readonly=\"readonly\" type=\"hidden\" value=\"" . "?" . $_SERVER['QUERY_STRING'] . "\">
 			<div style=\"text-align:right\">
 				<input type=\"submit\" value=\"Registrera betalning\">
 			</div>
 		</form>";
     putBoxEnd();
-
-    putBoxStart();
-    echo"<h2>Uppdrag</h2>
-		 <table>
-			<tr class=\"toptr\">
-				<td>Period</td>
-				<td>Uppdrag</td>
-				<td>Beskrivning</td>
-			</tr>";
-    $result = getMandates($_GET['id']);
-    $i = 0;
-    if ($result) {
-        $today = strtotime(date("Y-m-d"));
-        foreach ($result as $value) {
-            $forst = strtotime($value["Forst"]);
-            $sist = strtotime($value["Sist"]);
-            if (!($forst < $today && $today < $sist)) {
-                $color = $bgcolor[$i%2];
-            } else {
-                $color = $validcolor;
-            }
-            echo "<tr bgcolor=\"" . $color . "\" onmouseover=\"this.bgColor=" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $color . "'\">
-					<td>" . $value["Period"] . "</td>
-					<td>" . $value["Benamning"] . "</td>
-					<td>" . $value["Beskrivning"] . "</td>
-				  </tr>";
-            $i++;
-        }
-    } else {
-        echo "<tr bgcolor=\"" . $bgcolor[$i%2] . "\" onmouseover=\"this.bgColor=" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $bgcolor[$i%2] . "'\">
-				<td>-</td>
-				<td>-</td>
-				<td>-</td>
-			  </tr>";
-    }
-    echo "</table>";
 } else {
-    $result = getPerson($_GET["id"], true);
+    $result = getMember($_GET["id"], true);
     if ($result) {
         echo "Personen är borttagen";
     } else {

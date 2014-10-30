@@ -1,16 +1,14 @@
 <?php
-    mysqli_query(
-    $GLOBALS["___mysqli_ston"],
-    "CREATE TABLE IF NOT EXISTS settings (
+    $DBH = new DB();
+
+    $DBH->query("CREATE TABLE IF NOT EXISTS settings (
       id int(11) NOT NULL AUTO_INCREMENT,
       option_name varchar(20) NOT NULL UNIQUE,
       option_value varchar(20) NOT NULL,
       PRIMARY KEY (id)
-    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;"
-    ) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
+    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8");
+    $DBH->execute();
 
-    mysqli_query(
-    $GLOBALS["___mysqli_ston"],
-    "INSERT INTO settings(option_name, option_value) VALUES('db-version', 0);"
-    ) or die(mysqli_error($GLOBALS["___mysqli_ston"]));
+    $DBH->query("INSERT INTO settings(option_name, option_value) VALUES('db-version', 0)");
+    $DBH->execute();
 ?>
