@@ -121,3 +121,12 @@ CREATE TABLE IF NOT EXISTS uppdrag (
   beskrivning text NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS settings (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  option_name varchar(20) NOT NULL UNIQUE,
+  option_value varchar(20) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;

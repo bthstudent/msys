@@ -17,6 +17,49 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+getConnection();
+
+$dbversion = -1;
+$nbr = 0;
+if ($r=mysqli_query($GLOBALS["___mysqli_ston"], "SHOW TABLES LIKE 'settings'")) {
+    $nbr=mysqli_num_rows($r);
+}
+if ($nbr == 0) {
+    $dbversion = 0;
+    // initial upgrade of database if needed. Will add the dbversion 0 setting.
+    include "../db/upgrade/$dbversion.db";
+}
+
+$r = mysqli_query(
+    $GLOBALS["___mysqli_ston"],
+    "SELECT option_value FROM settings
+    WHERE option_name = 'db-version'"
+);
+if (mysqli_num_rows($r) == 1) {
+    $a = mysqli_fetch_assoc($r);
+
+    $dbversion = $a["option_value"];
+
+    $upgrades = glob("../db/upgrade/*.db");
+    foreach ($upgrades as $file) {
+        if (!preg_match("/^\.\.\/db\/upgrade\/([0-9]+)\.db$/", $file, $availableupgrade)) {
+            continue;
+        }
+        if ($availableupgrade[1] <= $dbversion) {
+            // Not applicable, this is already applied.
+            continue;
+        } else {
+            include $file;
+            mysqli_query(
+                "UPDATE settings SET option_value='".$availableupgrade[1]."'
+                WHERE option_name='db-version'"
+            );
+        }
+    }
+} else {
+    exit("<h1>ERROR: Database version missing in settings. Contact a database administrator for assistance.</h1>");
+}
 ?>
 <div class="logindivs" id="logindivleft">
 	<form name="student" method="post">
