@@ -740,29 +740,47 @@ function insertHead($menu=false)
           </h1>";
 
     if ($menu) {
-        echo "<div id=\"logout\">
-                <form name=\"logout\" method=\"post\">
-                    <select name=\"Medlem\" onChange=\"location = '?page='+this.options[this.selectedIndex].value; this.selectedIndex=0;\">
-                        <option value=\"0\" selected=\"selected\">-Medlemmar</option>
-                        <option value=\"newmember\">Ny person</option>
-                    </select>
-                    <select name=\"Rapporter\" onChange=\"window.open('/createreport.php?type='+this.options[this.selectedIndex].value); this.selectedIndex=0;\">
-                        <option value=\"0\" selected=\"selected\">-Rapporter</option>
-                        <option value=\"1\">Vilka har betalat?</option>
-                        <option value=\"2\">Vilka har ej betalat?</option>
-                    </select>
-                    <select name=\"Administration\" onChange=\"location = '?page='+this.options[this.selectedIndex].value; this.selectedIndex=0;\">
-                        <option value=\"0\" selected=\"selected\">-Administration</option>
-                        <option value=\"fees\">Avgifter</option>
-                        <option value=\"periods\">Perioduppgifter</option>
-                        <option value=\"user\">Användarkonton</option>
-                        <option value=\"webservice\">Webservice</option>
-                    </select>
-                    <img class=\"menu_button\" src=\"misc/logout.png\" onclick=\"document.forms['logout'].submit();\" />
-                    <img class=\"menu_button\" src=\"misc/about.png\" onclick=\"location = '?page=om';\" />
-                    <input type=\"hidden\" readonly=\"readonly\" value=\"Logout\" name=\"handler\" />
-                </form>
-              </div>";
+        echo "
+          <ul style=\"width: 500px; margin: 0 auto 0 auto;\">
+              <li>
+                  <a href=\"?page=newmember\" class=\"menu item\">Ny person</a>
+              </li>
+              <li>
+                  <a href=\"#\" class=\"menu item\">Rapporter</a>
+              <ul>
+                  <li>
+                      <a href=\"createreport.php?type=1\" class=\"menu item\">Betalda</a>
+                      <a href=\"createreport.php?type=2\" class=\"menu item\">Ej betalda</a>
+                  </li>
+              </ul>
+              </li>
+              <li>
+                  <a href=\"#\" class=\"menu item\">Administration</a>
+                  <ul>
+                      <li>
+                          <a href=\"?page=fees\" class=\"menu item\">Avgifter</a>
+                      </li>
+                      <li>
+                          <a href=\"?page=periods\" class=\"menu item\">Perioduppgifter</a>
+                      </li>
+                      <li>
+                          <a href=\"?page=user\" class=\"menu item\">Användarkonton</a>
+                      </li>
+                      <li>
+                          <a href=\"?page=webservice\" class=\"menu item\">Webservice</a>
+                      </li>
+                  </ul>
+              </li>
+              <li>
+                  <a href=\"?page=about\" class=\"menu item\">Om</a>
+              </li>
+              <li>
+                  <form name=\"logout\" method=\"post\">
+                  <a href=\"#\" class=\"menu item\" onclick=\"document.forms['logout'].submit();\">Logga ut</a>
+                  <input type=\"hidden\" readonly=\"readonly\" value=\"Logout\" name=\"handler\" />
+                  </form>
+              </li>
+          </ul>";
     }
     putBoxEnd();
 }

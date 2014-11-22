@@ -194,3 +194,66 @@ input[type=submit]:active {
 	margin-left:5px;
 	cursor:pointer;
 }
+
+##### Menu #####
+ul
+{
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul li
+{
+    display: block;
+    position: relative;
+    float: left;
+}
+
+li ul
+{
+    display: none;
+}
+
+ul li a
+{
+    display: block;
+    text-decoration: none;
+    color: #ffffff;
+    border: 1px solid #000;
+    border-radius: 3px;
+    padding: 5px 15px 5px 15px;
+    background: #FFA500;
+    margin-left: 1px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+ul li a:hover
+{
+    background: #FFB611;
+    text-decoration:inherit;
+}
+li:hover ul
+{
+    display: block;
+    position: absolute;
+}
+
+li:hover li
+{
+    float: none;
+    font-size: 11px;
+}
+
+li:hover a
+{
+    background: #FFA500;
+}
+
+li:hover li a:hover
+{
+    background: #FFB611;
+}
