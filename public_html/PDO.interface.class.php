@@ -122,4 +122,8 @@ class DB {
     public function debugDumpParams() {
         return $this->_stmt->debugDumpParams();
     }
+
+    public function getDBName() {
+        return $this->_dbname;
+    }
 }
