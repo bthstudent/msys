@@ -130,3 +130,4 @@ CREATE TABLE IF NOT EXISTS settings (
   option_value varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+INSERT INTO settings(option_name, option_value) VALUES('db-version', 0);
