@@ -808,6 +808,7 @@ function getMembers($payment=true,$address=false,$page=0,$pagesize=20)
         $query .= ", co, address, postalnr, country, wrongaddress, donotadvertise";
     }
     $query .= " FROM member
+        WHERE deleted=0
         GROUP BY ssn
                 ORDER BY ssn DESC";
     if ($page>0) {
@@ -837,6 +838,7 @@ function getNonMembers()
     unset($query);
     $query = "SELECT ssn, lastname, firstname, email, phone";
     $query .= " FROM member
+                WHERE deleted=0
                 GROUP BY ssn
                 ORDER BY ssn DESC";
     $DBH->query($query);
