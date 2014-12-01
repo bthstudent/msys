@@ -419,16 +419,16 @@ function setAPIPersonData($data)
     $DBH->bind(":pnr", $data->PNR);
     $personID = $DBH->single();
 
-    $DBH->query("UPDATE personer SET telefon='" . $data->TEL . "',
-                    epost ='" . $data->EMAIL . "',
-                    co='" . $data->CO . "',
-                    adress='" . $data->ADR . "',
-                    postnr='" . $PSTNR . "',
-                    ort='". $data->ORT . "',
-                    land='" . $data->LAND . "',
-                    aviseraej='" . $data->AVISEJ . "',
+    $DBH->query("UPDATE personer SET telefon = :tel,
+                    epost = :epost,
+                    co = :co,
+                    adress = :adress,
+                    postnr = :postnr,
+                    ort = :ort,
+                    land = :land,
+                    aviseraej = :aviseraej,
                     senastandrad=DATE(NOW())
-                WHERE id='" . $personID["id"] . "'");
+                WHERE id = :id");
     $DBH->bind(":tel", $data->TEL);
     $DBH->bind(":epost", $data->EMAIL);
     $DBH->bind(":co", $data->CO);

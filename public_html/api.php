@@ -141,6 +141,7 @@ case "registerPerson":
         $data->LAND   = urldecode($_GET['lan']);
         $data->AVISEJ = urldecode($_GET['ave']);
         $data->FELADR = 0;
+        $data->TEL    = "0";
         addAPIPerson($data);
     } else {
         echo "Insufficient permissions";
