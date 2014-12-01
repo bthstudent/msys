@@ -110,7 +110,7 @@ if (tableexists("personer") && ! tableexists("member")) {
     $DBH->query("ALTER TABLE member CHANGE adress address varchar(255) DEFAULT NULL");
     $DBH->execute();
 
-    $DBH->query("ALTER TABLE member CHANGE postnr postalnr int(5) DEFAULT NULL");
+    $DBH->query("ALTER TABLE member CHANGE postnr postalnr varchar(5) DEFAULT NULL");
     $DBH->execute();
 
     $DBH->query("ALTER TABLE member CHANGE ort city varchar(255) DEFAULT NULL");

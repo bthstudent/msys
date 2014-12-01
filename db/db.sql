@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS member (
   lastname varchar(255) NOT NULL,
   co varchar(255) DEFAULT NULL,
   address varchar(255) DEFAULT NULL,
-  postalnr int(5) DEFAULT NULL,
+  postalnr varchar(5) DEFAULT NULL,
   city varchar(255) DEFAULT NULL,
   country varchar(255) DEFAULT NULL,
   phone varchar(255) DEFAULT NULL,
