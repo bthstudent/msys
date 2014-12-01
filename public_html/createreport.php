@@ -24,8 +24,6 @@ if (isset($_GET['type']) && !($_GET['type']==0)) {
     case "1":
         $filename ="medlemmar" . date("Y") . ".xls";
         $persons = getMembers(true,true);
-        print_r($persons);
-        exit();
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon;Period;Medlemstyp;Avgift;Betalat \n";
         foreach ($persons as $key => $person) {
             $contents .= $person["ssn"] . ";" .
