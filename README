@@ -5,12 +5,12 @@ was working very good and had lots of nice features. We used hardly
 any of them. When investigating posible cost cuts the membership
 tracking system was an obvious candidate as we only needed a bare
 minimum. However, going for a classic approach and tuck all names and
-addresses into a spread sheet wasn't really and option.
+addresses into a spread sheet wasn't really an option.
 
 Soon enough the discussion began to write a web application to take
 care of the actual interface towards some kind of database. During
 initial planning we decided to mimic the parts of the proprietary
-system we used and to provide an API 8to be a drop in replacement for
+system we used and to provide an API to be a drop in replacement for
 the old system that exposed itself via a web service.
 
 During the autumn 2012 things was considered pretty much done. The
@@ -26,24 +26,33 @@ At the time of writing (autumn 2013) there are a bunch of known bugs
 and issues but the system is in daily use both via direct web
 interaction and via the API.
 
-Code can be found at http://git.sis.bthstudent.se/?p=msys.git, the
+Code can be found at https://gitlab.bthstudent.se/msys/msys, the
 license to adhere to is AGPLv3.
 
 
 INSTALL AND USAGE
 
 This code is clean PHP5, HTML, CSS and JavaScript. To execute it you
-need a standard webserver with PHP and a MySQL server instance. It
-might work with MariaDB but it has not yet been tested.
+need a standard webserver with PHP and a MySQL server like
+instance. Some development is done with MariaDB as backend, just to
+try it out.
 
-git clone the repository (http://git.sis.bthstudent.se/git/msys), set
-Apache to serve the public_html directory. Copy example-config.php to
-local-config.php and add the relevant database information there.
+git clone the repository (https://gitlab.bthstudent.se/msys/msys.git),
+set Apache to serve the public_html directory. Copy example-config.php
+to local-config.php and add the relevant database information there.
 
 Use the MySQL commandline client and read the db/db.sql file.
   mysql -u USERNAME -pPASSWORD databasename< db/db.sql
 
+The database user and a database must be in place before, the user
+needs most privs to operate. For experienced users you could tweak the
+privileges settings to your liking - the system does however try to
+update the database in the background when new versions are installed
+into the code tree. Using GRANT ALL on the databse in question is a
+good idea for that reason.
+
 Point your webclient to the system and login with admin as user and
 nimda as password.
 
-You are now ready to start.
+You are now ready to start. (A good first step is to add a new admin
+user and sign in with that instead and then remove the default one...)
