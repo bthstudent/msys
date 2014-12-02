@@ -1040,7 +1040,7 @@ function findFNM($fnm)
 {
     $DBH = new DB();
     $DBH->query("SELECT * FROM member
-              WHERE firstname LIKE '%$fnm%' AND deleted != 1");
+              WHERE firstname SOUNDS LIKE :fnm AND deleted != 1");
     $DBH->bind(":fnm", "%".$fnm."%");
     $members = $DBH->resultset();
     if (!empty($members)) {
@@ -1062,7 +1062,7 @@ function findLNM($lnm)
 {
     $DBH = new DB();
     $DBH->query("SELECT * FROM member
-              WHERE lastname LIKE :lnm AND deleted != 1");
+              WHERE lastname SOUNDS LIKE :enm AND deleted != 1");
     $DBH->bind(":lnm", "%".$lnm."%");
     $members = $DBH->resultset();
     if (!empty($members)) {
@@ -1086,8 +1086,8 @@ function findNM($fnm, $lnm)
 {
     $DBH = new DB();
     $DBH->query("SELECT * FROM member
-                WHERE firstname LIKE :fnm AND
-                    lastname LIKE :lnm
+                WHERE firstname SOUNDS LIKE :fnm AND
+                    lastname SOUNDS LIKE :enm
                     AND deleted != 1");
     $DBH->bind(":fnm", "%".$fnm."%");
     $DBH->bind(":lnm", "%".$lnm."%");
