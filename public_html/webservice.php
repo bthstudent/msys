@@ -54,7 +54,7 @@ $users = getAPIUsers();
 foreach ($users as $row) {
     echo "<hr />";
     echo "<div style=\"text-align:left;float:left\">";
-    echo "<p style=\"font-size:18px\">Användarnamn: " . $row["username"] . "<br>Permissions: " . $row["permissions"] . "<br>API-Nyckel: ";
+    echo "<p style=\"font-size:18px\">Användarnamn: " . $row["username"] . "<br>Permissions: " . $row["permission"] . "<br>API-Nyckel: ";
     echo "<input type=\"text\" value=\"". $row["apikey"] . "\" readonly float:right/>" . "</p>";
     echo "</div>";
     echo "<form name=\"RemoveAPIUser\" class=\"info\" method=\"post\">
