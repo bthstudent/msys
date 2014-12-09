@@ -303,12 +303,12 @@ function getUsers()
 function authenticateAPIUser($key, $user)
 {
     $DBH = new DB();
-    $DBH->query("SELECT apikey, permissions FROM api
+    $DBH->query("SELECT apikey, permission FROM api
                 WHERE username=:uname");
     $DBH->bind(":uname", $user);
     $result = $DBH->single();
     if ($result["apikey"] == $key) {
-        return $result["permissions"];
+        return $result["permission"];
     } else {
         return 0;
     }
