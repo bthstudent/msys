@@ -346,6 +346,32 @@ function getAPIMember($ssn)
 }
 
 /**
+ * Extracts members from the database using a search pattern.
+ * echoes the membes in a structured CSV.
+ */
+function getAPIMembers()
+{
+    $DBH = new DB();
+    unset($query);
+    $query = "SELECT ssn, lastname, firstname, email, phone";
+    $query .= ", co, address, postalnr, country, wrongaddress, donotadvertise";
+    $query .= " FROM member
+        WHERE deleted=0
+        GROUP BY ssn
+        ORDER BY ssn DESC";
+    $DBH->query($query);
+    $members = $DBH->resultset();
+    $result = Array();
+    foreach ($members as $member) {
+        if (isMember($member["ssn"])) {
+            echo $member["ssn"] . "," . $member["lastname"]  . "," . $member["firstname"] . "," . $member["email"]
+            . "," . $member["co"] . "," . $member["address"] . "," . $member["postalnr"] . "," . $member["country"]
+            . "," . $member["wrongaddress"] . "," . $member["donotadvertise"] . "\n";
+        }
+    }
+}
+
+/**
  * Validates the administrator trying to login.
  *
  * @return void

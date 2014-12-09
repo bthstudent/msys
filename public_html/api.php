@@ -39,7 +39,6 @@ if (isset($_GET['cmd'])) {
 }
 
 $userPermissions = authenticateAPIUser($apiKey, $username);
-
 switch($command) {
 case "getMember":
     if ($userPermissions & 1) {
@@ -50,6 +49,14 @@ case "getMember":
             die();
         }
         getAPIMember($ssn);
+    } else {
+        echo "Insufficient permissions";
+        die();
+    }
+    break;
+case "getMembers":
+    if ($userPermissions & 1) {
+        getAPIMembers();
     } else {
         echo "Insufficient permissions";
         die();
