@@ -907,7 +907,8 @@ function isMember($ssn)
                 LEFT JOIN member ON payment.member_id=member.id
                 WHERE first<=DATE(NOW()) AND
                 last>=DATE(NOW()) AND
-                ssn = :ssn");
+                ssn = :ssn AND
+                payment.deleted = 0");
     $DBH->bind(":ssn", $ssn);
 
     $IsMember = $DBH->single();
