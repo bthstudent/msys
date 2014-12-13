@@ -966,22 +966,6 @@ function getRegisteredPersonBySsn($ssn)
 }
 
 /**
- * Extract information about all members.
- * Returns the information in a array.
- *
- * A rather stupid function really...
- *
- * @return mixed
- */
-function getPersons()
-{
-    $DBH = new DB();
-    $DBH->query("SELECT * FROM member WHERE deleted != 1");
-    $members = $DBH->resultset();
-    return $members;
-}
-
-/**
  * Searches for members matching the email field.
  * Will not search for members marked as deleted.
  *
