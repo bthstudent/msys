@@ -1085,11 +1085,12 @@ function findNM($fnm, $lnm)
 /**
  * Extrats all payments for a member.
  *
- * @param int $id The internal personal number of a member.
+ * @param int  $id         The internal personal number of a member.
+ * @param bool $onlyActive Only return payment(s) for current periods.
  *
  * @return mixed
  */
-function getPayments($id)
+function getPayments($id, $onlyActive=false)
 {
     $DBH = new DB();
     $query = "SELECT payment.id AS id, paymenttype.naming AS paymenttype,
@@ -1103,6 +1104,9 @@ function getPayments($id)
               LEFT JOIN period ON fee.period_id=period.id
               LEFT JOIN membershiptype ON fee.membershiptype_id=membershiptype.id
               WHERE payment.member_id=:id AND deleted != 1";
+    if ($onlyActive == true) {
+        $query .= " AND first<=DATE(NOW()) AND last>=DATE(NOW())";
+    }
     $DBH->query($query);
     $DBH->bind(":id", $id);
     $payments = $DBH->resultset();
