@@ -26,15 +26,15 @@ if (isset($_GET['type']) && !($_GET['type']==0)) {
         $persons = getMembers(true,true);
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon;Period;Medlemstyp;Avgift;Betalat \n";
         foreach ($persons as $key => $person) {
-            $contents .= $person["ssn"] . ";" .
-                         $person["lastname"] . ";" .
-                         $person["firstname"] . ";" .
-                         $person["email"] . ";" .
-                         $person["phone"] . ";" .
-                         $person["period"] . ";" .
-                         $person["membershiptype"] . ";" .
-                         $person["fee"] . ";" .
-                         $person["paid"] . " \n";
+            $contents .= $person["member"]["ssn"] . ";\"" .
+                         $person["member"]["lastname"] . "\";\"" .
+                         $person["member"]["firstname"] . "\";\"" .
+                         $person["member"]["email"] . "\";\"" .
+                         $person["member"]["phone"] . "\";" .
+                         $person["payment"]["period"] . ";" .
+                         $person["payment"]["membershiptype"] . ";" .
+                         $person["payment"]["fee"] . ";" .
+                         $person["payment"]["paid"] . " \n";
         }
         break;
     case "2":

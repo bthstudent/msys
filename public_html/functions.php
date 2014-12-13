@@ -786,8 +786,10 @@ function insertHead($menu=false)
 }
 
 /**
- * Extracts members from the database using a search pattern.
- * Returns the membes in a structurred array.
+ * Extracts members from the database using a search pattern.  Returns
+ * the membes in a array with a array per member, index "member" for
+ * member information and "payment" for payment information if that
+ * was requested.
  *
  * @param boolean $payment  If true the payment information is
  *                          included.
@@ -803,7 +805,7 @@ function getMembers($payment=true,$address=false,$page=0,$pagesize=20)
 {
     $DBH = new DB();
     unset($query);
-    $query = "SELECT ssn, lastname, firstname, email, phone";
+    $query = "SELECT id, ssn, lastname, firstname, email, phone";
     if ($address === true) {
         $query .= ", co, address, postalnr, country, wrongaddress, donotadvertise";
     }
@@ -819,7 +821,13 @@ function getMembers($payment=true,$address=false,$page=0,$pagesize=20)
     $result = Array();
     foreach ($members as $member) {
         if (isMember($member["ssn"])) {
-            $result[] = $member;
+            $temp=array();
+            $temp["member"] = $member;
+            if ($payment == true) {
+                $temp["payment"] = getPayments($member["id"], true)[0];
+            }
+            $result[] = $temp;
+
         }
     }
     return $result;
