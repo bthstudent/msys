@@ -210,8 +210,10 @@ function getAPIUsers()
 function addAPIUser()
 {
     $DBH = new DB();
+
+    // Here be sloppy error handling. Will render NOTICEs.
     $permission = $_POST['getPerson'] + $_POST['setPerson'] + $_POST['regPayment'] + $_POST['regPerson']  + $_POST['isMember'];
-    $query = "INSERT INTO api(username, apikey, permissions)
+    $query = "INSERT INTO api(username, apikey, permission)
               VALUES (:usr,
                       :key,
                       :perms)";
