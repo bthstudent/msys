@@ -42,11 +42,11 @@ if (isset($_GET['type']) && !($_GET['type']==0)) {
         $persons = getNonMembers();
         $contents = "Personnummer;Efternamn;Förnamn;Epost;Telefon\n";
         foreach ($persons as $key => $person) {
-            $contents .= $person["ssn"] . ";" .
-                         $person["lastname"] . ";" .
-                         $person["firstname"] . ";" .
-                         $person["email"] . ";" .
-                         $person["phone"] . " \n";
+            $contents .= $person["ssn"] . ";\"" .
+                         $person["lastname"] . "\";\"" .
+                         $person["firstname"] . "\";\"" .
+                         $person["email"] . "\";\"" .
+                         $person["phone"] . "\" \n";
         }
         break;
     }
