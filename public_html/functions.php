@@ -917,9 +917,11 @@ function countMembers()
                 FROM payment
                 LEFT JOIN fee ON payment.fee_id=fee.id
                 LEFT JOIN period ON fee.period_id=period.id
+                LEFT JOIN member ON payment.member_id=member.id
                 WHERE period.first<=DATE(NOW()) AND
                 period.last>=DATE(NOW()) AND
-                payment.deleted != 1");
+                payment.deleted != 1 AND
+                member.deleted != 1");
     $Count = $DBH->single();
     $memberCount = $Count["NumberOfMembers"];
     return $memberCount;
@@ -1317,15 +1319,17 @@ function removePayment()
 function getNumberOfMembers($membershiptype)
 {
     $DBH = new DB();
-    $query = "SELECT count(payment.id) AS count, membershiptype.naming
+    $query = "SELECT count(DISTINCT member_id) AS count, membershiptype.naming
               FROM payment
               LEFT JOIN fee ON payment.fee_id = fee.id
               LEFT JOIN membershiptype ON fee.membershiptype_id = membershiptype.id
               LEFT JOIN period ON fee.period_id=period.id
+              LEFT JOIN member ON payment.member_id=member.id
               WHERE period.first<=DATE(NOW()) AND
               period.last>=DATE(NOW()) AND
               payment.deleted = 0 AND
-              membershiptype.naming = :naming";
+              membershiptype.naming = :naming AND
+              member.deleted != 1";
     $DBH->query($query);
     $DBH->bind(":naming", $membershiptype);
     $result = $DBH->single();
