@@ -539,7 +539,7 @@ function addMember($data=false)
         $DBH->bind(":pho", $_POST['PHO']);
         $DBH->bind(":eml", $_POST['EMAIL']);
         $DBH->bind(":donotad", "0");
-        $DBH->bind(":wrngaddr", $_POST['WRONGADDR']);
+        $DBH->bind(":wrngaddr", "0");
         $DBH->execute();
     }
 }
