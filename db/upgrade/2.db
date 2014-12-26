@@ -1,0 +1,18 @@
+<?php
+    require "../db/functions.php";
+    $DBH = new DB();
+
+    $DBH->query("CREATE TABLE IF NOT EXISTS log (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      message TEXT NOT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8");
+    $DBH->execute();
+
+    if (tableexists("api")) {
+    $DBH->query("ALTER TABLE api DROP PRIMARY KEY");
+    $DBH->execute();
+    $DBH->query("ALTER TABLE api ADD id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT FIRST");
+    $DBH->execute();
+}
+?>

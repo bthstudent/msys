@@ -12,10 +12,11 @@ sha1('nimda'));
 -- --------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS api (
+  id int(11) NOT NULL AUTO_INCREMENT,
   username varchar(12) NOT NULL,
   apikey varchar(64) NOT NULL,
   permission int(11) NOT NULL,
-  PRIMARY KEY (username),
+  PRIMARY KEY (id),
   UNIQUE KEY apikey (apikey)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -111,4 +112,12 @@ CREATE TABLE IF NOT EXISTS settings (
   PRIMARY KEY (id),
   UNIQUE KEY option_name (option_name)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-INSERT INTO settings(option_name, option_value) VALUES('db-version', 1);
+INSERT INTO settings(option_name, option_value) VALUES('db-version', 2);
+
+-- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS log (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  message TEXT NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
