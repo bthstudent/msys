@@ -2,6 +2,7 @@
 require "../local-config.php";
 require "PDO.interface.class.php";
 require "lib/password.php";
+require "Logger.class.php";
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -223,6 +224,9 @@ function addAPIUser()
     $DBH->bind(":key", $_POST['KEY']);
     $DBH->bind(":perms", $permission);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "addAPIUser", "Created a new API user " . $_POST['USR']);
 }
 
 /**
@@ -237,6 +241,9 @@ function removeAPIUser()
                 WHERE username=:usr");
     $DBH->bind(":usr", $_POST['USR']);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeAPIUser", "Removed API user " . $_POST['USR']);
 }
 
 /**
@@ -255,6 +262,9 @@ function addUser()
     $DBH->bind(":uname", $_POST['USR']);
     $DBH->bind(":pass", $password);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "addUser", "Created a new user " . $_POST['USR']);
 }
 
 /**
@@ -273,6 +283,10 @@ function removeUser()
               WHERE id=:auid");
     $DBH->bind(":auid", $_POST['id']);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeUser", "Removed the user with id " . $_POST['id']);
+
     if ($_POST['id']==$_SESSION['id']) {
         echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
         echo "<script type=\"text/javascript\">";
@@ -307,11 +321,13 @@ function getUsers()
 function authenticateAPIUser($key, $user)
 {
     $DBH = new DB();
-    $DBH->query("SELECT apikey, permission FROM api
+    $DBH->query("SELECT id, apikey, permission FROM api
                 WHERE username=:uname");
     $DBH->bind(":uname", $user);
     $result = $DBH->single();
     if ($result["apikey"] == $key) {
+        $_SESSION['id'] = $result['id'];
+        $_SESSION['user_type'] = "api";
         return $result["permission"];
     } else {
         return 0;
@@ -407,6 +423,9 @@ function checkAdminLogin()
             $DBH->bind(":username", $_POST['username']);
             $DBH->execute();
         }
+        $_SESSION['page']="admin";
+        $_SESSION['id']=$row['id'];
+        $_SESSION['user_type']="local";
     }
 }
 
@@ -472,6 +491,9 @@ function addPayment($data=false)
         $DBH->bind(":payed", $_POST['PAID']);
         $DBH->execute();
     }
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "addPayment", "Created a new Payment with the id " . $DBH->lastInsertId());
 }
 
 /**
@@ -483,6 +505,7 @@ function addPayment($data=false)
  */
 function addMember($data=false)
 {
+    print_r($data);
     if ($data) {
         $DBH = new DB();
         $PSTNR = str_replace(' ', '', $data->PSTNR);
@@ -542,6 +565,8 @@ function addMember($data=false)
         $DBH->bind(":wrngaddr", "0");
         $DBH->execute();
     }
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "addMember", "Created a new member with the id " . $DBH->lastInsertId());
 }
 
 /**
@@ -562,6 +587,8 @@ function removeMember()
     $DBH->bind(":id", $_POST['ID']);
     $DBH->execute();
 
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeMember", "Flagged member " . $_POST['ID'] . "as deleted");
 
 }
 
@@ -580,6 +607,9 @@ function addPeriod()
     $DBH->bind(":first", $_POST['first']);
     $DBH->bind(":last", $_POST['last']);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "addPeriod", "Created a new period " . $_POST['period']);
 }
 
 /**
@@ -598,6 +628,9 @@ function changePeriod()
     $DBH->bind(":lastname", $_POST['last']);
     $DBH->bind(":period", $_POST['period']);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "changePeriod", "Edited period " . $_POST['period']);
 }
 
 /**
@@ -609,6 +642,7 @@ function changePeriod()
  */
 function updateMember($data=false)
 {
+    $id = "";
     if ($data) {
         $PSTNR = str_replace(' ', '', $data->PSTNR);
         $DBH = new DB();
@@ -616,6 +650,9 @@ function updateMember($data=false)
         $DBH->query("SELECT id FROM member WHERE ssn=:ssn");
         $DBH->bind(":ssn", $data->SSN);
         $memberID = $DBH->single();
+
+        $id = $memberID["id"];
+
         $DBH->query("UPDATE member SET phone= :phone,
                         email = :email,
                         co= :co,
@@ -638,6 +675,7 @@ function updateMember($data=false)
         $DBH->execute();
     } else {
         $member = getMember($_POST['ID']);
+        $id = $_POST['ID'];
         $haschanged = false;
         $PSTNR = str_replace(' ', '', urldecode($_POST['PSTNR']));
         // The ugly way to make sure that checkboxes are "set" when not ticked...
@@ -705,6 +743,9 @@ function updateMember($data=false)
             $DBH->execute();
         }
     }
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "updateMember", "updated member " . $id);
 }
 
 /**
@@ -736,6 +777,9 @@ function updateFee()
         exit("FATAL ERROR. Execution Stopped.");
     }
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "updateDee", "Updated fee " . $_POST['feeid']);
 }
 
 /**
@@ -1322,6 +1366,9 @@ function removePayment()
                 WHERE id=:bid");
     $DBH->bind(":bid", $_POST['paymentId']);
     $DBH->execute();
+
+    $LOGGER = new Logger();
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removePayment", "Flagged payment " . $_POST['paymentId'] . " as deleted");
 }
 
 /**
