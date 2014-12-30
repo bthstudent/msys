@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS adminuser (
   id int(11) NOT NULL AUTO_INCREMENT,
   username varchar(12) NOT NULL,
   hashpass varchar(64) NOT NULL,
+  deleted tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -16,6 +17,7 @@ CREATE TABLE IF NOT EXISTS api (
   username varchar(12) NOT NULL,
   apikey varchar(64) NOT NULL,
   permission int(11) NOT NULL,
+  deleted tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   UNIQUE KEY apikey (apikey)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

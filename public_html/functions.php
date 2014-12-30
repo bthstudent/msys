@@ -199,7 +199,7 @@ function handlepost()
 function getAPIUsers()
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM api");
+    $DBH->query("SELECT * FROM api WHERE deleted != '1'");
     $users = $DBH->resultset();
     return $users;
 }
@@ -237,13 +237,14 @@ function addAPIUser()
 function removeAPIUser()
 {
     $DBH = new DB();
-    $DBH->query("DELETE FROM api
+    $DBH->query("UPDATE api
+                SET deleted = '1'
                 WHERE username=:usr");
     $DBH->bind(":usr", $_POST['USR']);
     $DBH->execute();
 
     $LOGGER = new Logger();
-    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeAPIUser", "Removed API user " . $_POST['USR']);
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeAPIUser", "Flagged API user " . $_POST['USR'] . " as deleted");
 }
 
 /**
@@ -279,13 +280,14 @@ function removeUser()
        possible?
     */
     $DBH = new DB();
-    $DBH->query("DELETE FROM adminuser
+    $DBH->query("UPDATE adminuser
+              SET deleted = '1'
               WHERE id=:auid");
     $DBH->bind(":auid", $_POST['id']);
     $DBH->execute();
 
     $LOGGER = new Logger();
-    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeUser", "Removed the user with id " . $_POST['id']);
+    $LOGGER->log($_SESSION['id'], $_SESSION['user_type'], "removeUser", "Flagged the user with id " . $_POST['id'] . " as deleted");
 
     if ($_POST['id']==$_SESSION['id']) {
         echo "<a href=\"http://" . $_SERVER['HTTP_HOST'] . "\">Redirecting</a>";
@@ -304,7 +306,7 @@ function removeUser()
 function getUsers()
 {
     $DBH = new DB();
-    $DBH->query("SELECT id, username FROM adminuser");
+    $DBH->query("SELECT id, username FROM adminuser WHERE deleted != '1'");
     $users = $DBH->resultset();
     return $users;
 }
@@ -322,7 +324,7 @@ function authenticateAPIUser($key, $user)
 {
     $DBH = new DB();
     $DBH->query("SELECT id, apikey, permission FROM api
-                WHERE username=:uname");
+                WHERE username=:uname AND deleted != '1'");
     $DBH->bind(":uname", $user);
     $result = $DBH->single();
     if ($result["apikey"] == $key) {
@@ -400,10 +402,14 @@ function checkAdminLogin()
 {
     global $globalsalt;
     $DBH = new DB();
-    $DBH->query("SELECT id,hashpass FROM adminuser
-                 WHERE username = :username");
+    $DBH->query("SELECT id FROM adminuser
+                 WHERE username = :username AND
+                 hashpass = :hashpass
+                 AND deleted != '1'");
     $DBH->bind(":username", $_POST['username']);
+    $DBH->bind(":hashpass", sha1($_POST['pass']));
     $DBH->execute();
+
     if (($DBH->rowCount()) == 1) {
         $row = $DBH->single();
         if (password_verify($_POST['username'] . $_POST['pass'] . $globalsalt,
