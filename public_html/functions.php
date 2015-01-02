@@ -778,8 +778,7 @@ function insertHead($menu=false)
     putBoxStart();
     echo "<h1>
             <a href=\"http://" . $_SERVER['HTTP_HOST'] . "\" title=\"Hem\">
-                <img src='".$customize["style"]["logo"]."' width=\"80\" height=\"60\" align=\"absmiddle\" />
-            </a>
+                <img src='".$customize["style"]["logo"]."' width=\"80\" height=\"60\" align=\"absmiddle\" /></a>
             ".$customize["text"]["title"]."
           </h1>";
 
@@ -791,12 +790,12 @@ function insertHead($menu=false)
               </li>
               <li>
                   <a href=\"#\" class=\"menu item\">Rapporter</a>
-              <ul>
-                  <li>
-                      <a href=\"createreport.php?type=1\" class=\"menu item\">Betalda</a>
-                      <a href=\"createreport.php?type=2\" class=\"menu item\">Ej betalda</a>
-                  </li>
-              </ul>
+                  <ul>
+                      <li>
+                          <a href=\"createreport.php?type=1\" class=\"menu item\">Betalda</a>
+                          <a href=\"createreport.php?type=2\" class=\"menu item\">Ej betalda</a>
+                      </li>
+                  </ul>
               </li>
               <li>
                   <a href=\"#\" class=\"menu item\">Administration</a>
