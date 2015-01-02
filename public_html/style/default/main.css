@@ -48,6 +48,14 @@ table td{
 	padding:4px 2px;
 }
 
+tr.invalid{
+	background:#FFC7C7;
+}
+
+tr.valid{
+	background:#C7FFC7;
+}
+
 h1{
 	font-size:18px;
 	font-weight:bold;

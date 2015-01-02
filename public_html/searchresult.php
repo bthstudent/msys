@@ -36,7 +36,6 @@ if ($result) {
     $bgcolor[] = "e7e7e7";
     $bgcolor[] = "ffffff";
     $hovercolor = "#d7d7ff";
-    $validcolor = "#d7ffd7";
 
     echo "<h2>Sökresultat</h2>
     <table>

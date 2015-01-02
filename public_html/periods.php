@@ -49,8 +49,6 @@ putBoxStart();
 $periods = getPeriods();
 $i=$j=$k=0;
 $today = strtotime(date("Y-m-d"));
-$validcolor = "#c7ffc7";
-$pastcolor = "#ffc7c7";
 foreach ($periods as $row) {
     echo "<form name=\"changeperiod" . $k . "\" method=\"post\"><table>";
     echo "<input type=\"hidden\" readonly=\"readonly\" value=\"ChangePeriod\" name=\"handler\" />";
@@ -64,9 +62,9 @@ foreach ($periods as $row) {
         $i = 0;
     }
     if ($i==1) {
-        echo "<tr bgcolor=\"" . $validcolor . "\">";
+        echo "<tr class=\"valid\">";
     } elseif ($i==-1) {
-        echo "<tr bgcolor=\"" . $pastcolor . "\">";
+        echo "<tr class=\"invalid\">";
     } else {
         echo "<tr>";
     }
