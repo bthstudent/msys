@@ -22,7 +22,7 @@ session_start();
 <html>
 <head>
     <?php
-        require_once "functions.php";
+        require_once "../lib/functions.php";
         handlesession();
         handlepost();
         handlestyle();

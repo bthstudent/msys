@@ -1,5 +1,4 @@
 <?php
-require "../db/functions.php";
 $DBH = new DB();
 
 function stopconvert($source, $target)

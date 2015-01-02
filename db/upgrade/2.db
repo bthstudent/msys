@@ -1,5 +1,4 @@
 <?php
-    require "../db/functions.php";
     $DBH = new DB();
 
     $DBH->query("CREATE TABLE IF NOT EXISTS log (

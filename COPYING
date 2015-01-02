@@ -5,4 +5,4 @@ There are some exceptions to the above rule, they are documented
 below.
 
 MIT License
- public_html/lib/password.php
+ lib/password.php

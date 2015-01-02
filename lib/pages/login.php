@@ -34,6 +34,7 @@ if ($DBH->rowCount()==1) {
     $dbversion = $res["option_value"];
 
     $upgrades = glob("../db/upgrade/*.db");
+    require "../db/functions.php";
     foreach ($upgrades as $file) {
         if (!preg_match("/^\.\.\/db\/upgrade\/([0-9]+)\.db$/", $file, $availableupgrade)) {
             continue;

@@ -1,8 +1,9 @@
 <?php
 require "../local-config.php";
 require "PDO.interface.class.php";
-require "lib/password.php";
+require "password.php";
 require "Logger.class.php";
+
 /**
     The membership tracker system.
     Copyright © 2012-2013 Blekinge studentkår <sis@bthstudent.se>
@@ -86,17 +87,17 @@ function handlejavascript()
 function adminpage()
 {
     insertHead(true);
-    include_once "search.php";
+    include_once "pages/search.php";
     if (isset($_GET["page"])) {
-        if (@file_exists($_GET["page"] . ".php")) {
-            include_once $_GET["page"] . ".php";
+        if (@file_exists("../lib/pages/" . $_GET["page"] . ".php")) {
+            include_once "../lib/pages/" . $_GET["page"] . ".php";
         } else {
             putBoxStart();
             echo "Sidan du ville öppna kunde inte hittas!";
             putBoxEnd();
         }
     } else {
-        include_once "start.php";
+        include_once "pages/start.php";
     }
 }
 
@@ -108,7 +109,7 @@ function adminpage()
 function loginpage()
 {
     insertHead();
-    include_once "login.php";
+    include_once "pages/login.php";
 }
 
 
@@ -839,8 +840,8 @@ function insertHead($menu=false)
                   <a href=\"#\" class=\"menu item\">Rapporter</a>
                   <ul>
                       <li>
-                          <a href=\"createreport.php?type=1\" class=\"menu item\">Betalda</a>
-                          <a href=\"createreport.php?type=2\" class=\"menu item\">Ej betalda</a>
+                          <a href=\"?page=createreport&amp;type=1\" class=\"menu item\">Betalda</a>
+                          <a href=\"?page=createreport.php&amp;type=2\" class=\"menu item\">Ej betalda</a>
                       </li>
                   </ul>
               </li>

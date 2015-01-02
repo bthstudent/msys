@@ -1,5 +1,4 @@
 <?php
-    require "../db/functions.php";
     $DBH = new DB();
     if (tableexists("api")) {
         if (!columnexists("api", "deleted")) {
