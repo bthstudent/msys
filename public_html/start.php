@@ -20,7 +20,7 @@
 require_once "functions.php";
 putBoxStart();
 ?>
-<h2>Blekinge studentkårs medlemsregister</h2>
+<h2>Medlemsregister</h2>
 <div id="infoBoxes">
 <?php
 putInfoBox("Antal medlemmar", countMembers());
