@@ -130,12 +130,7 @@ if ($result) {
         }
     } else {
         echo "<tr class=\"even\">
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
+                    <td colspan=\"6\">Inga betalningar registrerade.</td>
                  </tr>";
     }
     echo "</table>
