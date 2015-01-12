@@ -33,9 +33,7 @@ if (isset($_GET["ssn"])) {
     $result = findEMA($_GET["email"]);
 }
 if ($result) {
-    $bgcolor[] = "e7e7e7";
-    $bgcolor[] = "ffffff";
-    $hovercolor = "#d7d7ff";
+    $bgcolor = array("even", "odd");
 
     echo "<h2>Sökresultat</h2>
     <table>
@@ -50,8 +48,7 @@ if ($result) {
         </tr>";
     $i = 0;
     foreach ($result as $value) {
-        $color = $bgcolor[$i%2];
-        echo "        <tr bgcolor='" . $color . "' onmouseover=\"this.bgColor='" . $hovercolor . "'; this.className='cursor';\" onmouseout=\"this.bgColor='" . $color . "'\" onclick=\" location.href='?page=member&amp;id=" . $value["id"] . "'\">
+        echo "        <tr class=\"".$bgcolor[$i%2]."\" onclick=\" location.href='?page=member&amp;id=" . $value["id"] . "'\">
             <td>" . $value["ssn"] . "</td>
             <td>" . $value["firstname"] . "</td>
             <td>" . $value["lastname"] . "</td>

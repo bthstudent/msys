@@ -56,6 +56,22 @@ tr.valid{
 	background:#C7FFC7;
 }
 
+tr.odd {
+    background: #e7e7e7;
+}
+
+tr.odd:hover {
+    background: #d7d7ff;
+}
+
+tr.even {
+    background: #ffffff;
+}
+
+tr.even:hover {
+    background: #d7d7ff;
+}
+
 h1{
 	font-size:18px;
 	font-weight:bold;

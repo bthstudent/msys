@@ -85,11 +85,7 @@ if ($result) {
 		  </div>
 		  </form>";
     putBoxEnd();
-    // move to CSS
-    $bgcolor[] = "e7e7e7";
-    $bgcolor[] = "ffffff";
-    $hovercolor = "#d7d7ff";
-    $validcolor = "#d7ffd7";
+    $bgcolor = array("even", "odd");
     putBoxStart();
     echo "<h2>Medlemskap</h2>
             <table>
@@ -111,9 +107,9 @@ if ($result) {
             if (!($first < $today && $today < $last)) {
                 $color = $bgcolor[$i%2];
             } else {
-                $color = $validcolor;
+                $color = "valid";
             }
-            echo "<tr bgcolor=\"" . $color . "\" onmouseover=\"this.bgColor='" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $color . "'\">
+            echo "<tr class=\"$color\">
                     <td>" . $value["period"] . "</td>
                     <td>" . $value["membershiptype"] . "</td>
                     <td>" . $value["fee"] . "</td>
@@ -133,8 +129,7 @@ if ($result) {
             $i++;
         }
     } else {
-        $color = $bgcolor[$i%2];
-        echo "<tr bgcolor=\"" . $color . "\" onmouseover=\"this.bgColor='" . $hovercolor . "'\" onmouseout=\"this.bgColor='" . $color . "'\">
+        echo "<tr class=\"even\">
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
