@@ -148,6 +148,7 @@ case "registerMember":
         $data->CITY    = urldecode($_GET['city']);
         $data->COUNTRY   = urldecode($_GET['coun']);
         $data->DONOTAD = urldecode($_GET['adv']);
+        $data->PHONE = urldecode($_GET['pho']);
         $data->WRNADDR = 0;
         addMember($data);
     } else {
