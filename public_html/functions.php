@@ -449,7 +449,7 @@ function addPayment($data=false)
         $DBH->query("INSERT INTO payment (member_id, fee_id, paymenttype_id, paymentdate, paid)
                       VALUES (:pid, :feeid, :ptid, :pdate, :payed)");
         $DBH->bind(":pid", $pid['id']);
-        $DBH->bind(":feeid", $a["fee_id"]);
+        $DBH->bind(":feeid", $a['fee_id']);
         $DBH->bind(":ptid", $data->PAYWAY);
         $DBH->bind(":pdate", $data->PAYDATE);
         $DBH->bind(":payed", $data->PAID);
