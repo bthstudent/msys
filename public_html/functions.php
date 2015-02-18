@@ -358,7 +358,7 @@ function getAPIMembers()
     $DBH = new DB();
     unset($query);
     $query = "SELECT ssn, lastname, firstname, email, phone";
-    $query .= ", co, address, postalnr, country, wrongaddress, donotadvertise";
+    $query .= ", co, address, postalnr, city, country, wrongaddress, donotadvertise";
     $query .= " FROM member
         WHERE deleted=0
         GROUP BY ssn
@@ -369,8 +369,8 @@ function getAPIMembers()
     foreach ($members as $member) {
         if (isMember($member["ssn"])) {
             echo $member["ssn"] . "," . $member["lastname"]  . "," . $member["firstname"] . "," . $member["email"]
-            . "," . $member["co"] . "," . $member["address"] . "," . $member["postalnr"] . "," . $member["country"]
-            . "," . $member["wrongaddress"] . "," . $member["donotadvertise"] . "\n";
+            . "," . $member["co"] . "," . $member["address"] . "," . $member["postalnr"] . "," . $member["city"]
+            . $member["country"] . "," . $member["wrongaddress"] . "," . $member["donotadvertise"] . "\n";
         }
     }
 }
