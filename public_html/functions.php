@@ -509,7 +509,7 @@ function addMember($data=false)
         $DBH->bind(":country", $data->COUNTRY);
         $DBH->bind(":phone", $data->PHONE);
         $DBH->bind(":eml", $data->EMAIL);
-        $DBH->bind(":avis", $data->AVISEJ);
+        $DBH->bind(":avis", $data->DONOTAD);
         $DBH->bind(":fadr", $data->WRNADDR);
         $DBH->execute();
     } else {
