@@ -11,7 +11,7 @@ if (tableexists("adminusers") && ! tableexists("adminuser")) {
     $DBH->query("RENAME TABLE adminusers TO adminuser");
     $DBH->execute();
 } else {
-    stopconvert("$adminusers", "$adminuser");
+    stopconvert("adminusers", "adminuser");
 }
 
 if (tableexists("api")) {
