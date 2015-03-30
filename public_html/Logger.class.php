@@ -22,6 +22,7 @@
      *
      *  @package Msys
      *  @author  Niclas Björner <niclas@cromigon.se>
+     *  @author  Martin Bagge <brother@bsnet.se>
      *  @license AGPL3
      */
     class Logger {
@@ -30,6 +31,7 @@
         }
 
         function log($user_id, $user_type, $function, $msg) {
+            $message = new stdClass();
             $message->time = time();
             $message->user_id = $user_id;
             $message->user_type = $user_type;
