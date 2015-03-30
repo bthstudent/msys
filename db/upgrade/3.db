@@ -2,12 +2,16 @@
     require "../db/functions.php";
     $DBH = new DB();
     if (tableexists("api")) {
-        $DBH->query("ALTER TABLE api ADD deleted tinyint(1) NOT NULL DEFAULT '0'");
-        $DBH->execute();
+        if (!columnexists("api", "deleted")) {
+            $DBH->query("ALTER TABLE api ADD deleted tinyint(1) NOT NULL DEFAULT '0'");
+            $DBH->execute();
+        }
     }
 
     if (tableexists("adminuser")) {
-        $DBH->query("ALTER TABLE adminuser ADD deleted tinyint(1) NOT NULL DEFAULT '0'");
-        $DBH->execute();
+        if (!columnexists("adminuser", "deleted")) {
+            $DBH->query("ALTER TABLE adminuser ADD deleted tinyint(1) NOT NULL DEFAULT '0'");
+            $DBH->execute();
+        }
     }
 ?>
