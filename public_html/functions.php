@@ -402,12 +402,11 @@ function checkAdminLogin()
 {
     global $globalsalt;
     $DBH = new DB();
-    $DBH->query("SELECT id FROM adminuser
-                 WHERE username = :username AND
-                 hashpass = :hashpass
+    $DBH->query("SELECT id, hashpass FROM adminuser
+                 WHERE username = :username
                  AND deleted != '1'");
+
     $DBH->bind(":username", $_POST['username']);
-    $DBH->bind(":hashpass", sha1($_POST['pass']));
     $DBH->execute();
 
     if (($DBH->rowCount()) == 1) {
@@ -429,8 +428,6 @@ function checkAdminLogin()
             $DBH->bind(":username", $_POST['username']);
             $DBH->execute();
         }
-        $_SESSION['page']="admin";
-        $_SESSION['id']=$row['id'];
         $_SESSION['user_type']="local";
     }
 }
