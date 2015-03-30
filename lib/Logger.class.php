@@ -17,33 +17,36 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
     */
 
-    /**
-     * A Logger class for msys
-     *
-     *  @package Msys
-     *  @author  Niclas Björner <niclas@cromigon.se>
-     *  @author  Martin Bagge <brother@bsnet.se>
-     *  @license AGPL3
-     */
-    class Logger {
-        function __construct() {
+/**
+ * A Logger class for msys
+*
+*  @package Msys
+*  @author  Niclas Björner <niclas@cromigon.se>
+*  @author  Martin Bagge <brother@bsnet.se>
+*  @license AGPL3, http://www.gnu.org/licenses/agpl.html
+*/
+class Logger
+{
+    function __construct()
+    {
 
-        }
-
-        function log($user_id, $user_type, $function, $msg) {
-            $message = new stdClass();
-            $message->time = time();
-            $message->user_id = $user_id;
-            $message->user_type = $user_type;
-            $message->function = $function;
-            $message->message = $msg;
-
-            $DBH = new DB();
-            $query = "INSERT INTO log(message)
-                      VALUES (:message)";
-            $DBH->query($query);
-            $DBH->bind(":message", json_encode($message));
-            $DBH->execute();
-        }
     }
+
+    function log($user_id, $user_type, $function, $msg)
+    {
+        $message = new stdClass();
+        $message->time = time();
+        $message->user_id = $user_id;
+        $message->user_type = $user_type;
+        $message->function = $function;
+        $message->message = $msg;
+
+        $DBH = new DB();
+        $query = "INSERT INTO log(message)
+                  VALUES (:message)";
+        $DBH->query($query);
+        $DBH->bind(":message", json_encode($message));
+        $DBH->execute();
+    }
+}
 ?>
