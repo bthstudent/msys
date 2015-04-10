@@ -450,7 +450,7 @@ function addPayment($data=false)
         $pid = $DBH->single();
 
         $DBH->query("SELECT id FROM membershiptype
-                     WHERE naming = :mtp");
+                     WHERE id = :mtp");
         $DBH->bind(":mtp", $data->MEMTYPE);
         $DBH->execute();
         $mtp = $DBH->single();
