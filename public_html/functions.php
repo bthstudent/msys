@@ -482,7 +482,7 @@ function addPayment($data=false)
                      WHERE membershiptype_id = :memtypeid AND
                      period_id = :periodid");
         $DBH->bind(":memtypeid", $_POST['MEMTYPE']);
-	$DBH->bind(":periodid", $per);
+        $DBH->bind(":periodid", $_POST['PERIOD']);
         $a = $DBH->single();
 
         $DBH->query("INSERT INTO payment (member_id, fee_id, paymenttype_id, paymentdate, paid)
