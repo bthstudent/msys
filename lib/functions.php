@@ -250,7 +250,7 @@ function insertHead($menu=false)
                   <ul>
                       <li>
                           <a href=\"?page=createreport&amp;type=1\" class=\"menu item\">Betalda</a>
-                          <a href=\"?page=createreport.php&amp;type=2\" class=\"menu item\">Ej betalda</a>
+                          <a href=\"?page=createreport&amp;type=2\" class=\"menu item\">Ej betalda</a>
                       </li>
                   </ul>
               </li>
