@@ -101,6 +101,70 @@ function addUser()
 }
 
 /**
+ * Update the password of a administrator.
+ *
+ * FIXME: Please merge this function with addUser()
+ *
+ * FIXME: #28 will split checkAdminLogin() into two parts, use the new
+ * validator to avoid code duplication as below.
+ *
+ * @return void
+ */
+function updateUserPassword()
+{
+    global $globalsalt;
+    $DBH = new DB();
+    $LOGGER = new Logger();
+    $_POST["error"] = 0;
+    if (isset($_POST["newpassword1"]) && isset($_POST["newpassword2"]) && isset($_POST["id"]) && !empty($_POST["newpassword1"]) && !empty($_POST["newpassword2"])) {
+        if ($_POST["newpassword1"] != $_POST["newpassword2"]) {
+            $LOGGER->log($_SESSION['id'],
+                         $_SESSION['user_type'],
+                         "updateUserPasswrord",
+                         "Password update attempt failed for user ID " . $_POST["id"] . " - mismatched passwords");
+            $_POST["error"] = -2;
+            return -2;
+        }
+        $DBH->query("SELECT id, username, hashpass FROM adminuser
+                 WHERE id = :id
+                 AND deleted != '1'");
+
+        $DBH->bind(":id", $_POST["id"]);
+        $DBH->execute();
+
+        if (($DBH->rowCount()) == 1) {
+            $row = $DBH->single();
+            $password = password_hash($row["username"] . $_POST["newpassword1"] . $globalsalt, PASSWORD_BCRYPT, array("cost" => 13));
+            $DBH->query("UPDATE adminuser SET hashpass = :pass WHERE id = :id");
+
+            $DBH->bind(":id", $_POST["id"]);
+            $DBH->bind(":pass", $password);
+            $DBH->execute();
+
+            $LOGGER->log($_SESSION['id'],
+                         $_SESSION['user_type'],
+                         "updateUserPasswrord",
+                         "Updated password for user '" . $row["username"] . "'");
+        } else {
+            $LOGGER->log($_SESSION['id'],
+                         $_SESSION['user_type'],
+                         "updateUserPasswrord",
+                         "Password update attempt failed becasue the provided user ID (".$_POST["id"].") was not found.");
+            $_POST["error"] = -3;
+            return -3;
+        }
+    } else {
+        $LOGGER->log($_SESSION['id'],
+                     $_SESSION['user_type'],
+                     "updateUserPasswrord",
+                     "Password update attempt failed for user '" . $_POST["id"] . "' - probably tried to use empty password.");
+        $_POST["error"] = -1;
+        return -1;
+    }
+
+}
+
+/**
  * Delete a administrator.
  *
  * @return void

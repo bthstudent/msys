@@ -143,6 +143,10 @@ a:active{
 	float:left;
 }
 
+.outerdivs .operation-error h2 {
+	color: #EC1212;
+}
+
 .right_align{
 	text-align:right;
 }

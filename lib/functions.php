@@ -177,6 +177,12 @@ function handlepost()
         case "RemoveUser":
             removeUser();
             break;
+        case "updateUserPassword":
+            updateUserPassword();
+            break;
+        case "updateUserPasswordForm":
+            // Placeholder because the UI code is stupid...
+            break;
         case "AddUser":
             addUser();
             break;
