@@ -54,11 +54,6 @@ CREATE TABLE IF NOT EXISTS paymenttype (
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- FIXME #1089
-INSERT INTO paymenttype(naming) VALUES('kassa');
-INSERT INTO paymenttype(naming) VALUES('konto');
-INSERT INTO paymenttype(naming) VALUES('online');
-
 -- --------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS membershiptype (

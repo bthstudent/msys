@@ -55,5 +55,8 @@ good idea for that reason.
 Point your webclient to the system and login with admin as user and
 nimda as password.
 
-You are now ready to start. (A good first step is to add a new admin
-user and sign in with that instead and then remove the default one...)
+Things to do at first use.
+    1. Add a new admin user and remove the default one. Or at least
+       change the default password.
+    2. Add a payment type.
+    3. Add a period and set the value of that period.

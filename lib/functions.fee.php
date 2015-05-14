@@ -322,6 +322,49 @@ function getPaymentway()
 }
 
 /**
+ * Update the description field of a payment type
+ *
+ * @return void
+ */
+function updatePaymentType()
+{
+    $currenttypes = getPaymentway();
+    $currentname="N/A";
+    foreach ($currenttypes as $type) {
+        if ($type["id"] == $_POST["ptid"]) {
+            $currentname = $type["naming"];
+            break;
+        }
+    }
+    $DBH = new DB();
+    $DBH->query("UPDATE paymenttype SET naming=:ptname
+                WHERE id=:ptid");
+    $DBH->bind(":ptname", $_POST["newlabel"]);
+    $DBH->bind(":ptid", $_POST["ptid"]);
+    if ($DBH->execute()) {
+        $LOGGER = new Logger();
+        $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "updatePaymentType", "Renamed payment type from $currentname to " . $_POST["newlabel"] . ".");
+    }
+}
+
+/**
+ * Add a new payment type
+ *
+ * @return void
+ */
+function addPaymentType()
+{
+    $DBH = new DB();
+    $DBH->query("INSERT INTO paymenttype SET naming = :ptnewname");
+    $DBH->bind(":ptnewname", $_POST["paymenttype"]);
+    if ($DBH->execute()) {
+        $LOGGER = new Logger();
+        $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "addPaymentType", "Added a new payment type " . $_POST["paymenttype"]);
+    }
+}
+
+
+/**
  * Marks a payment as deleted.
  *
  * @return void
