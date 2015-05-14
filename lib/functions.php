@@ -201,6 +201,15 @@ function handlepost()
         case "AddPaymentType":
             addPaymentType();
             break;
+        case "EditMembershipTypeForm":
+            // Placeholder because the UI code is stupid...
+            break;
+        case "EditMembershipType":
+            updateMembershipType();
+            break;
+        case "AddMembershipType":
+            addMembershipType();
+            break;
         default:
             echo "Du har försökt skicka något med metoden 'POST' som sidan inte känner igen,<br />";
             echo "<script type=\"text/javascript\">";
@@ -280,6 +289,9 @@ function insertHead($menu=false)
                       </li>
                       <li>
                           <a href=\"?page=paymenttype\" class=\"menu item\">Betalvägar</a>
+                      </li>
+                      <li>
+                          <a href=\"?page=membershiptype\" class=\"menu item\">Medlemsskap</a>
                       </li>
                       <li>
                           <a href=\"?page=user\" class=\"menu item\">Användarkonton</a>

@@ -309,6 +309,48 @@ function getMembershiptypes()
 }
 
 /**
+ * Update the description field of a membership type
+ *
+ * @return void
+ */
+function updateMembershipType()
+{
+    $currenttypes = getMembershiptypes();
+    $currentname="N/A";
+    foreach ($currenttypes as $type) {
+        if ($type["id"] == $_POST["mbtid"]) {
+            $currentname = $type["naming"];
+            break;
+        }
+    }
+    $DBH = new DB();
+    $DBH->query("UPDATE membershiptype SET naming=:mbtname
+                WHERE id=:mbtid");
+    $DBH->bind(":mbtname", $_POST["newlabel"]);
+    $DBH->bind(":mbtid", $_POST["mbtid"]);
+    if ($DBH->execute()) {
+        $LOGGER = new Logger();
+        $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "updateMembershipType", "Renamed membership type from $currentname to " . $_POST["newlabel"] . ".");
+    }
+}
+
+/**
+ * Add a new membership type
+ *
+ * @return void
+ */
+function addMembershipType()
+{
+    $DBH = new DB();
+    $DBH->query("INSERT INTO membershiptype SET naming = :mbtnewname");
+    $DBH->bind(":mbtnewname", $_POST["membershiptype"]);
+    if ($DBH->execute()) {
+        $LOGGER = new Logger();
+        $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "addMembershipType", "Added a new membership type " . $_POST["membershiptype"]);
+    }
+}
+
+/**
  * Extract the payment types and returns them in a structurred array.
  *
  * @return mixed

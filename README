@@ -59,4 +59,5 @@ Things to do at first use.
     1. Add a new admin user and remove the default one. Or at least
        change the default password.
     2. Add a payment type.
-    3. Add a period and set the value of that period.
+    3. Add a membership type.
+    4. Add a period and set the value of that period.

@@ -62,13 +62,6 @@ CREATE TABLE IF NOT EXISTS membershiptype (
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- FIXME #1013
-INSERT INTO membershiptype(naming) VALUES('Campus');
-INSERT INTO membershiptype(naming) VALUES('Distans/Doktorand');
-INSERT INTO membershiptype(naming) VALUES('Stod');
-
-
-
 -- --------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS period (
