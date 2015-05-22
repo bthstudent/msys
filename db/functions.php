@@ -27,11 +27,13 @@ function columnexists ($table, $column)
         SELECT table_schema, table_name, column_name
         FROM information_schema.columns
         WHERE table_schema='".$DBH->getDBName()."'
-            AND table_name='adminuser'
-            AND column_name='deleted';
+            AND table_name=:tname
+            AND column_name=:cname;
             ";
 
     $DBH->query($query);
+    $DBH->bind(":tname", $table);
+    $DBH->bind(":cname", $column);
     $DBH->execute();
     if ($DBH->rowCount() == 1) {
         return true;
