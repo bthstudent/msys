@@ -42,4 +42,16 @@ function columnexists ($table, $column)
     }
 }
 
+function indexexists ($table, $indexname)
+{
+    $DBH = new DB();
+    $DBH->query("SHOW INDEX FROM $table WHERE Key_name = :indexname");
+    $DBH->bind(":indexname", $indexname);
+    $DBH->execute();
+    if ($DBH->rowCount() == 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 ?>
