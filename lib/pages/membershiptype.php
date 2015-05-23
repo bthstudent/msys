@@ -30,7 +30,8 @@
 <div class="outerdivs">
 	<h2>Nuvarande medlemsskap</h2>
 <?php
-$types = getMembershiptypes();
+// true as parameter to also fetch hidden types.
+$types = getMembershiptypes(true);
 foreach ($types as $row) {
     echo "<div style=\"text-align: left; border-top:1px solid black; margin-bottom: 5px;\">";
     echo "<span style=\"font-size: 20px;\">" . $row["naming"] . "</span>";
@@ -55,6 +56,16 @@ foreach ($types as $row) {
 			<input type=\"hidden\" readonly=\"readonly\" value=\"EditMembershipTypeForm\" name=\"handler\" />
 			<input type=\"hidden\" readonly=\"readonly\" value=\"" . $row["id"] . "\" name=\"id\"/>
 			<input type=\"submit\" value=\"Ändra namn\">
+		</form>
+	</div>";
+    $active="Inaktivera";
+    if ($row["deleted"] == 1) { $active = "Aktivera"; }
+    echo "
+	<div style=\"text-align: right;\">
+		<form name=\"ToggleMembership\" class=\"info\" method=\"post\">
+			<input type=\"hidden\" readonly=\"readonly\" value=\"ToggleMembershipType\" name=\"handler\" />
+			<input type=\"hidden\" readonly=\"readonly\" value=\"" . $row["id"] . "\" name=\"id\"/>
+			<input type=\"submit\" value=\"$active\">
 		</form>
 	</div>";
     echo "</div>";

@@ -52,7 +52,7 @@ foreach ($periods as $row) {
 				<td>Medlemstyp:</td>
 				<td><select name="MEMTYPE">
 <?php
-$membershiptypes = getMembershiptypes();
+$membershiptypes = getMembershiptypes(false);
 foreach ($membershiptypes as $membershiptype) {
     echo "<option value=\"" . $membershiptype["id"] . "\">" . $membershiptype["naming"] . "</option>\n";
 }
@@ -63,7 +63,7 @@ foreach ($membershiptypes as $membershiptype) {
 				<td>Betalsätt:</td>
 				<td><select name = "PAYWAY">
 <?php
-$betalsatt = getPaymentway();
+$betalsatt = getPaymentway(false);
 foreach ($betalsatt as $satt) {
     echo "<option value=\"" . $satt["id"] . "\">" . $satt["naming"] . "</option>\n";
 }

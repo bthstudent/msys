@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS payment (
 CREATE TABLE IF NOT EXISTS paymenttype (
   id int(11) NOT NULL AUTO_INCREMENT,
   naming text,
+  deleted tinyint(1) default 0,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS paymenttype (
 CREATE TABLE IF NOT EXISTS membershiptype (
   id int(11) NOT NULL AUTO_INCREMENT,
   naming text,
+  deleted tinyint(1) default 0,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

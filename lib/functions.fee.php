@@ -187,7 +187,7 @@ function getPayments($id, $onlyActive=false)
               LEFT JOIN paymenttype ON payment.paymenttype_id=paymenttype.id
               LEFT JOIN period ON fee.period_id=period.id
               LEFT JOIN membershiptype ON fee.membershiptype_id=membershiptype.id
-              WHERE payment.member_id=:id AND deleted != 1";
+              WHERE payment.member_id=:id AND payment.deleted != 1";
     if ($onlyActive == true) {
         $query .= " AND first<=DATE(NOW()) AND last>=DATE(NOW())";
     }
@@ -298,12 +298,19 @@ function getFeeId($fee, $membertype)
 /**
  * Extract the membership types and returns them in a structurred array.
  *
+ * @param bool if set to true the hidden membership types will be
+ * included.
+ *
  * @return mixed
  */
-function getMembershiptypes()
+function getMembershiptypes($showHidden=false)
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM membershiptype");
+    if ($showHidden) {
+        $DBH->query("SELECT id, naming, deleted FROM membershiptype");
+    } else {
+        $DBH->query("SELECT id, naming FROM membershiptype WHERE deleted=0");
+    }
     $membershiptypes = $DBH->resultset();
     return $membershiptypes;
 }
@@ -315,7 +322,7 @@ function getMembershiptypes()
  */
 function updateMembershipType()
 {
-    $currenttypes = getMembershiptypes();
+    $currenttypes = getMembershiptypes(true);
     $currentname="N/A";
     foreach ($currenttypes as $type) {
         if ($type["id"] == $_POST["mbtid"]) {
@@ -331,6 +338,37 @@ function updateMembershipType()
     if ($DBH->execute()) {
         $LOGGER = new Logger();
         $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "updateMembershipType", "Renamed membership type from $currentname to " . $_POST["newlabel"] . ".");
+    }
+}
+
+/**
+ * Toggle visibility for a specific membership type.
+ *
+ * @return void
+ */
+function toggleMembershipType()
+{
+    $currenttypes = getMembershiptypes(true);
+    $currentname="N/A";
+    foreach ($currenttypes as $type) {
+        if ($type["id"] == $_POST["id"]) {
+            $current = $type["deleted"];
+            $currentname = $type["naming"];
+            break;
+        }
+    }
+    $DBH = new DB();
+    $DBH->query("UPDATE membershiptype SET deleted=:mbthide
+                WHERE id=:mbtid");
+    if ($current == 1) {
+        $DBH->bind(":mbthide", 0);
+    } else {
+        $DBH->bind(":mbthide", 1);
+    }
+    $DBH->bind(":mbtid", $_POST["id"]);
+    if ($DBH->execute()) {
+        $LOGGER = new Logger();
+        $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "toggleMembershipType", "Toggled hidden status for '$currentname' was ($current).");
     }
 }
 
@@ -353,12 +391,19 @@ function addMembershipType()
 /**
  * Extract the payment types and returns them in a structurred array.
  *
+ * @param bool if set to true the hidden payment types will be
+ * included.
+ *
  * @return mixed
  */
-function getPaymentway()
+function getPaymentway($showHidden=false)
 {
     $DBH = new DB();
-    $DBH->query("SELECT * FROM paymenttype");
+    if ($showHidden) {
+        $DBH->query("SELECT id, naming, deleted FROM paymenttype");
+    } else {
+        $DBH->query("SELECT id, naming FROM paymenttype WHERE deleted=0");
+    }
     $paymentway = $DBH->resultset();
     return $paymentway;
 }
@@ -370,7 +415,7 @@ function getPaymentway()
  */
 function updatePaymentType()
 {
-    $currenttypes = getPaymentway();
+    $currenttypes = getPaymentway(true);
     $currentname="N/A";
     foreach ($currenttypes as $type) {
         if ($type["id"] == $_POST["ptid"]) {
@@ -388,6 +433,39 @@ function updatePaymentType()
         $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "updatePaymentType", "Renamed payment type from $currentname to " . $_POST["newlabel"] . ".");
     }
 }
+
+/**
+ * Toggle visibility for a specific payment type.
+ *
+ * @return void
+ */
+function togglePaymentType()
+{
+    $currenttypes = getPaymentway(true);
+    $currentname="N/A";
+    $current=0;
+    foreach ($currenttypes as $type) {
+        if ($type["id"] == $_POST["id"]) {
+            $current = $type["deleted"];
+            $currentname = $type["naming"];
+            break;
+        }
+    }
+    $DBH = new DB();
+    $DBH->query("UPDATE paymenttype SET deleted=:pthide
+                WHERE id=:ptid");
+    if ($current == 1) {
+        $DBH->bind(":pthide", 0);
+    } else {
+        $DBH->bind(":pthide", 1);
+    }
+    $DBH->bind(":ptid", $_POST["id"]);
+    if ($DBH->execute()) {
+        $LOGGER = new Logger();
+        $LOGGER->log($_SESSION["id"], $_SESSION["user_type"], "togglePaymentType", "Toggled hidden status for '$currentname' was ($current).");
+    }
+}
+
 
 /**
  * Add a new payment type

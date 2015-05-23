@@ -1,0 +1,17 @@
+<?php
+
+    $DBH = new DB();
+    if (tableexists("paymenttype")) {
+        if (!columnexists("paymenttype", "deleted")) {
+            $DBH->query("ALTER TABLE paymenttype ADD COLUMN deleted tinyint(1) DEFAULT 0");
+            $DBH->execute();
+        }
+    }
+
+    if (tableexists("membershiptype")) {
+        if (!columnexists("membershiptype", "deleted")) {
+            $DBH->query("ALTER TABLE membershiptype ADD COLUMN deleted tinyint(1) DEFAULT 0");
+            $DBH->execute();
+        }
+    }
+?>

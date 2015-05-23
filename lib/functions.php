@@ -198,6 +198,9 @@ function handlepost()
         case "EditPaymentType":
             updatePaymentType();
             break;
+        case "TogglePaymentType":
+            togglePaymentType();
+            break;
         case "AddPaymentType":
             addPaymentType();
             break;
@@ -206,6 +209,9 @@ function handlepost()
             break;
         case "EditMembershipType":
             updateMembershipType();
+            break;
+        case "ToggleMembershipType":
+            toggleMembershipType();
             break;
         case "AddMembershipType":
             addMembershipType();
