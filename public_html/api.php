@@ -185,5 +185,21 @@ case 'isRegistered':
         }
     }
     break;
+case 'getMembershipTypes':
+    if ($userPermissions & 4) {
+        $types = getMembershipTypes();
+        foreach ($types as $row) {
+            echo implode(",", $row)."\n";
+        }
+    }
+    break;
+case 'getPaymentTypes':
+    if ($userPermissions & 4) {
+        $types = getPaymentway();
+        foreach ($types as $row) {
+            echo implode(",", $row)."\n";
+        }
+    }
+    break;
 }
 ?>
